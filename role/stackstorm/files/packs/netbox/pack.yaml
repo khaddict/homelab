@@ -1,0 +1,15 @@
+---
+name: netbox
+description: NetBox DCIM
+keywords:
+  - netbox
+  - networking
+  - ipam
+  - dcim
+version: 3.4.1
+python_versions:
+  - "3"
+author: John Anderson, Jefferson White
+email: lampwins@gmail.com
+contributors:
+  - Abhimanyu Saharan <asaharan@onemindservices.com>

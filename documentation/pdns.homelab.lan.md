@@ -1,0 +1,1 @@
+- ✅ `pdns.homelab.lan` : machine DNS PowerDNS qui permet de gérer la partie record DNS.

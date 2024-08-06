@@ -1,0 +1,14 @@
+common_packages:
+  - "curl"
+  - "git"
+  - "htop"
+  - "tmux"
+  - "jq"
+  - "rsync"
+  - "tree"
+  - "bc"
+  - "qemu-guest-agent"
+  - "parted"
+
+purged_packages:
+  - openipmi

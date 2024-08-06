@@ -1,0 +1,35 @@
+---
+hostname:
+  description: "Hostname for the NetBox server"
+  type: "string"
+  required: true
+
+api_token:
+  description: "API Token to use against the API"
+  type: "string"
+  required: true
+
+use_https:
+  description: "Use HTTPS when contacting the API"
+  type: "boolean"
+  required: true
+
+ssl_verify:
+  description: "Verify ssl/tls protocol certs when contacting the API."
+  type: "boolean"
+  required: true
+
+sensor_address:
+  description: "Host address to run the Webhook sensor on."
+  type: "string"
+  default: "0.0.0.0"
+
+sensor_port:
+  description: "Port to run the Webhook sensor on."
+  type: "integer"
+  default: 6000
+
+sensor_secret:
+  description: "When provided, will force request signature verification using the provided secret value."
+  type: "string"
+  default: ""

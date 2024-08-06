@@ -1,0 +1,13 @@
+[Unit]
+Description=Homelab API service (FastAPI)
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/opt/api_homelab
+ExecStart=/opt/api_homelab/api_venv/bin/fastapi dev /opt/api_homelab/api_homelab.py --host 0.0.0.0 --port 80
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

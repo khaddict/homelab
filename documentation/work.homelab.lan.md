@@ -1,0 +1,1 @@
+- ✅ `work.homelab.lan` : machine de taff.

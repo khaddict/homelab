@@ -1,0 +1,68 @@
+# This action was auto generated from the NetBox API Swagger Spec
+# NetBox API version: 3.7
+description: "Post a list of IP range objects."
+enabled: true
+entry_point: run.py
+name: post.ipam.ip_ranges
+parameters:
+  endpoint_uri:
+    default: "/ipam/ip-ranges/"
+    immutable: true
+    type: string
+  http_verb:
+    default: post
+    immutable: true
+    type: string
+  get_detail_route_eligible:
+    default: true
+    immutable: true
+    type: boolean
+  start_address:
+    required: false
+    type: string
+    description: "Start address"
+  end_address:
+    required: false
+    type: string
+    description: "End address"
+  vrf:
+    required: false
+    type: integer
+    description: "Vrf"
+  tenant:
+    required: false
+    type: integer
+    description: "Tenant"
+  status:
+    required: false
+    type: string
+    description: "Operational status of this range
+
+* `active` - Active
+* `reserved` - Reserved
+* `deprecated` - Deprecated"
+  role:
+    required: false
+    type: integer
+    description: "The primary function of this range"
+  description:
+    required: false
+    type: string
+    description: "Description"
+  comments:
+    required: false
+    type: string
+    description: "Comments"
+  tags:
+    required: false
+    type: array
+    description: "Array of tag strings"
+  custom_fields:
+    required: false
+    type: object
+    description: "Custom fields"
+  mark_utilized:
+    required: false
+    type: boolean
+    description: "Treat as fully utilized"
+runner_type: python-script

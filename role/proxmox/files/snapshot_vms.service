@@ -1,0 +1,12 @@
+[Unit]
+Description=Snapshot all VMs on Proxmox
+After=network.target
+
+[Service]
+User=root
+Group=root
+Type=oneshot
+ExecStart=/opt/snapshot_vms.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,5 @@
+---
+hostname: "netbox.homelab.lan"
+api_token: "{{ netbox_api_token }}"
+use_https: true
+ssl_verify: false

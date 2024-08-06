@@ -1,0 +1,36 @@
+# This action was auto generated from the NetBox API Swagger Spec
+# NetBox API version: 3.7
+description: "Post a list of device bay template objects."
+enabled: true
+entry_point: run.py
+name: post.dcim.device_bay_templates
+parameters:
+  endpoint_uri:
+    default: "/dcim/device-bay-templates/"
+    immutable: true
+    type: string
+  http_verb:
+    default: post
+    immutable: true
+    type: string
+  get_detail_route_eligible:
+    default: true
+    immutable: true
+    type: boolean
+  device_type:
+    required: false
+    type: integer
+    description: "Device type"
+  name:
+    required: false
+    type: string
+    description: "{module} is accepted as a substitution for the module bay position when attached to a module type."
+  label:
+    required: false
+    type: string
+    description: "Physical label"
+  description:
+    required: false
+    type: string
+    description: "Description"
+runner_type: python-script
