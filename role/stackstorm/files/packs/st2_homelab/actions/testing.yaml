@@ -1,0 +1,7 @@
+---
+name: testing
+pack: st2_homelab
+description: Test things. Highstate stackstorm.homelab.lan to reset it.
+runner_type: orquesta
+entry_point: workflows/testing.yaml
+enabled: true

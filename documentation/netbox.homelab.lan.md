@@ -1,0 +1,1 @@
+- ✅ `netbox.homelab.lan` : machine NetBox pour l'inventaire des ressources + permet de récupérer pour réutiliser certaines variables dans des workflows Stackstorm.

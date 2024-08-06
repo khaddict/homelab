@@ -1,0 +1,135 @@
+version: 1.0
+description: Create VM on NetBox side.
+
+input:
+  - vm_name
+  - vm_role
+  - ip_addr
+  - vcpus
+  - memory
+  - disk
+
+vars:
+  - domain: "homelab.lan"
+  - fqdn: "<% ctx().vm_name %>.<% ctx().domain %>"
+  - slug: <% ctx().vm_role %>
+  - vm_id: ""
+  - role_id: ""
+  - iface_name: "ens18"
+  - vm_parameters: ""
+
+tasks:
+  check_if_role_exists:
+    action: netbox.get.dcim.device_roles
+    input:
+      name: [<% ctx().vm_role %>]
+    next:
+      - when: <% succeeded() and result().result.raw.count = 0 %>
+        do: create_role
+      - when: <% succeeded() and result().result.raw.count = 1 %>
+        do: check_if_vm_exists
+        publish:
+          - role_id: <% list(result().result.raw.results.id)[0] %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not get the device role <% ctx().vm_role %> from NetBox."
+
+  create_role:
+    action: netbox.post.dcim.device_roles
+    input:
+      name: "<% ctx().vm_role %>"
+      slug: "<% ctx().slug %>"
+      color: "00ffff"
+      vm_role: true
+    next:
+      - when: <% succeeded() %>
+        do: check_if_vm_exists
+        publish:
+          - role_id: <% result().result.raw.id %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not create the device role <% ctx().vm_role %> on NetBox."
+
+  check_if_vm_exists:
+    action: netbox.get.virtualization.virtual_machines
+    input:
+      name: [<% ctx().fqdn %>]
+    next:
+      - when: <% succeeded() and result().result.raw.count = 0 %>
+        do: create_vm
+      - when: <% succeeded() and result().result.raw.count = 1 %>
+        do: fail
+        publish:
+          - msg: "The virtual machine <% ctx().fqdn %> already exists on NetBox."
+      - when: <% failed() %>
+        publish:
+          - msg: "The action check_if_vm_exists failed."
+
+  create_vm:
+    action: netbox.post.virtualization.virtual_machines
+    input:
+      name: "<% ctx().fqdn %>"
+      status: "active"
+      site: 1
+      cluster: 1
+      role: <% ctx().role_id %>
+      vcpus: <% ctx().vcpus %>
+      memory: <% ctx().memory %>
+      disk: <% ctx().disk %>
+    next:
+      - when: <% succeeded() %>
+        do: create_interface
+        publish:
+          - vm_id: <% result().result.raw.id %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not create the virtual machine <% ctx().fqdn %> on NetBox."
+
+  create_interface:
+    action: netbox.post.virtualization.interfaces
+    input:
+      virtual_machine: <% ctx().vm_id %> 
+      name: <% ctx().iface_name %>
+    next:
+      - when: <% succeeded() %>
+        do: create_ip_addr
+        publish:
+          - iface_id: <% result().result.raw.id %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not create the interface <% ctx().iface_name %> for <% ctx().fqdn %>."
+
+  create_ip_addr:
+    action: netbox.post.ipam.ip_addresses
+    input:
+      address: <% ctx().ip_addr %>
+      status: "active"
+      dns_name: "<% ctx().fqdn %>"
+      assigned_object_type: "virtualization.vminterface"
+      assigned_object_id: <% ctx().iface_id %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - ip_addr_id: <% result().result.raw.id %>
+        do: primary_ip_vm
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not create the IP address for <% ctx().fqdn %>."
+
+  primary_ip_vm:
+    action: netbox.patch.virtualization.virtual_machines
+    input:
+      id: <% ctx().vm_id %>
+      primary_ip4: <% ctx().ip_addr_id %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - msg: "Everything is finished."
+          - vm_parameters: "vm_name=<% ctx().vm_name %>, fqdn=<% ctx().fqdn %>, vm_id=<% ctx().vm_id %>, vm_role=<% ctx().vm_role %>, role_id=<% ctx().role_id %>, slug=<% ctx().slug %>, ip_addr=<% ctx().ip_addr %>, ip_addr_id=<% ctx().ip_addr_id %>, iface_name=<% ctx().iface_name %>, iface_id=<% ctx().iface_id %>, disk=<% ctx().disk %>, memory=<% ctx().memory %>, vcpus=<% ctx().vcpus %>, "
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not set the IP address as primary IP."
+
+output:
+  - msg: <% ctx().msg %>
+  - vm_parameters: <% ctx().vm_parameters %>

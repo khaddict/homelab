@@ -1,0 +1,1 @@
+- ☑️ `openstack.homelab.lan` : machine Openstack pour apprendre les basiques.

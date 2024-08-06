@@ -1,0 +1,17 @@
+---
+name: view_cert
+pack: st2_homelab
+description: View certificate (.crt, .pem).
+runner_type: orquesta
+entry_point: workflows/view_cert.yaml
+enabled: true
+parameters:
+  vm_name:
+    required: true
+    type: string
+    description: The VM name.
+  cert_extension:
+    required: true
+    type: string
+    default: "crt"
+    description: The certificate extension (can be crt or pem).

@@ -1,0 +1,81 @@
+# This action was auto generated from the NetBox API Swagger Spec
+# NetBox API version: 3.7
+description: "Patch a prefix object."
+enabled: true
+entry_point: run.py
+name: patch.ipam.prefixes
+parameters:
+  endpoint_uri:
+    default: "/ipam/prefixes/{{ id }}/"
+    immutable: true
+    type: string
+  http_verb:
+    default: patch
+    immutable: true
+    type: string
+  get_detail_route_eligible:
+    default: true
+    immutable: true
+    type: boolean
+  prefix:
+    required: false
+    type: string
+    description: "Prefix"
+  site:
+    required: false
+    type: integer
+    description: "Site"
+  vrf:
+    required: false
+    type: integer
+    description: "Vrf"
+  tenant:
+    required: false
+    type: integer
+    description: "Tenant"
+  vlan:
+    required: false
+    type: integer
+    description: "Vlan"
+  status:
+    required: false
+    type: string
+    description: "Operational status of this prefix
+
+* `container` - Container
+* `active` - Active
+* `reserved` - Reserved
+* `deprecated` - Deprecated"
+  role:
+    required: false
+    type: integer
+    description: "The primary function of this prefix"
+  is_pool:
+    required: false
+    type: boolean
+    description: "Is a pool"
+  mark_utilized:
+    required: false
+    type: boolean
+    description: "Treat as fully utilized"
+  description:
+    required: false
+    type: string
+    description: "Description"
+  comments:
+    required: false
+    type: string
+    description: "Comments"
+  tags:
+    required: false
+    type: array
+    description: "Array of tag strings"
+  custom_fields:
+    required: false
+    type: object
+    description: "Custom fields"
+  id:
+    required: true
+    type: integer
+    description: "ID of the object to patch."
+runner_type: python-script

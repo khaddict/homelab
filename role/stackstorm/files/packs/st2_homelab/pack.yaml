@@ -1,0 +1,7 @@
+---
+ref: st2_homelab
+name: st2_homelab
+version: 1.0.0
+author: khaddict
+email: khaddict@homelab.lan
+description: Homelab StackStorm pack.

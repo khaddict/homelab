@@ -1,0 +1,1 @@
+- ✅ `elk.homelab.lan` : machine ELK → Elasticsearch + Logstash + Kibana. Permet de visualiser les logs gérés par rsyslog. Tous les logs sont envoyés vers `/var/log/servers/*/*.log`.

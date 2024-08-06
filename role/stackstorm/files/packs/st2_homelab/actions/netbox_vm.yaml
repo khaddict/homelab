@@ -1,0 +1,32 @@
+---
+name: netbox_vm
+pack: st2_homelab
+description: Create VM on NetBox side.
+runner_type: orquesta
+entry_point: workflows/netbox_vm.yaml
+enabled: true
+parameters:
+  vm_name:
+    required: true
+    type: string
+    description: The VM name.
+  vm_role:
+    required: true
+    type: string
+    description: The VM role.
+  ip_addr:
+    required: true
+    type: string
+    description: The VM IPV4 address.
+  vcpus:
+    required: true
+    type: integer
+    description: The number of VCPUs.
+  memory:
+    required: true
+    type: integer
+    description: The memory.
+  disk:
+    required: true
+    type: integer
+    description: The disk space.

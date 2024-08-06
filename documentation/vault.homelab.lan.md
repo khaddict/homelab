@@ -1,0 +1,1 @@
+- ✅ `vault.homelab.lan` : machine Vault qui permet de stocker les secrets qui peuvent être récupérés via SaltStack.

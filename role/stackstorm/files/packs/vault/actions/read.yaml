@@ -1,0 +1,16 @@
+---
+name: read
+runner_type: python-script
+description: "Read value from Vault server"
+enabled: true
+entry_point: "read.py"
+parameters:
+  profile_name:
+    description: "The profile to use to run this action."
+    type: "string"
+    required: false
+  path:
+    type: string
+    description: "Key to read from Vault"
+    required: true
+    position: 0

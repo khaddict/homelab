@@ -1,0 +1,84 @@
+# This action was auto generated from the NetBox API Swagger Spec
+# NetBox API version: 3.7
+description: "Put a interface object."
+enabled: true
+entry_point: run.py
+name: put.virtualization.interfaces
+parameters:
+  endpoint_uri:
+    default: "/virtualization/interfaces/{{ id }}/"
+    immutable: true
+    type: string
+  http_verb:
+    default: put
+    immutable: true
+    type: string
+  get_detail_route_eligible:
+    default: true
+    immutable: true
+    type: boolean
+  virtual_machine:
+    required: false
+    type: integer
+    description: "Virtual machine"
+  name:
+    required: false
+    type: string
+    description: "Name"
+  enabled:
+    required: false
+    type: boolean
+    description: "Enabled"
+  parent:
+    required: false
+    type: integer
+    description: "Parent interface"
+  bridge:
+    required: false
+    type: integer
+    description: "Bridge interface"
+  mtu:
+    required: false
+    type: integer
+    description: "Mtu"
+  mac_address:
+    required: false
+    type: string
+    description: "Mac address"
+  description:
+    required: false
+    type: string
+    description: "Description"
+  mode:
+    required: false
+    type: string
+    description: "IEEE 802.1Q tagging strategy
+
+* `access` - Access
+* `tagged` - Tagged
+* `tagged-all` - Tagged (All)"
+  untagged_vlan:
+    required: false
+    type: integer
+    description: "Untagged vlan"
+  tagged_vlans:
+    required: false
+    type: array
+    description: "Tagged vlans"
+  vrf:
+    required: false
+    type: integer
+    description: "Vrf"
+  tags:
+    required: false
+    type: array
+    description: "Array of tag strings"
+  custom_fields:
+    required: false
+    type: object
+    description: "Custom fields"
+  id:
+    required: true
+    type: integer
+    description: "ID of the object to put."
+runner_type: python-script

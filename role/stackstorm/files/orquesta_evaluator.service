@@ -1,0 +1,13 @@
+[Unit]
+Description=Orquesta Evaluator service
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/opt/orquestaevaluator
+ExecStart=/opt/orquestaevaluator/orquestaevaluator_venv/bin/python /opt/orquestaevaluator/app.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,68 @@
+# This action was auto generated from the NetBox API Swagger Spec
+# NetBox API version: 3.7
+description: "Post a list of VLAN objects."
+enabled: true
+entry_point: run.py
+name: post.ipam.vlans
+parameters:
+  endpoint_uri:
+    default: "/ipam/vlans/"
+    immutable: true
+    type: string
+  http_verb:
+    default: post
+    immutable: true
+    type: string
+  get_detail_route_eligible:
+    default: true
+    immutable: true
+    type: boolean
+  site:
+    required: false
+    type: integer
+    description: "The specific site to which this VLAN is assigned (if any)"
+  group:
+    required: false
+    type: integer
+    description: "VLAN group (optional)"
+  vid:
+    required: false
+    type: integer
+    description: "VLAN ID"
+  name:
+    required: false
+    type: string
+    description: "Name"
+  tenant:
+    required: false
+    type: integer
+    description: "Tenant"
+  status:
+    required: false
+    type: string
+    description: "Operational status of this VLAN
+
+* `active` - Active
+* `reserved` - Reserved
+* `deprecated` - Deprecated"
+  role:
+    required: false
+    type: integer
+    description: "The primary function of this VLAN"
+  description:
+    required: false
+    type: string
+    description: "Description"
+  comments:
+    required: false
+    type: string
+    description: "Comments"
+  tags:
+    required: false
+    type: array
+    description: "Array of tag strings"
+  custom_fields:
+    required: false
+    type: object
+    description: "Custom fields"
+runner_type: python-script

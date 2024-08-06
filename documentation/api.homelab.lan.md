@@ -1,0 +1,1 @@
+- ✅ `api.homelab.lan` : machine API (FastAPI) pour gérer certains cas d'usage.

@@ -1,0 +1,2 @@
+---
+ca_password: {{ ca_password }}

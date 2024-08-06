@@ -1,0 +1,1 @@
+- ✅ `prometheus.homelab.lan` : machine Prometheus x Alertmanager pour la partie monitoring & alerting (redirections vers Discord).

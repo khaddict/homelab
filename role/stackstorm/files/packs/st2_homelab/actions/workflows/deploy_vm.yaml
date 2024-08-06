@@ -1,0 +1,452 @@
+version: 1.0
+description: Deploy a new VM.
+
+input:
+  - vm_id
+  - vm_name
+  - disk_resize
+  - memory_resize
+  - cores_resize
+  - description
+  - template
+  - ip_addr
+  - vm_role
+
+vars:
+  - saltmaster: "saltmaster.homelab.lan"
+  - node: "n1-cls1"
+  - disk_type: "scsi0"
+  - template_id: 0
+  - vm_parameters: ""
+  - resize_cores: ""
+  - resize_memory: ""
+  - resize_disk: ""
+  - clone_vm: ""
+  - start_vm: ""
+  - a_record: ""
+  - ptr_record: ""
+  - netbox_creation: ""
+  - domain: "homelab.lan"
+  - a_zone_name: "<% ctx().domain %>."
+  - ptr_zone_name: "0.168.192.in-addr.arpa."
+  - temporary_ip: ""
+  - get_temporary_ip: ""
+  - set_hostname: ""
+  - resize_part: ""
+  - set_network: ""
+  - set_hosts: ""
+  - set_resolv: ""
+  - interface_name: ""
+  - install_salt_minion: ""
+  - ssh_keygen: ""
+  - ssh_pubkey: ""
+  - reboot: ""
+  - accept_salt_key: ""
+  - msg: ""
+
+tasks:
+  get_template_id:
+    action: core.noop
+    next:
+      - when: <% succeeded() and ctx().template = "bookworm" %>
+        do: clone_vm
+        publish:
+          - template_id: 200
+      - when: <% succeeded() and ctx().template = "focal" %>
+        do: clone_vm
+        publish:
+          - template_id: 201
+      - when: <% failed() or (ctx().template != "focal" and ctx().template != "bookworm") %>
+        do: fail
+        publish:
+          - msg: "The template must be focal or bookworm."
+
+  clone_vm:
+    action: core.remote
+    input:
+      hosts: "<% ctx().node %>.<% ctx().domain %>"
+      username: root
+      cmd: |
+        pvesh create /nodes/<% ctx().node %>/qemu/<% ctx().template_id %>/clone --newid <% ctx().vm_id %> --description "<% ctx().description %>" --full yes --name "<% ctx().vm_name %>"
+    next:
+      - when: <% succeeded() %>
+        do: resize_cores
+        publish:
+          - clone_vm: "VM creation done."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not create the VM."
+
+  resize_cores:
+    action: core.remote
+    input:
+      hosts: "<% ctx().node %>.<% ctx().domain %>"
+      username: root
+      cmd: |
+        pvesh create /nodes/<% ctx().node %>/qemu/<% ctx().vm_id %>/config --cores <% ctx().cores_resize %>
+    next:
+      - when: <% succeeded() %>
+        do: resize_memory
+        publish:
+          - resize_cores: "Cores resize done."
+      - when: <% failed() %>
+        do: resize_memory
+        publish:
+          - msg: "Could not resize cores."
+
+  resize_memory:
+    action: core.remote
+    input:
+      hosts: "<% ctx().node %>.<% ctx().domain %>"
+      username: root
+      cmd: |
+        pvesh create /nodes/<% ctx().node %>/qemu/<% ctx().vm_id %>/config --memory <% ctx().memory_resize %>
+    next:
+      - when: <% succeeded() %>
+        do: resize_disk
+        publish:
+          - resize_memory: "Memory resize done."
+      - when: <% failed() %>
+        do: resize_disk
+        publish:
+          - msg: "Could not resize the memory."
+
+  resize_disk:
+    action: core.remote
+    input:
+      hosts: "<% ctx().node %>.<% ctx().domain %>"
+      username: root
+      cmd: |
+        pvesh set /nodes/<% ctx().node %>/qemu/<% ctx().vm_id %>/resize --disk scsi0 --size <% ctx().disk_resize %>
+    next:
+      - when: <% succeeded() %>
+        do: start_vm
+        publish:
+          - resize_disk: "Disk resize done."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not resize the disk."
+
+  start_vm:
+    action: core.remote
+    input:
+      hosts: "<% ctx().node %>.<% ctx().domain %>"
+      username: root
+      cmd: |
+        pvesh create /nodes/<% ctx().node %>/qemu/<% ctx().vm_id %>/status/start
+    next:
+      - when: <% succeeded() %>
+        do: sleep_15
+        publish:
+          - vm_parameters: "vm_id=<% ctx().vm_id %>, vm_name=<% ctx().vm_name %>, disk_resize=<% ctx().disk_resize %>, memory_resize=<% ctx().memory_resize %>, cores_resize=<% ctx().cores_resize %>, ip_addr=<% ctx().ip_addr %>, description=<% ctx().description %>, template=<% ctx().template %>"
+          - start_vm: "VM <% ctx().vm_name %>.<% ctx().domain %> started."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not start <% ctx().vm_name %>.<% ctx().domain %>."
+
+  sleep_15:
+    action: core.local
+    input:
+      cmd: sleep 15
+    next:
+      - when: <% succeeded() %>
+        do: get_temporary_ip
+
+  get_temporary_ip:
+    action: core.remote
+    input:
+      hosts: "<% ctx().node %>.<% ctx().domain %>"
+      username: root
+      cmd: |
+        qm guest exec <% ctx().vm_id %> -- ip -br a | jq -r '.["out-data"]' | grep -o '192\.168\.0\.[0-9]\+' | head -n 1
+    next:
+      - when: <% succeeded() %>
+        do: resize_part
+        publish:
+          - temporary_ip: <% result()[ctx().node + "." + ctx().domain].stdout %>
+          - get_temporary_ip: "Temporary IP for <% ctx().vm_name %>.<% ctx().domain %> is <% ctx().temporary_ip %>."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not get the temporary IP for <% ctx().vm_id %>."
+
+  resize_part:
+    action: core.remote
+    input:
+      hosts: "<% ctx().temporary_ip %>"
+      username: root
+      cmd: |
+        apt install parted -y
+        echo -e "Yes\nquit" | parted /dev/sda resizepart 1 100% ---pretend-input-tty
+    next:
+      - when: <% succeeded() %>
+        do: set_hostname
+        publish:
+          - resize_part: "Part 1 is resized."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not resize the part 1."
+
+  set_hostname:
+    action: core.remote
+    input:
+      hosts: "<% ctx().temporary_ip %>"
+      username: root
+      cmd: |
+        hostnamectl set-hostname "<% ctx().vm_name %>.<% ctx().domain %>"
+    next:
+      - when: <% succeeded() %>
+        do: set_network
+        publish:
+          - set_hostname: "The hostname has been set successfully."
+      - when: <% failed() %>
+        publish:
+          - msg: "The hostname could not be set."
+
+  set_network:
+    action: core.remote
+    input:
+      hosts: "<% ctx().temporary_ip %>"
+      username: root
+      cmd: |
+        FIRST_INTERFACE=$(ip -br a | grep UP | awk '{print $1}')
+        cat > /etc/network/interfaces <<EOF
+        # Generated by Stackstorm
+
+        source /etc/network/interfaces.d/*
+
+        # The loopback network interface
+
+        auto lo
+        iface lo inet loopback
+
+        # The primary network interface
+
+        allow-hotplug $FIRST_INTERFACE
+        iface $FIRST_INTERFACE inet static
+                address <% ctx().ip_addr %>
+                netmask {{ netmask }}
+                gateway {{ gateway }}
+        EOF
+        echo $FIRST_INTERFACE
+    next:
+      - when: <% succeeded() %>
+        do: set_hosts
+        publish:
+          - interface_name: <% result()[ctx().temporary_ip].stdout %>
+          - set_network: "The /etc/network/interfaces file has been updated successfully."
+      - when: <% failed() %>
+        publish:
+          - msg: "The /etc/network/interfaces file could not be updated."
+
+  set_hosts:
+    action: core.remote
+    input:
+      hosts: "<% ctx().temporary_ip %>"
+      username: root
+      cmd: |
+        cat > /etc/hosts <<EOF
+        # Generated by post_deploy.sh script
+
+        127.0.0.1       localhost.localdomain   localhost
+        <% ctx().ip_addr %>     <% ctx().vm_name %>.<% ctx().domain %>       <% ctx().vm_name %>
+        EOF
+    next:
+      - when: <% succeeded() %>
+        do: set_resolv
+        publish:
+          - set_hosts: "The /etc/hosts file has been updated successfully."
+      - when: <% failed() %>
+        publish:
+          - msg: "The /etc/hosts file could not be updated."
+
+  set_resolv:
+    action: core.remote
+    input:
+      hosts: "<% ctx().temporary_ip %>"
+      username: root
+      cmd: |
+        cat > /etc/resolv.conf <<EOF
+        # Generated by Stackstorm
+        # Need to set it dynamically
+        nameserver {{ dns }}
+        EOF
+    next:
+      - when: <% succeeded() %>
+        do: install_salt_minion
+        publish:
+          - set_resolv: "The /etc/resolv.conf file has been updated successfully."
+      - when: <% failed() %>
+        publish:
+          - msg: "The /etc/resolv.conf file could not be updated."
+
+  install_salt_minion:
+    action: core.remote
+    input:
+      hosts: "<% ctx().temporary_ip %>"
+      username: root
+      cmd: |
+        mkdir -p /etc/apt/keyrings
+        apt install -y curl
+        curl -fsSL -o /etc/apt/keyrings/salt-archive-keyring-2023.gpg https://repo.saltproject.io/salt/py3/ubuntu/20.04/amd64/SALT-PROJECT-GPG-PUBKEY-2023.gpg
+        echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.gpg arch=amd64] https://repo.saltproject.io/salt/py3/ubuntu/20.04/amd64/latest focal main" | tee /etc/apt/sources.list.d/salt.list
+        apt update
+        apt install -y salt-minion
+        echo "master: <% ctx().saltmaster %>" > /etc/salt/minion
+        echo "<% ctx().vm_name %>.<% ctx().domain %>" > /etc/salt/minion_id
+        systemctl enable salt-minion && systemctl start salt-minion
+    next:
+      - when: <% succeeded() %>
+        do: ssh_keygen
+        publish:
+          - install_salt_minion: "salt-minion installed & configured."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not install & configure salt-minion."
+
+  ssh_keygen:
+    action: core.remote
+    input:
+      hosts: "<% ctx().temporary_ip %>"
+      username: root
+      cmd: |
+        ssh-keygen -t ed25519 -C "<% ctx().vm_name %>.<% ctx().domain %>" -f /root/.ssh/id_ed25519 -q -N ""
+        cat /root/.ssh/id_ed25519.pub
+    next:
+      - when: <% succeeded() %>
+        do: reboot
+        publish:
+          - ssh_keygen: "The SSH public key has been generated in /root/.ssh/id_ed25519.pub."
+          - ssh_pubkey: <% result()[ctx().temporary_ip].stdout %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not generate the SSH public key."
+
+  reboot:
+    action: core.remote
+    input:
+      hosts: "<% ctx().temporary_ip %>"
+      username: root
+      cmd: |
+        reboot now
+    next:
+      - when: <% succeeded() or failed() %>
+        do: accept_salt_key
+        publish:
+          - reboot: "The VM is rebooting."
+
+  accept_salt_key:
+    action: core.remote
+    input:
+      hosts: "<% ctx().saltmaster %>"
+      username: root
+      cmd: |
+        sleep 15
+        salt-key -a <% ctx().vm_name %>.<% ctx().domain %> -y
+    next:
+      - when: <% succeeded() %>
+        do: create_a_record
+        publish:
+          - accept_salt_key: "The salt-key was accepted."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not accept the salt-key."
+
+  create_a_record:
+    action: powerdns.create_records
+    input:
+      rrset_changetype: "REPLACE"
+      rrset_name: "<% ctx().vm_name %>"
+      rrset_ttl: 60
+      rrset_rtype: A
+      rrset_records:
+        - <% ctx().ip_addr %>
+      zone_name: "<% ctx().a_zone_name %>"
+    next:
+      - when: <% succeeded() %>
+        do: create_ptr_record
+        publish:
+          - a_record: "A record created for <% ctx().vm_name %>.<% ctx().domain %>."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not create the A record for <% ctx().vm_name %>.<% ctx().domain %>."
+
+  create_ptr_record:
+    action: powerdns.create_records
+    input:
+      rrset_changetype: "REPLACE"
+      rrset_name: "<% ctx().ip_addr.split('.')[3] %>"
+      rrset_ttl: 60
+      rrset_rtype: PTR
+      rrset_records:
+        - "<% ctx().vm_name %>.<% ctx().domain %>."
+      zone_name: "<% ctx().ptr_zone_name %>"
+    next:
+      - when: <% succeeded() %>
+        do: create_vm_netbox
+        publish:
+          - ptr_record: "PTR record created for <% ctx().vm_name %>.<% ctx().domain %>."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not create the PTR record for <% ctx().vm_name %>.<% ctx().domain %>."
+
+  create_vm_netbox:
+    action: st2_homelab.netbox_vm
+    input:
+      vm_name: "<% ctx().vm_name %>"
+      vm_role: <% ctx().vm_role %>
+      ip_addr: "<% ctx().ip_addr %>/24"
+      vcpus: <% ctx().cores_resize %>
+      memory: <% ctx().memory_resize %>
+      disk: <% int(ctx().disk_resize.substring(1, (len(ctx().disk_resize) - 2))) + 20 %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - netbox_creation: "<% ctx().vm_name %>.<% ctx().domain %> created on NetBox side."
+          - msg: "Everything is finished."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not create <% ctx().vm_name %>.<% ctx().domain %> on NetBox side."
+
+output:
+  - 01_resize_cores: <% ctx().resize_cores %>
+  - 02_resize_memory: <% ctx().resize_memory %>
+  - 03_resize_disk: <% ctx().resize_disk %>
+  - 04_clone_vm: <% ctx().clone_vm %>
+  - 05_start_vm: <% ctx().start_vm %>
+  - 06_vm_parameters: <% ctx().vm_parameters %>
+  - 07_get_temporary_ip: <% ctx().get_temporary_ip %>
+  - 08_set_hostname: <% ctx().set_hostname %>
+  - 09_resize_part: <% ctx().resize_part %>
+  - 10_set_network: <% ctx().set_network %>
+  - 11_set_hosts: <% ctx().set_hosts %>
+  - 12_set_resolv: <% ctx().set_resolv %>
+  - 13_install_salt_minion: <% ctx().install_salt_minion %>
+  - 14_ssh_keygen: <% ctx().ssh_keygen %>
+  - 15_reboot: <% ctx().reboot %>
+  - 16_accept_salt_key: <% ctx().accept_salt_key %>
+  - 17_a_record: <% ctx().a_record %>
+  - 18_ptr_record: <% ctx().ptr_record %>
+  - 19_netbox_creation: <% ctx().netbox_creation %>
+  - 20_msg: <% ctx().msg %>
+  - 21_merge_request: |
+
+      _______________________________________________________________________________
+
+      1) salt:/homelab/global/common/ssh/files/authorized_keys
+
+      <% ctx().ssh_pubkey %>                                                          
+
+      2) salt:/homelab/data/network_confs.yaml
+
+        <% ctx().vm_name %>.<% ctx().domain %>:
+          main_iface: "<% ctx().interface_name %>"
+          ip_addr: "<% ctx().ip_addr %>"
+
+      3) salt:/homelab/top.sls
+
+        '<% ctx().vm_name %>.<% ctx().domain %>':
+          - role.<role_name>
+
+      If it's a new role, you also have to create salt:/homelab/role/<role_name>
+
+      _______________________________________________________________________________ 
