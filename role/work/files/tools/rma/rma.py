@@ -115,9 +115,9 @@ def create_table_data(data, netbox_api, inventory_url):
 def print_hostnames_by_ids(table_data):
     """Prompt user to select hostnames by IDs and generate Slack commands."""
     datacenters = {row[1].lower() for row in table_data}
-    commands = {dc: [] for dc in datacenters}
 
     while True:
+        commands = {dc: [] for dc in datacenters}
         user_input = input("\nEnter IDs separated by spaces (or 'q' to quit): ").strip()
         if user_input.lower() == 'q':
             break
