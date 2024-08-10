@@ -2,8 +2,13 @@
 
 ListenAddress                       0.0.0.0
 Port                                22
+{%- if fqdn == 'main.homelab.lan' %}
 PermitRootLogin                     yes
 PasswordAuthentication              yes
+{%- else %}
+PermitRootLogin                     prohibit-password
+PasswordAuthentication              no
+{%- endif %}
 PubkeyAuthentication                yes
 AuthorizedKeysFile                  /root/.ssh/authorized_keys
 UsePAM                              yes
