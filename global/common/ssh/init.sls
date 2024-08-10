@@ -11,6 +11,9 @@ sshd_config:
     - mode: 644
     - user: root
     - group: root
+    - template: jinja
+    - context:
+        fqdn: {{ fqdn }}
 
 remove_symlink_if_present:
   cmd.run:
@@ -24,6 +27,9 @@ authorized_keys_file:
     - mode: 600
     - user: root
     - group: root
+    - template: jinja
+    - context:
+        fqdn: {{ fqdn }}
     - require:
       - cmd: remove_symlink_if_present
 

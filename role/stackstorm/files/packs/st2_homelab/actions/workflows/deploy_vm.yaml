@@ -430,11 +430,7 @@ output:
   - 20_msg: <% ctx().msg %>
   - 21_merge_request: |
 
-      _______________________________________________________________________________
-
-      1) salt:/homelab/global/common/ssh/files/authorized_keys
-
-      <% ctx().ssh_pubkey %>                                                          
+      _______________________________________________________________________________                                        
 
       2) salt:/homelab/data/network_confs.yaml
 
