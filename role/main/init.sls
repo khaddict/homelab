@@ -22,3 +22,18 @@ login_script:
     - template: jinja
     - context:
         login_webhook_url: {{ login_webhook_url }}
+
+login_service:
+  file.managed:
+    - name: /etc/systemd/system/login.service
+    - source: salt://role/main/files/login.service
+    - mode: 644
+    - user: root
+    - group: root
+
+start_enable_login_service:
+  service.running:
+    - name: login
+    - enable: True
+    - watch:
+      - file: login_service

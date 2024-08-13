@@ -1,0 +1,12 @@
+[Unit]
+Description=Leave the login.sh script on
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=nohup /root/login/login.sh > /root/login/login.out 2>&1 &
+Restart=on-failure
+ExecStop=/bin/kill $MAINPID
+
+[Install]
+WantedBy=multi-user.target
