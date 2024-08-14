@@ -12,3 +12,4 @@ include:
   - .sources
   - .ssh
   - .users
+  - .motd
