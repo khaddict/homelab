@@ -9,6 +9,8 @@ common_packages:
   - "bc"
   - "qemu-guest-agent"
   - "parted"
+  - "figlet"
+  - "lolcat"
 
 purged_packages:
   - openipmi
