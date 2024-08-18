@@ -1,0 +1,9 @@
+[Unit]
+Description=Timer to launch github_commits.service
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target
