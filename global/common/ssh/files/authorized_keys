@@ -2,4 +2,5 @@
 
 {% if fqdn != 'main.homelab.lan' -%}
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJVXqVtuW5tMudYf4tNAO/r0u7mxmw7MGUVbpY6evU2A main.homelab.lan
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMe90Wiw4mR6NRi6lQ1qBmDHHzweeMSeksqUd38GpR2e stackstorm.homelab.lan
 {%- endif %}
