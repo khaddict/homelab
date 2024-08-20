@@ -96,3 +96,6 @@ network_conf:
   work.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.230"
+  yacine.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.231"
