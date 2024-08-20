@@ -81,3 +81,6 @@
 
   'work.homelab.lan':
     - role.work
+
+  'yacine.homelab.lan':
+    - role.yacine
