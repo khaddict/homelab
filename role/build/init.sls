@@ -6,10 +6,16 @@ install_debhelper:
   pkg.installed:
     - name: debhelper
 
-homelab_blackbox_exporter_directory:
+homelab_blackbox_exporter_amd64_directory:
   file.recurse:
-    - name: /root/homelab-blackbox-exporter
-    - source: salt://role/build/files/homelab-blackbox-exporter
+    - name: /root/homelab-blackbox-exporter_amd64
+    - source: salt://role/build/files/homelab-blackbox-exporter_amd64
+    - include_empty: True
+
+homelab_blackbox_exporter_arm64_directory:
+  file.recurse:
+    - name: /root/homelab-blackbox-exporter_arm64
+    - source: salt://role/build/files/homelab-blackbox-exporter_arm64
     - include_empty: True
 
 packages_dir:
