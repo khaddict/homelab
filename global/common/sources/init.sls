@@ -11,3 +11,11 @@ sources_config:
     - template: jinja
     - context:
         oscodename: {{ oscodename }}
+
+homelab_aptly_config:
+  file.managed:
+    - name: /etc/apt/sources.list.d/homelab_aptly.list
+    - source: salt://global/common/sources/files/homelab_aptly.list
+    - mode: 644
+    - user: root
+    - group: root
