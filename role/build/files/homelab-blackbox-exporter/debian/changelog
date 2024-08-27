@@ -1,0 +1,6 @@
+homelab-blackbox-exporter (1.0.0) unstable; urgency=medium
+
+  [ Khaddict ]
+  * Add homelab-blackbox-exporter package
+
+ -- Khaddict <ab20meki@gmail.com>  Tue, 20 Aug 2024 00:00:00 +0000
