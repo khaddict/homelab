@@ -1,0 +1,11 @@
+[Unit]
+Description=Aptly repository server
+After=network.target
+
+[Service]
+User=root
+ExecStart=/usr/bin/aptly serve
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
