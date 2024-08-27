@@ -1,0 +1,17 @@
+[Unit]
+Description=Blackbox Exporter Service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=blackbox
+Group=blackbox
+ExecStart=/opt/homelab-blackbox-exporter/blackbox_exporter \
+  --config.file=/opt/homelab-blackbox-exporter/blackbox.yml \
+  --web.listen-address=":9115"
+
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

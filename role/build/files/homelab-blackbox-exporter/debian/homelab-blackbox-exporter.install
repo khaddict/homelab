@@ -1,0 +1,3 @@
+etc/systemd/system/homelab-blackbox-exporter.service /etc/systemd/system/
+opt/homelab-blackbox-exporter/blackbox_exporter /opt/homelab-blackbox-exporter/
+opt/homelab-blackbox-exporter/blackbox.yml /opt/homelab-blackbox-exporter/
