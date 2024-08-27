@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+if ! id "blackbox" >/dev/null 2>&1; then
+    useradd -rs /usr/sbin/nologin blackbox
+fi
+
+if [ -d /opt/homelab-blackbox-exporter ]; then
+    chown -R blackbox:blackbox /opt/homelab-blackbox-exporter/*
+    chmod +x /opt/homelab-blackbox-exporter/blackbox_exporter
+fi
+
+if [ -f /etc/systemd/system/homelab-blackbox-exporter.service ]; then
+    systemctl daemon-reload
+    systemctl enable homelab-blackbox-exporter.service
+    systemctl start homelab-blackbox-exporter.service
+fi
+
+exit 0
