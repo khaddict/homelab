@@ -11,6 +11,7 @@ common_packages:
   - "parted"
   - "figlet"
   - "lolcat"
+  - "homelab-blackbox-exporter"
 
 purged_packages:
   - openipmi
