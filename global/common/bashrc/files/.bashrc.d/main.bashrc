@@ -40,37 +40,38 @@ function __setprompt {
     local BROWN="\033[0;33m"
     local GREEN="\033[0;32m"
     local NOCOLOR="\033[0m"
+    local WHITE="\033[0;37m"
 
     # Date and time
     PS1="\
-\[${DARKGRAY}\](\[${MAGENTA}\]\$(date +%A) \[${MAGENTA}\]\$(date +%-d) \[${MAGENTA}\]\$(date +%b)${DARKGRAY})\
-\[${DARKGRAY}\](${BLUE}\$(date +'%H:%M:%S')\[${DARKGRAY}\])"
+\[${WHITE}\](\[${MAGENTA}\]\$(date +%A) \[${MAGENTA}\]\$(date +%-d) \[${MAGENTA}\]\$(date +%b)${WHITE})\
+\[${WHITE}\](${BLUE}\$(date +'%H:%M:%S')\[${WHITE}\])"
 
     # SSH information
     local SSH_IP=$(echo $SSH_CLIENT | awk '{ print $1 }')
     local SSH2_IP=$(echo $SSH2_CLIENT | awk '{ print $1 }')
     if [ -n "$SSH_IP" ] || [ -n "$SSH2_IP" ]; then
-        PS1+="(\[${RED}\]\u@\h\[${DARKGRAY}\]:\[${BROWN}\]\w\[${DARKGRAY}\])"
+        PS1+="(\[${RED}\]\u@\h\[${WHITE}\]:\[${BROWN}\]\w\[${WHITE}\])"
     else
-        PS1+="(\[${RED}\]\u\[${DARKGRAY}\]:\[${BROWN}\]\w\[${DARKGRAY}\])"
+        PS1+="(\[${RED}\]\u\[${WHITE}\]:\[${BROWN}\]\w\[${WHITE}\])"
     fi
 
     # Add the current Git branch name only if inside a Git repository
     if git rev-parse --is-inside-work-tree &>/dev/null; then
-        PS1+="\[${DARKGRAY}\](\[${CYAN}\]\$(parse_git_branch | sed 's/^ //g')\[${DARKGRAY}\])"
+        PS1+="\[${WHITE}\](\[${CYAN}\]\$(parse_git_branch | sed 's/^ //g')\[${WHITE}\])"
     fi
 
     # Total size of files in the current directory
     local total_size=$(ls -lah | awk '/^total/ {print $2}')
-    
+
     # Number of directories and files
     local num_dirs=$(find . -maxdepth 1 -type d | wc -l)
     local num_files=$(find . -maxdepth 1 -type f | wc -l)
-    
+
     # Adjust the directory count to exclude the current directory
     num_dirs=$((num_dirs - 1))
 
-    PS1+="(\[${GREEN}\]${total_size}:\[${GREEN}\]${num_dirs}D:\[${GREEN}\]${num_files}F\[${DARKGRAY}\])"
+    PS1+="(\[${GREEN}\]${total_size}:\[${GREEN}\]${num_dirs}D:\[${GREEN}\]${num_files}F\[${WHITE}\])"
 
     # New line
     PS1+="\n"
@@ -83,13 +84,13 @@ function __setprompt {
     fi
 
     # PS2 for continuing a command
-    PS2="\[${DARKGRAY}\]>\[${NOCOLOR}\] "
+    PS2="\[${WHITE}\]>\[${NOCOLOR}\] "
 
     # PS3 for script choices
     PS3='Please enter a number from above list: '
 
     # PS4 for debugging
-    PS4='\[${DARKGRAY}\]+\[${NOCOLOR}\] '
+    PS4='\[${WHITE}\]+\[${NOCOLOR}\] '
 }
 
 # Define the prompt command
