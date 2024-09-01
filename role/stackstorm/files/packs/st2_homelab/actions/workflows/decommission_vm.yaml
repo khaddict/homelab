@@ -1,0 +1,214 @@
+version: 1.0
+description: Workflow to decommission Proxmox VMs properly.
+
+input:
+  - vm_name
+
+vars:
+  - domain: "homelab.lan"
+  - fqdn: <% ctx().vm_name + "." + ctx().domain %>
+  - node: "n1-cls1.<% ctx().domain %>"
+  - saltmaster: "saltmaster.<% ctx().domain %>"
+  - zone_name: "<% ctx().domain %>."
+  - ptr_zone_name: "0.168.192.in-addr.arpa."
+  - vm_id_netbox: ""
+  - vm_ip_netbox: ""
+  - role_id: ""
+  - vm_id: ""
+  - get_vm_id_ip_netbox: ""
+  - vm_existence: ""
+  - vm_status: ""
+  - stop_vm: ""
+  - delete_vm: ""
+  - delete_saltkey: ""
+  - delete_a_record: ""
+  - delete_ptr_record: ""
+  - delete_vm_netbox: ""
+  - delete_role_netbox: ""
+  - msg: ""
+
+tasks:
+  get_vm_id_ip_netbox:
+    action: netbox.get.virtualization.virtual_machines
+    input:
+      name: [<% ctx().fqdn %>]
+    next:
+      - when: <% succeeded() %>
+        do: vm_existence
+        publish:
+          - vm_id_netbox: <% str(result().result.raw.results[0].id) %>
+          - vm_ip_netbox: <% str(result().result.raw.results[0].primary_ip.address.split("/")[0]) %>
+          - role_id: <% str(result().result.raw.results[0].role.id) %>
+          - get_vm_id_ip_netbox: "VM ID and VM IP successfully retrieved from NetBox."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not get the VM ID and the VM IP on NetBox."
+
+  vm_existence:
+    action: core.remote
+    input:
+      hosts: "<% ctx().node %>"
+      username: root
+      cmd: |
+        qm list | grep "<% ctx().vm_name %>"
+    next:
+      - when: <% succeeded() %>
+        do: vm_status
+        publish:
+          - vm_id: <% result()[ctx().node].stdout.split()[0] %>
+          - vm_existence: "VM retrieved on Proxmox."
+      - when: <% failed() %>
+        publish:
+          - msg: "VM doesn't exist."
+
+  vm_status:
+    action: core.remote
+    input:
+      hosts: "<% ctx().node %>"
+      username: root
+      cmd: |
+        qm status <% ctx().vm_id %> | awk '{print $2}'
+    next:
+      - when: <% succeeded() and result()[ctx().node].stdout = "running" %>
+        do: stop_vm
+        publish:
+          - vm_status: "VM running and will be stopped."
+      - when: <% succeeded() and result()[ctx().node].stdout = "stopped" %>
+        do: delete_vm
+        publish:
+          - vm_status: "VM stopped."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not retrieve the VM status."
+
+  stop_vm:
+    action: core.remote
+    input:
+      hosts: "<% ctx().node %>"
+      username: root
+      cmd: |
+        qm stop <% ctx().vm_id %>
+    next:
+      - when: <% succeeded() %>
+        do: delete_vm
+        publish:
+          - stop_vm: "VM stopped."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not stop the VM."
+
+  delete_vm:
+    action: core.remote
+    input:
+      hosts: "<% ctx().node %>"
+      username: root
+      cmd: |
+        qm destroy <% ctx().vm_id %>
+    next:
+      - when: <% succeeded() %>
+        do: delete_saltkey
+        publish:
+          - delete_vm: "VM destroyed."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not destroy the VM."
+
+  delete_saltkey:
+    action: core.remote
+    input:
+      hosts: "<% ctx().saltmaster %>"
+      username: root
+      cmd: |
+        salt-key -d <% ctx().fqdn %> -y
+    next:
+      - when: <% succeeded() %>
+        do: delete_a_record
+        publish:
+          - delete_saltkey: "Salt-key deleted."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not delete the salt-key."
+
+  delete_a_record:
+    action: powerdns.delete_records
+    input:
+      rrset_changetype: "DELETE"
+      rrset_name: <% ctx().vm_name %>
+      rrset_rtype: A
+      rrset_records: "[ ]"
+      zone_name: <% ctx().zone_name %>
+    next:
+      - when: <% succeeded() %>
+        do: calculate_reverse_dns
+        publish:
+          - delete_a_record: "A record deleted."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not delete the A record."
+
+  calculate_reverse_dns:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do: delete_ptr_record
+        publish:
+          - reverse_name: <% ctx(vm_ip_netbox).split(".").limit(4).reverse().join(".") + ".in-addr.arpa." %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not calculate the reverse name."
+
+  delete_ptr_record:
+    action: powerdns.delete_records
+    input:
+      rrset_changetype: "DELETE"
+      rrset_name: <% ctx().reverse_name %>
+      rrset_rtype: PTR
+      rrset_records: "[ ]"
+      zone_name: <% ctx().ptr_zone_name %>
+    next:
+      - when: <% succeeded() %>
+        do: delete_vm_netbox
+        publish:
+          - delete_ptr_record: "PTR record deleted."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not delete the PTR record."
+
+  delete_vm_netbox:
+    action: netbox.delete.virtualization.virtual_machines
+    input:
+      id: <% int(ctx().vm_id_netbox) %>
+    next:
+      - when: <% succeeded() %>
+        do: delete_role_netbox
+        publish:
+          - delete_vm_netbox: "VM deleted on NetBox."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not delete the virtual machine <% ctx().fqdn %> on NetBox."
+
+  delete_role_netbox:
+    action: netbox.delete.dcim.device_roles
+    input:
+      id: <% int(ctx().role_id) %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - delete_role_netbox: "Role deleted on NetBox."
+          - msg: "Everything is finished."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not delete the role on NetBox."
+
+output:
+  - 01_get_vm_id_ip_netbox: <% ctx().get_vm_id_ip_netbox %>
+  - 02_vm_existence: <% ctx().vm_existence %>
+  - 03_vm_status: <% ctx().vm_status %>
+  - 04_stop_vm: <% ctx().stop_vm %>
+  - 05_delete_vm: <% ctx().delete_vm %>
+  - 06_delete_saltkey: <% ctx().delete_saltkey %>
+  - 07_delete_a_record: <% ctx().delete_a_record %>
+  - 08_delete_ptr_record: <% ctx().delete_ptr_record %>
+  - 09_delete_vm_netbox: <% ctx().delete_vm_netbox %>
+  - 10_delete_role_netbox: <% ctx().delete_role_netbox %>
+  - msg: <% ctx().msg %>

@@ -1,0 +1,12 @@
+---
+name: decommission_vm
+pack: st2_homelab
+description: Workflow to decommission Proxmox VMs properly.
+runner_type: orquesta
+entry_point: workflows/decommission_vm.yaml
+enabled: true
+parameters:
+  vm_name:
+    description: The VM name.
+    required: true
+    type: string

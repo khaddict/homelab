@@ -13,7 +13,8 @@ input:
   - vm_role
 
 vars:
-  - saltmaster: "saltmaster.homelab.lan"
+  - domain: "homelab.lan"
+  - saltmaster: "saltmaster.<% ctx().domain %>"
   - node: "n1-cls1"
   - disk_type: "scsi0"
   - template_id: 0
@@ -26,7 +27,6 @@ vars:
   - a_record: ""
   - ptr_record: ""
   - netbox_creation: ""
-  - domain: "homelab.lan"
   - a_zone_name: "<% ctx().domain %>."
   - ptr_zone_name: "0.168.192.in-addr.arpa."
   - temporary_ip: ""
@@ -432,13 +432,13 @@ output:
 
       _______________________________________________________________________________                                        
 
-      2) salt:/homelab/data/network_confs.yaml
+      1) salt:/homelab/data/network_confs.yaml
 
         <% ctx().vm_name %>.<% ctx().domain %>:
           main_iface: "<% ctx().interface_name %>"
           ip_addr: "<% ctx().ip_addr %>"
 
-      3) salt:/homelab/top.sls
+      2) salt:/homelab/top.sls
 
         '<% ctx().vm_name %>.<% ctx().domain %>':
           - role.<role_name>
