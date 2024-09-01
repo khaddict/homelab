@@ -2,7 +2,7 @@
 Description=Timer to launch github_commits.service
 
 [Timer]
-OnCalendar=daily
+OnCalendar=*-*-* 18:30:00
 Persistent=true
 
 [Install]
