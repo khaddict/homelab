@@ -1,7 +1,0 @@
-#!/usr/bin/make -f
-
-%:
-	dh $@
-
-override_dh_dwz:
-	echo "Skipping dwz compression due to issue with debug sections."

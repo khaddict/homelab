@@ -12,12 +12,6 @@ homelab_blackbox_exporter_amd64_directory:
     - source: salt://role/build/files/homelab-blackbox-exporter_amd64
     - include_empty: True
 
-homelab_blackbox_exporter_arm64_directory:
-  file.recurse:
-    - name: /root/homelab-blackbox-exporter_arm64
-    - source: salt://role/build/files/homelab-blackbox-exporter_arm64
-    - include_empty: True
-
 packages_dir:
   file.directory:
     - name: /root/packages
