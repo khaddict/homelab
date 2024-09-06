@@ -1,6 +1,6 @@
 {% set fqdn = grains["fqdn"] %}
-{% set ha_iface = 'enp0s11' %}
-{% set vip = '192.168.0.214' %}
+{% set ha_iface = 'ens18' %}
+{% set vip = '192.168.0.212' %}
 {% set host = grains["host"] %}
 
 include:
