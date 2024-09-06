@@ -9,6 +9,12 @@ network_conf:
   n1-cls1.homelab.lan:
     main_iface: "enp87s0"
     ip_addr: "192.168.0.200"
+  ha01.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.202"
+  ha02.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.203"
   smtp.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.204"
@@ -27,6 +33,15 @@ network_conf:
   vault.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.209"
+  web01.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.210"
+  web02.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.211"
+  pihole.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.213"
   ldap.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.215"
