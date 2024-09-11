@@ -9,6 +9,9 @@ network_conf:
   n1-cls1.homelab.lan:
     main_iface: "enp87s0"
     ip_addr: "192.168.0.200"
+  n2-cls1.homelab.lan:
+    main_iface: "enp87s0"
+    ip_addr: "192.168.0.201"
   ha01.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.202"
