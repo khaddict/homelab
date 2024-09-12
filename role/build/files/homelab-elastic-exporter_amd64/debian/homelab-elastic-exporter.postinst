@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+if ! id "es-exp" >/dev/null 2>&1; then
+    useradd -rs /usr/sbin/nologin es-exp
+fi
+
+if [ -d /opt/homelab-elastic-exporter ]; then
+    chown -R es-exp:es-exp /opt/homelab-elastic-exporter/*
+    chmod +x /opt/homelab-elastic-exporter/elasticsearch_exporter
+fi
+
+if [ -f /etc/systemd/system/homelab-elastic-exporter.service ]; then
+    systemctl daemon-reload
+    systemctl enable homelab-elastic-exporter.service
+    systemctl start homelab-elastic-exporter.service
+fi
+
+exit 0

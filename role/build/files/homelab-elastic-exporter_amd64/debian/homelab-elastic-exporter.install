@@ -1,0 +1,2 @@
+etc/systemd/system/homelab-elastic-exporter.service /etc/systemd/system/
+opt/homelab-elastic-exporter/* /opt/homelab-elastic-exporter/

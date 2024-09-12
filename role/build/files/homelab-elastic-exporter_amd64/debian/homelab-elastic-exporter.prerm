@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+if systemctl is-active --quiet homelab-elastic-exporter.service; then
+    systemctl stop homelab-elastic-exporter.service
+fi
+
+if systemctl is-enabled --quiet homelab-elastic-exporter.service; then
+    systemctl disable homelab-elastic-exporter.service
+fi
+
+if id "es-exp" >/dev/null 2>&1; then
+    userdel es-exp
+fi
+
+systemctl daemon-reload
+
+exit 0
