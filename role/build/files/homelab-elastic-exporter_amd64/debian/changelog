@@ -1,0 +1,6 @@
+homelab-elastic-exporter (1.0.0) unstable; urgency=medium
+
+  [ Khaddict ]
+  * Add homelab-elastic-exporter package (amd64)
+
+ -- Khaddict <ab20meki@gmail.com>  Thu, 12 Sep 2024 00:00:00 +0000

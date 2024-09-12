@@ -1,0 +1,11 @@
+Source: homelab-elastic-exporter
+Maintainer: Khaddict <ab20meki@gmail.com>
+Section: base
+Priority: optional
+Standards-Version: 4.5.1
+Build-Depends: debhelper-compat (= 13)
+
+Package: homelab-elastic-exporter
+Architecture: amd64
+Depends: ${misc:Depends}
+Description: A Prometheus Elasticsearch exporter.

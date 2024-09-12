@@ -1,0 +1,16 @@
+[Unit]
+Description=Prometheus exporter for Elasticsearch
+Documentation=https://github.com/prometheus-community/elasticsearch_exporter
+
+[Service]
+Restart=on-failure
+RestartSec=5
+User=es-exp
+EnvironmentFile=/etc/default/homelab-elastic-exporter
+ExecStart=/opt/homelab-elastic-exporter/elasticsearch_exporter --es.uri="https://elk.homelab.lan:9200" --es.ssl-skip-verify
+ExecReload=/bin/kill -HUP $MAINPID
+TimeoutStopSec=20s
+SendSIGKILL=no
+
+[Install]
+WantedBy=multi-user.target
