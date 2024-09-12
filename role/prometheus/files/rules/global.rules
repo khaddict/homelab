@@ -20,15 +20,6 @@ groups:
         labels:
           severity: warning
 
-      - alert: FanHighSpeed
-        annotations:
-          summary: "Host {{ $labels.sensor }} speed is high (instance {{ $labels.instance }})"
-          description: "{{ $labels.instance }} {{ $labels.sensor }} speed is high (> 8000 RPM) (value {{ $value }})"
-        expr: node_hwmon_fan_rpm > 8000
-        for: 5m
-        labels:
-          severity: warning
-
       - alert: ComponentHot
         annotations:
           summary: "{{ $labels.chip }} is hot (instance {{ $labels.instance }})"
@@ -43,6 +34,24 @@ groups:
           summary: "{{ $labels.name }} is down"
           description: "{{ $labels.name }} is not {{ $labels.state }}. Start it on {{ $labels.instance }}."
         expr: node_systemd_unit_state{instance="main.homelab.lan", job="node", name="login.service", state="active"} != 1
+        for: 3m
+        labels:
+          severity: warning
+
+      - alert: SSHUnreachable
+        annotations:
+          summary: "SSH unreachable (instance {{ $labels.instance }})"
+          description: "SSH is unreachable on $labels.instance (value {{ $value }})"
+        expr: probe_success{job="blackbox_ssh_banner"} == 1
+        for: 3m
+        labels:
+          severity: warning
+
+      - alert: ICMPUnreachable
+        annotations:
+          summary: "ICMP unreachable (instance {{ $labels.instance }})"
+          description: "ICMP is unreachable on $labels.instance (value {{ $value }})"
+        expr: probe_success{job="blackbox_icmp"} == 1
         for: 3m
         labels:
           severity: warning
