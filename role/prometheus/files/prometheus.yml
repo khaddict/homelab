@@ -46,3 +46,17 @@ scrape_configs:
         regex: '^([^:]+):[0-9]+$'
         replacement: '$1'
         target_label: instance
+
+  - job_name: elasticsearch
+    metrics_path: /metrics
+    params:
+      target:
+        - 'elk.homelab.lan'
+    static_configs:
+      - targets:
+          - 'elk.homelab.lan:9114'
+    relabel_configs:
+    - source_labels: [__address__]
+      regex: '^([^:]+):[0-9]+$'
+      replacement: '$1'
+      target_label: instance
