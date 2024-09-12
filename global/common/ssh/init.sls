@@ -15,23 +15,21 @@ sshd_config:
     - context:
         fqdn: {{ fqdn }}
 
-remove_symlink_if_present:
-  cmd.run:
-    - name: unlink /root/.ssh/authorized_keys
-    - onlyif: test -L /root/.ssh/authorized_keys
-
 authorized_keys_file:
   file.managed:
+    {% if fqdn is match('n\d-cls\d\.homelab\.lan') %}
+    - name: /etc/pve/priv/authorized_keys
+    - group: www-data
+    {% else %}
     - name: /root/.ssh/authorized_keys
+    - group: root
+    {% endif %}
     - source: salt://global/common/ssh/files/authorized_keys
     - mode: 600
     - user: root
-    - group: root
     - template: jinja
     - context:
         fqdn: {{ fqdn }}
-    - require:
-      - cmd: remove_symlink_if_present
 
 ssh_config_file:
   file.managed:
