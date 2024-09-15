@@ -1,6 +1,8 @@
 {% set admin_api_key = salt['vault'].read_secret('kv/powerdns').admin_api_key %}
 {% set login_webhook_url = salt['vault'].read_secret('kv/main').login_webhook_url %}
+{% set pull_webhook_url = salt['vault'].read_secret('kv/main').pull_webhook_url %}
 {% set github_commits_khaddict_webhook_url = salt['vault'].read_secret('kv/main').github_commits_khaddict_webhook_url %}
+{% set github_pull_token = salt['vault'].read_secret('kv/main').github_pull_token %}
 
 vars_bashrc:
   file.managed:
@@ -73,3 +75,39 @@ github_commits_timer:
       - file: github_commits_script
     - watch:
       - file: github_commits_script
+
+github_pull_script:
+  file.managed:
+    - name: /root/github_pull/github_pull.sh
+    - source: salt://role/main/files/github_pull.sh
+    - mode: 755
+    - user: root
+    - group: root
+    - template: jinja
+    - context:
+        github_pull_token: {{ github_pull_token }}
+        pull_webhook_url: {{ pull_webhook_url }}
+
+github_pull_service:
+  file.managed:
+    - name: /etc/systemd/system/github_pull.service
+    - source: salt://role/main/files/github_pull.service
+    - mode: 644
+    - user: root
+    - group: root
+    - require:
+      - file: github_pull_script
+    - watch:
+      - file: github_pull_script
+
+github_pull_timer:
+  file.managed:
+    - name: /etc/systemd/system/github_pull.timer
+    - source: salt://role/main/files/github_pull.timer
+    - mode: 644
+    - user: root
+    - group: root
+    - require:
+      - file: github_pull_script
+    - watch:
+      - file: github_pull_script
