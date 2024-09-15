@@ -41,35 +41,16 @@ scrape_configs:
     static_configs:
       - targets:
           {% for host in hosts -%}
-          - '{{ host }}:9115'{% if not loop.last %}
+          - '{{ host }}'{% if not loop.last %}
           {% endif -%}
           {% endfor %}
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
-      - source_labels: [__address__]
-        regex: '^([^:]+):[0-9]+$'
-        replacement: '$1'
+      - source_labels: [__param_target]
         target_label: instance
-
-  - job_name: 'blackbox_ssh_banner'
-    metrics_path: /probe
-    params:
-      module: [ssh_banner]
-    scrape_interval: 5s
-    static_configs:
-      - targets:
-          {% for host in hosts -%}
-          - '{{ host }}:9115'{% if not loop.last %}
-          {% endif -%}
-          {% endfor %}
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__address__]
-        regex: '^([^:]+):[0-9]+$'
-        replacement: '$1'
-        target_label: instance
+      - target_label: __address__
+        replacement: prometheus.homelab.lan:9115
 
   - job_name: elasticsearch
     metrics_path: /metrics
