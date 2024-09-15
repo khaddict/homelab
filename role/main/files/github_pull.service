@@ -1,0 +1,11 @@
+[Unit]
+Description=Service to execute github_pull.sh
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /root/github_pull/github_pull.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

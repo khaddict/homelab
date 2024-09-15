@@ -1,0 +1,9 @@
+[Unit]
+Description=Timer to launch github_pull.service every minute
+
+[Timer]
+OnCalendar=*:0/1
+Persistent=true
+
+[Install]
+WantedBy=timers.target
