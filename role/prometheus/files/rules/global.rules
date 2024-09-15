@@ -7,7 +7,7 @@ groups:
           summary: "Exporter down (instance {{ $labels.instance }})"
           description: "Prometheus exporter down (value {{ $value }})"
         expr: up{instance=~".*homelab.lan"} == 0
-        for: 5m
+        for: 3m
         labels:
           severity: warning
 
@@ -34,15 +34,15 @@ groups:
           summary: "{{ $labels.name }} is down"
           description: "{{ $labels.name }} is not {{ $labels.state }}. Start it on {{ $labels.instance }}."
         expr: node_systemd_unit_state{instance="main.homelab.lan", job="node", name="login.service", state="active"} != 1
-        for: 3m
+        for: 1m
         labels:
           severity: warning
 
       - alert: ICMPUnreachable
         annotations:
           summary: "ICMP unreachable (instance {{ $labels.instance }})"
-          description: "ICMP is unreachable on $labels.instance (value {{ $value }})"
+          description: "ICMP is unreachable on {{ $labels.instance }} (value {{ $value }})"
         expr: probe_success{job="blackbox_icmp"} == 0
-        for: 3m
+        for: 1m
         labels:
           severity: warning
