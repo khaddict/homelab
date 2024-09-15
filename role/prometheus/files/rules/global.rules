@@ -38,20 +38,11 @@ groups:
         labels:
           severity: warning
 
-      - alert: SSHUnreachable
-        annotations:
-          summary: "SSH unreachable (instance {{ $labels.instance }})"
-          description: "SSH is unreachable on $labels.instance (value {{ $value }})"
-        expr: probe_success{job="blackbox_ssh_banner"} == 1
-        for: 3m
-        labels:
-          severity: warning
-
       - alert: ICMPUnreachable
         annotations:
           summary: "ICMP unreachable (instance {{ $labels.instance }})"
           description: "ICMP is unreachable on $labels.instance (value {{ $value }})"
-        expr: probe_success{job="blackbox_icmp"} == 1
+        expr: probe_success{job="blackbox_icmp"} == 0
         for: 3m
         labels:
           severity: warning
