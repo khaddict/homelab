@@ -5,7 +5,7 @@ DATE=$(date +%d-%m-%Y)
 
 cd /root/github_commits
 
-if [ $((RANDOM % 10)) -lt 7 ]; then
+if [ $((RANDOM % 10)) -lt 5 ]; then
     commits_number=0
 else
     commits_number=$(( (RANDOM % 5) + 1 ))
