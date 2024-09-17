@@ -12,6 +12,7 @@ common_packages:
   - "figlet"
   - "lolcat"
   - "homelab-blackbox-exporter"
+  - "ca-certificates"
 
 purged_packages:
   - openipmi
