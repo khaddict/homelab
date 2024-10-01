@@ -6,8 +6,7 @@ L'objectif de ce projet, c'est de me faire un p'tit homelab pour tester plein de
 
 ## Matériel
 
-- `GEEKOM Mini IT13 Mini-PC Intel Core i9 upgrade à 64Go` : https://www.geekom.fr/geekom-mini-it13-mini-pc/
-- `Raspberry Pi 5 8GB x2` : https://www.raspberrypi.com/products/raspberry-pi-5/
+- `GEEKOM Mini IT13 Mini-PC Intel Core i9 upgrade à 64Go x2` : https://www.geekom.fr/geekom-mini-it13-mini-pc/
 - `TP-Link TL-SG108E Switch Ethernet 8 Ports Gigabit` : https://www.amazon.fr/gp/product/B00JKB63D8
 
 ## Documentation
