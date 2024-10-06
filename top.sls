@@ -84,3 +84,6 @@
 
   'yacine.homelab.lan':
     - role.yacine
+
+  'centreon.homelab.lan':
+    - role.centreon
