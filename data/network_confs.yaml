@@ -45,6 +45,9 @@ network_conf:
   pihole.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.213"
+  centreon.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.214"
   ldap.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.215"
