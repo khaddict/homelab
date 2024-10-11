@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SNAPSHOT_NAME="auto_snapshot_$(date +%Y%m%d_%H%M%S)"
-NODES=("n1-cls1")
+NODES=("n1-cls1" "n2-cls1")
 
 for NODE in "${NODES[@]}"; do
     # VMID > 200 = templates
