@@ -1,5 +1,6 @@
 {% set ldap_password = salt['vault'].read_secret('kv/ldap').proxmox_pass %}
 {% set fqdn = grains["fqdn"] %}
+{% set host = grains["host"] %}
 
 user_cfg_file:
   file.managed:
@@ -31,7 +32,6 @@ ldap_pw_file:
     - context:
         ldap_password: {{ ldap_password }}
 
-{% if fqdn is match('n1-cls1.homelab.lan') %}
 snapshot_vms_script:
   file.managed:
     - name: /opt/snapshot_vms.sh
@@ -39,6 +39,9 @@ snapshot_vms_script:
     - user: root
     - group: root
     - mode: 755
+    - template: jinja
+    - context:
+        host: {{ host }}
 
 snapshot_vms_service:
   file.managed:
@@ -77,4 +80,3 @@ start_enable_snapshot_vms_timer:
     - enable: True
     - require:
       - service: start_enable_snapshot_vms_service
-{% endif %}
