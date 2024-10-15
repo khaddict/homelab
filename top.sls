@@ -87,3 +87,6 @@
 
   'centreon.homelab.lan':
     - role.centreon
+
+  'revproxy.homelab.lan':
+    - role.revproxy
