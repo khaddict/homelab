@@ -40,6 +40,9 @@ add_{{ host }}_symlink:
     - file_mode: 644
     - user: root
     - group: root
+    - template: jinja
+    - context:
+        host: {{ host }}
     - require:
       - file: remove_default_nginx_config
 
