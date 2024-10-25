@@ -1,2 +1,0 @@
-- ✅ `ha01.homelab.lan` : premier HAProxy + Keepalived pour gérer la HA sur les serveurs web (la VIP : `web.homelab.lan`).
-- ✅ `ha02.homelab.lan` : deuxième HAProxy + Keepalived.

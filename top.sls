@@ -73,9 +73,6 @@
   'work.homelab.lan':
     - role.work
 
-  'yacine.homelab.lan':
-    - role.yacine
-
   'centreon.homelab.lan':
     - role.centreon
 

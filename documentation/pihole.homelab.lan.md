@@ -1,1 +1,0 @@
-- ✅ `pihole.homelab.lan` : machine DNS Pi-hole qui permet de gérer la partie blocage de pubs. Actuellement pas utilisé. Le serveur DNS principal est `pdns.homelab.lan`.

@@ -1,1 +1,0 @@
-- ☑️ `smtp.homelab.lan` : machine SMTP pour gérer l'envoi / réception de mails.

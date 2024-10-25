@@ -1,2 +1,0 @@
-- ✅ `web01.homelab.lan` : premier serveur web (son contenu n'est pas important pour le moment).
-- ✅ `web02.homelab.lan` : deuxième serveur web équivalent au premier.
