@@ -13,9 +13,6 @@
   'main.homelab.lan':
     - role.main
 
-  'pihole.homelab.lan':
-    - role.pihole
-
   'stackstorm.homelab.lan':
     - role.stackstorm
 
@@ -24,12 +21,6 @@
 
   'vault.homelab.lan':
     - role.vault
-
-  'web??.homelab.lan':
-    - role.web
-
-  'ha??.homelab.lan':
-    - role.ha
 
   'ldap.homelab.lan':
     - role.ldap
