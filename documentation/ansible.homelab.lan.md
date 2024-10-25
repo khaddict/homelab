@@ -1,1 +1,0 @@
-- ☑️ `ansible.homelab.lan` : machine Ansible pour apprendre les basiques.

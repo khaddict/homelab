@@ -1,1 +1,0 @@
-- ✅ `ca.homelab.lan` : machine Certificate Authority (CA) qui gère les certificats SSL via openSSL. La génération + envoi est géré via Stackstorm.

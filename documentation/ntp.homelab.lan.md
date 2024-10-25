@@ -1,1 +1,0 @@
-- ✅ `ntp.homelab.lan` : machine NTP avec chrony d'installé dessus. Tous les serveurs récupèrent leur horloge sur ce serveur.

@@ -1,1 +1,0 @@
-- ✅ `saltmaster.homelab.lan` : machine saltmaster qui pilote ses minions (toutes les autres machines). La gestion des configurations se gère à ce niveau là ; `cd /srv/salt && git pull && salt '*' state.highstate`.

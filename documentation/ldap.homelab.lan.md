@@ -1,1 +1,0 @@
-- ✅ `ldap.homelab.lan` : machine LDAP + PHPLDAPAdmin pour gérer la partie LDAP.

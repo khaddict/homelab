@@ -1,1 +1,0 @@
-- ✅ `grafana.homelab.lan` : machine Grafana pour la partie dashboards. Les données contenues dedans sont récupérées via Prometheus.

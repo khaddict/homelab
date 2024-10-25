@@ -1,1 +1,0 @@
-- ✅ `stackstorm.homelab.lan` :  machine Stackstorm qui permet de gérer les automatisations parmi lesquelles la création de VM, la génération de certificats et leur envoi vers les machines cibles.

@@ -1,1 +1,0 @@
-- ☑️ `kubernetes.homelab.lan` : machine Kubernetes pour apprendre les basiques.

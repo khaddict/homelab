@@ -1,1 +1,0 @@
-- ☑️ `build.homelab.lan` : machine pour gérer la création de packages Debian.
