@@ -3,6 +3,7 @@ include:
   - .bashrc
   - .ca
   - .hosts
+  - .motd
   - .network
   - .ntp
   - .packages
@@ -12,4 +13,3 @@ include:
   - .sources
   - .ssh
   - .users
-  - .motd
