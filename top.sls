@@ -78,3 +78,9 @@
 
   'revproxy.homelab.lan':
     - role.revproxy
+
+  'work.homelab.lan':
+    - role.work
+
+  'yacine.homelab.lan':
+    - role.yacine
