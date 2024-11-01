@@ -1,0 +1,7 @@
+---
+name: snapshot_vms
+pack: st2_homelab
+description: Snapshot all VMs on Proxmox and retain only the last 3 snapshots for each node.
+runner_type: orquesta
+entry_point: workflows/snapshot_vms.yaml
+enabled: true

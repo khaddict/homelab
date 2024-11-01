@@ -1,0 +1,34 @@
+version: 1.0
+description: Snapshot all VMs on Proxmox and retain only the last 3 snapshots for each node.
+
+vars:
+  - snapshot_name: "auto_snapshot_<% '{}{:02}{:02}_{:02}{:02}{:02}'.format(now().year, now().month, now().day, now().hour, now().minute, now().second) %>"
+  - nodes: ["n1-cls1", "n2-cls1"]
+
+tasks:
+  snapshot_vms:
+    with: <% ctx().nodes %>
+    action: core.remote
+    input:
+      hosts: "<% item() %>"
+      username: root
+      timeout: 600
+      cmd: |
+        VMIDS=$(pvesh get /nodes/<% item() %>/qemu --output-format json | jq -r '.[] | select(.vmid < 200) | .vmid')
+
+        for VMID in $VMIDS; do
+            pvesh create /nodes/<% item() %>/qemu/$VMID/snapshot --snapname <% ctx().snapshot_name %> --description "Automated snapshot" --vmstate true
+            
+            SNAPSHOTS=$(pvesh get /nodes/<% item() %>/qemu/$VMID/snapshot --output-format json | jq -r '.[].name' | sort -r)
+            COUNT=0
+            
+            for SNAPSHOT in $SNAPSHOTS; do
+                COUNT=$((COUNT+1))
+                if [ $COUNT -gt 4 ]; then
+                    pvesh delete /nodes/<% item() %>/qemu/$VMID/snapshot/$SNAPSHOT
+                fi
+            done
+        done
+
+output:
+  - msg: "Snapshots created and old snapshots deleted successfully."

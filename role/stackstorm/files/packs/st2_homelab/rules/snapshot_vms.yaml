@@ -1,0 +1,15 @@
+---
+name: snapshot_vms
+pack: st2_homelab
+enabled: true
+description: "Snapshot all VMs on Proxmox and retain only the last 3 snapshots for each node."
+trigger:
+  type: "core.st2.CronTimer"
+  parameters:
+      timezone: "UTC"
+      day_of_week: "*"
+      hour: 0
+      minute: 0
+      second: 0
+action:
+  ref: st2_homelab.snapshot_vms

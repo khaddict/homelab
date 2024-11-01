@@ -10,3 +10,8 @@ parameters:
     description: The VM name.
     required: true
     type: string
+  node:
+    required: true
+    type: string
+    default: "n1-cls1"
+    description: The Proxmox node.
