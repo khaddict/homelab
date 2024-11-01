@@ -11,11 +11,11 @@ input:
   - template
   - ip_addr
   - vm_role
+  - node
 
 vars:
   - domain: "homelab.lan"
   - saltmaster: "saltmaster.<% ctx().domain %>"
-  - node: "n1-cls1"
   - disk_type: "scsi0"
   - template_id: 0
   - vm_parameters: ""

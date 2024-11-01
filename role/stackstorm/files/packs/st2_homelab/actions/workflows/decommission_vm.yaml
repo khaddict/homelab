@@ -3,11 +3,12 @@ description: Workflow to decommission Proxmox VMs properly.
 
 input:
   - vm_name
+  - node
 
 vars:
   - domain: "homelab.lan"
   - fqdn: <% ctx().vm_name + "." + ctx().domain %>
-  - node: "n1-cls1.<% ctx().domain %>"
+  - node_fqdn: "<% ctx().node %>.<% ctx().domain %>"
   - saltmaster: "saltmaster.<% ctx().domain %>"
   - zone_name: "<% ctx().domain %>."
   - ptr_zone_name: "0.168.192.in-addr.arpa."
@@ -47,7 +48,7 @@ tasks:
   vm_existence:
     action: core.remote
     input:
-      hosts: "<% ctx().node %>"
+      hosts: "<% ctx().node_fqdn %>"
       username: root
       cmd: |
         qm list | grep "<% ctx().vm_name %>"
@@ -55,7 +56,7 @@ tasks:
       - when: <% succeeded() %>
         do: vm_status
         publish:
-          - vm_id: <% result()[ctx().node].stdout.split()[0] %>
+          - vm_id: <% result()[ctx().node_fqdn].stdout.split()[0] %>
           - vm_existence: "VM retrieved on Proxmox."
       - when: <% failed() %>
         publish:
@@ -64,16 +65,16 @@ tasks:
   vm_status:
     action: core.remote
     input:
-      hosts: "<% ctx().node %>"
+      hosts: "<% ctx().node_fqdn %>"
       username: root
       cmd: |
         qm status <% ctx().vm_id %> | awk '{print $2}'
     next:
-      - when: <% succeeded() and result()[ctx().node].stdout = "running" %>
+      - when: <% succeeded() and result()[ctx().node_fqdn].stdout = "running" %>
         do: stop_vm
         publish:
           - vm_status: "VM running and will be stopped."
-      - when: <% succeeded() and result()[ctx().node].stdout = "stopped" %>
+      - when: <% succeeded() and result()[ctx().node_fqdn].stdout = "stopped" %>
         do: delete_vm
         publish:
           - vm_status: "VM stopped."
@@ -84,7 +85,7 @@ tasks:
   stop_vm:
     action: core.remote
     input:
-      hosts: "<% ctx().node %>"
+      hosts: "<% ctx().node_fqdn %>"
       username: root
       cmd: |
         qm stop <% ctx().vm_id %>
@@ -100,7 +101,7 @@ tasks:
   delete_vm:
     action: core.remote
     input:
-      hosts: "<% ctx().node %>"
+      hosts: "<% ctx().node_fqdn %>"
       username: root
       cmd: |
         qm destroy <% ctx().vm_id %>
