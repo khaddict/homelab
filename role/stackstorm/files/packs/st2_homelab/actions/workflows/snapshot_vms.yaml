@@ -2,7 +2,7 @@ version: 1.0
 description: Snapshot all VMs on Proxmox and retain only the last 3 snapshots for each node.
 
 vars:
-  - snapshot_name: "auto_snapshot_<% '{}{:02}{:02}_{:02}{:02}{:02}'.format(now().year, now().month, now().day, now().hour, now().minute, now().second) %>"
+  - snapshot_name: "auto_snapshot_<% '{}{:02}{:02}_{:02}{:02}{:02}'.format(now().year, now().month, now().day, (now().hour + 1), now().minute, now().second) %>"
   - nodes: ["n1-cls1", "n2-cls1"]
 
 tasks:
@@ -29,6 +29,20 @@ tasks:
                 fi
             done
         done
+    next:
+      - when: <% succeeded() %>
+        do: send_stdout_to_discord
+        publish:
+          - content: "Succeeded."
+      - when: <% failed() %>
+        do: send_stdout_to_discord
+        publish:
+          - content: "Failed."
 
-output:
-  - msg: "Snapshots created and old snapshots deleted successfully."
+  send_stdout_to_discord:
+    action: core.http
+    input:
+      method: POST
+      url: "{{ snapshot_vms_discord_webhook }}"
+      headers: {"Content-Type": "application/json"}
+      body: '{"content": "<% ctx().content %>"}'

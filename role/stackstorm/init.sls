@@ -8,6 +8,7 @@
 {% set database_password = salt['vault'].read_secret('kv/stackstorm/st2').database_password %}
 {% set database_password = salt['vault'].read_secret('kv/stackstorm/st2').database_password %}
 {% set powerdns_api_key = salt['vault'].read_secret('kv/stackstorm/powerdns').api_key %}
+{% set snapshot_vms_discord_webhook = salt['vault'].read_secret('kv/stackstorm/st2_homelab').snapshot_vms_discord_webhook %}
 
 st2actionrunner_file:
   file.managed:
@@ -74,6 +75,7 @@ st2_homelab_folder:
         dns: {{ network_confs.dns_nameservers.powerdns }}
         netmask: {{ network_confs.netmask }}
         gateway: {{ network_confs.gateway }}
+        snapshot_vms_discord_webhook: {{ snapshot_vms_discord_webhook }}
 
 netbox_folder:
   file.recurse:
