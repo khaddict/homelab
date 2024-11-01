@@ -1,9 +1,0 @@
-[Unit]
-Description=Run snapshot_vms.service weekly
-
-[Timer]
-OnCalendar=weekly
-Persistent=true
-
-[Install]
-WantedBy=timers.target
