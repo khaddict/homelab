@@ -63,3 +63,12 @@ add_fstab_entry:
     - name: /etc/fstab
     - text: "https://drive.shadow.tech/remote.php/webdav /mnt/shadowdrive davfs rw,user,_netdev 0 0"
     - unless: grep -q "https://drive.shadow.tech/remote.php/webdav /mnt/shadowdrive davfs rw,user,_netdev 0 0" /etc/fstab
+
+davfs2_config:
+  file.managed:
+    - name: /etc/davfs2/davfs2.conf
+    - source: salt://role/proxmox/files/davfs2.conf
+    - user: root
+    - group: root
+    - mode: 644
+    - makedirs: True
