@@ -1,6 +1,11 @@
 {% set ldap_password = salt['vault'].read_secret('kv/ldap').proxmox_pass %}
+{% set shadowdrive_user = salt['vault'].read_secret('kv/proxmox').shadowdrive_user %}
+{% set shadowdrive_password = salt['vault'].read_secret('kv/proxmox').shadowdrive_password %}
 {% set fqdn = grains["fqdn"] %}
 {% set host = grains["host"] %}
+
+include:
+  - base.davfs2
 
 user_cfg_file:
   file.managed:
@@ -31,3 +36,30 @@ ldap_pw_file:
     - template: jinja
     - context:
         ldap_password: {{ ldap_password }}
+
+shadowdrive_directory:
+  file.directory:
+    - name: /mnt/shadowdrive
+    - mode: 755
+    - user: root
+    - group: root
+    - makedirs: True
+
+shadowdrive_secrets:
+  file.managed:
+    - name: /etc/davfs2/secrets
+    - source: salt://role/proxmox/files/secrets
+    - user: root
+    - group: root
+    - mode: 600
+    - makedirs: True
+    - template: jinja
+    - context:
+        shadowdrive_user: {{ shadowdrive_user }}
+        shadowdrive_password: {{ shadowdrive_password }}
+
+add_fstab_entry:
+  file.append:
+    - name: /etc/fstab
+    - text: "https://drive.shadow.tech/remote.php/webdav /mnt/shadowdrive davfs rw,user,_netdev 0 0"
+    - unless: grep -q "https://drive.shadow.tech/remote.php/webdav /mnt/shadowdrive davfs rw,user,_netdev 0 0" /etc/fstab
