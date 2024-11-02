@@ -1,0 +1,14 @@
+[Unit]
+Description=Mount Shadow Drive via rclone
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/rclone mount shadowdrive: /mnt/shadowdrive --vfs-cache-mode writes --vfs-cache-max-size 1G
+ExecStop=/bin/fusermount -u /mnt/shadowdrive
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
