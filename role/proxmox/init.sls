@@ -1,11 +1,11 @@
 {% set ldap_password = salt['vault'].read_secret('kv/ldap').proxmox_pass %}
 {% set shadowdrive_user = salt['vault'].read_secret('kv/proxmox').shadowdrive_user %}
-{% set shadowdrive_password = salt['vault'].read_secret('kv/proxmox').shadowdrive_password %}
+{% set shadowdrive_encrypted_password = salt['vault'].read_secret('kv/proxmox').shadowdrive_encrypted_password %}
 {% set fqdn = grains["fqdn"] %}
 {% set host = grains["host"] %}
 
 include:
-  - base.davfs2
+  - base.rclone
 
 user_cfg_file:
   file.managed:
@@ -45,10 +45,10 @@ shadowdrive_directory:
     - group: root
     - makedirs: True
 
-shadowdrive_secrets:
+shadowdrive_rclone_config:
   file.managed:
-    - name: /etc/davfs2/secrets
-    - source: salt://role/proxmox/files/secrets
+    - name: /root/.config/rclone/rclone.conf
+    - source: salt://role/proxmox/files/rclone.conf
     - user: root
     - group: root
     - mode: 600
@@ -56,19 +56,20 @@ shadowdrive_secrets:
     - template: jinja
     - context:
         shadowdrive_user: {{ shadowdrive_user }}
-        shadowdrive_password: {{ shadowdrive_password }}
+        shadowdrive_encrypted_password: {{ shadowdrive_encrypted_password }}
 
-add_fstab_entry:
-  file.append:
-    - name: /etc/fstab
-    - text: "https://drive.shadow.tech/remote.php/webdav /mnt/shadowdrive davfs rw,user,_netdev 0 0"
-    - unless: grep -q "https://drive.shadow.tech/remote.php/webdav /mnt/shadowdrive davfs rw,user,_netdev 0 0" /etc/fstab
-
-davfs2_config:
+shadowdrive_rclone_service:
   file.managed:
-    - name: /etc/davfs2/davfs2.conf
-    - source: salt://role/proxmox/files/davfs2.conf
+    - name: /etc/systemd/system/shadowdrive-rclone.service
+    - source: salt://role/proxmox/files/shadowdrive-rclone.service
     - user: root
     - group: root
     - mode: 644
     - makedirs: True
+
+enable_service_shadowdrive_rclone:
+  service.running:
+    - name: shadowdrive-rclone
+    - enable: True
+    - require:
+      - file: shadowdrive_rclone_service
