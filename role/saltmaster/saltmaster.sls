@@ -1,3 +1,6 @@
+include:
+  - base.saltstack
+
 saltgui_directory:
   file.recurse:
     - name: /srv/saltgui
