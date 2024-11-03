@@ -73,3 +73,5 @@ enable_service_shadowdrive_rclone:
     - enable: True
     - require:
       - file: shadowdrive_rclone_service
+    - watch:
+      - file: shadowdrive_rclone_service
