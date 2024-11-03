@@ -1,74 +1,74 @@
-netmask: "255.255.255.0"
 gateway: "192.168.0.254"
+netmask: "255.255.255.0"
 
 dns_nameservers:
-  powerdns: "192.168.0.222"
   freebox: "192.168.0.254"
+  powerdns: "192.168.0.222"
 
 network_conf:
+  api.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.221"
+  aptly.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.228"
+  build.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.227"
+  ca.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.217"
+  docker.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.225"
+  elk.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.220"
+  grafana.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.219"
+  kubernetes.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.226"
+  ldap.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.215"
+  main.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.206"
   n1-cls1.homelab.lan:
     main_iface: "enp87s0"
     ip_addr: "192.168.0.200"
   n2-cls1.homelab.lan:
     main_iface: "enp87s0"
     ip_addr: "192.168.0.201"
-  saltmaster.homelab.lan:
-    main_iface: "ens18"
-    ip_addr: "192.168.0.205"
-  main.homelab.lan:
-    main_iface: "ens18"
-    ip_addr: "192.168.0.206"
-  stackstorm.homelab.lan:
-    main_iface: "ens18"
-    ip_addr: "192.168.0.207"
   netbox.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.208"
-  vault.homelab.lan:
-    main_iface: "ens18"
-    ip_addr: "192.168.0.209"
-  ldap.homelab.lan:
-    main_iface: "ens18"
-    ip_addr: "192.168.0.215"
-  prometheus.homelab.lan:
-    main_iface: "ens18"
-    ip_addr: "192.168.0.216"
-  ca.homelab.lan:
-    main_iface: "ens18"
-    ip_addr: "192.168.0.217"
   ntp.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.218"
-  grafana.homelab.lan:
-    main_iface: "ens18"
-    ip_addr: "192.168.0.219"
-  elk.homelab.lan:
-    main_iface: "ens18"
-    ip_addr: "192.168.0.220"
-  api.homelab.lan:
-    main_iface: "ens18"
-    ip_addr: "192.168.0.221"
   pdns.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.222"
-  docker.homelab.lan:
+  prometheus.homelab.lan:
     main_iface: "ens18"
-    ip_addr: "192.168.0.225"
-  kubernetes.homelab.lan:
+    ip_addr: "192.168.0.216"
+  revproxy.homelab.lan:
     main_iface: "ens18"
-    ip_addr: "192.168.0.226"
-  build.homelab.lan:
+    ip_addr: "192.168.0.232"
+  saltmaster.homelab.lan:
     main_iface: "ens18"
-    ip_addr: "192.168.0.227"
-  aptly.homelab.lan:
+    ip_addr: "192.168.0.205"
+  stackstorm.homelab.lan:
     main_iface: "ens18"
-    ip_addr: "192.168.0.228"
+    ip_addr: "192.168.0.207"
+  vault.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.209"
   work.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.230"
   yacine.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.231"
-  revproxy.homelab.lan:
-    main_iface: "ens18"
-    ip_addr: "192.168.0.232"

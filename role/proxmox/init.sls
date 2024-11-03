@@ -1,6 +1,7 @@
 {% set ldap_password = salt['vault'].read_secret('kv/ldap').proxmox_pass %}
 {% set shadowdrive_user = salt['vault'].read_secret('kv/proxmox').shadowdrive_user %}
 {% set shadowdrive_encrypted_password = salt['vault'].read_secret('kv/proxmox').shadowdrive_encrypted_password %}
+{% import_yaml 'data/proxmox.yaml' as proxmox %}
 {% set fqdn = grains["fqdn"] %}
 {% set host = grains["host"] %}
 
@@ -24,6 +25,23 @@ domains_cfg_file:
     - group: www-data
     - mode: 640
     - makedirs: True
+
+jobs_cfg_file:
+  file.managed:
+    - name: /etc/pve/jobs.cfg
+    - source: salt://role/proxmox/files/jobs.cfg
+    - user: root
+    - group: www-data
+    - mode: 640
+    - makedirs: True
+    - template: jinja
+    - context:
+        backup_storage: {{ proxmox.backup_storage }}
+        proxmox_backups:
+          {% for hostname, data in proxmox.proxmox_backups.items() %}
+          - id: {{ data.id }}
+            schedule: {{ data.schedule }}
+          {% endfor %}
 
 ldap_pw_file:
   file.managed:

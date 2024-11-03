@@ -1,0 +1,63 @@
+backup_storage: "ShadowDrive"
+
+proxmox_backups:
+  api.homelab.lan:
+    id: 117
+    schedule: "sat 02:00"
+  aptly.homelab.lan:
+    id: 124
+    schedule: "sat 02:30"
+  build.homelab.lan:
+    id: 123
+    schedule: "sat 03:00"
+  ca.homelab.lan:
+    id: 113
+    schedule: "sat 03:30"
+  docker.homelab.lan:
+    id: 121
+    schedule: "sat 04:00"
+  elk.homelab.lan:
+    id: 116
+    schedule: "sat 04:30"
+  grafana.homelab.lan:
+    id: 115
+    schedule: "sat 05:00"
+  kubernetes.homelab.lan:
+    id: 122
+    schedule: "sat 05:30"
+  ldap.homelab.lan:
+    id: 111
+    schedule: "sat 06:00"
+  main.homelab.lan:
+    id: 100
+    schedule: "sat 06:30"
+  netbox.homelab.lan:
+    id: 105
+    schedule: "sat 07:00"
+  ntp.homelab.lan:
+    id: 114
+    schedule: "sat 07:30"
+  pdns.homelab.lan:
+    id: 118
+    schedule: "sat 08:00"
+  prometheus.homelab.lan:
+    id: 112
+    schedule: "sat 08:30"
+  revproxy.homelab.lan:
+    id: 129
+    schedule: "sat 09:00"
+  saltmaster.homelab.lan:
+    id: 103
+    schedule: "sat 09:30"
+  stackstorm.homelab.lan:
+    id: 104
+    schedule: "sat 10:00"
+  vault.homelab.lan:
+    id: 106
+    schedule: "sat 10:30"
+  work.homelab.lan:
+    id: 126
+    schedule: "sat 11:00"
+  yacine.homelab.lan:
+    id: 127
+    schedule: "sat 11:30"
