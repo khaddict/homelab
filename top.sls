@@ -46,15 +46,6 @@
   'pdns.homelab.lan':
     - role.pdns
 
-  'smtp.homelab.lan':
-    - role.smtp
-
-  'ansible.homelab.lan':
-    - role.ansible
-
-  'terraform.homelab.lan':
-    - role.terraform
-
   'docker.homelab.lan':
     - role.docker
 
@@ -67,14 +58,8 @@
   'aptly.homelab.lan':
     - role.aptly
 
-  'openstack.homelab.lan':
-    - role.openstack
-
   'work.homelab.lan':
     - role.work
-
-  'centreon.homelab.lan':
-    - role.centreon
 
   'revproxy.homelab.lan':
     - role.revproxy
