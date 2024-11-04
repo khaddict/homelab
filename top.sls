@@ -66,3 +66,6 @@
 
   'yacine.homelab.lan':
     - role.yacine
+
+  'knode0?.homelab.lan':
+    - role.knode

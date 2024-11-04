@@ -25,6 +25,15 @@ proxmox_backups:
   kubernetes.homelab.lan:
     id: 122
     schedule: "sat 05:30"
+  knode01.homelab.lan:
+    id: 130
+    schedule: "sat 12:00"
+  knode02.homelab.lan:
+    id: 131
+    schedule: "sat 12:30"
+  knode03.homelab.lan:
+    id: 132
+    schedule: "sat 13:00"
   ldap.homelab.lan:
     id: 111
     schedule: "sat 06:00"
