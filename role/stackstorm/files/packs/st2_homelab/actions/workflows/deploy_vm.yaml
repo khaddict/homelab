@@ -17,7 +17,7 @@ vars:
   - domain: "homelab.lan"
   - saltmaster: "saltmaster.<% ctx().domain %>"
   - disk_type: "scsi0"
-  - template_id: 0
+  - template_id: ""
   - vm_parameters: ""
   - resize_cores: ""
   - resize_memory: ""
@@ -46,20 +46,21 @@ vars:
 
 tasks:
   get_template_id:
-    action: core.noop
+    action: core.remote
+    input:
+      hosts: "<% ctx().node %>.<% ctx().domain %>"
+      username: root
+      cmd: |
+        qm list | grep "<% ctx().template %>" | awk '{print $1}'
     next:
-      - when: <% succeeded() and ctx().template = "bookworm" %>
+      - when: <% succeeded() %>
         do: clone_vm
         publish:
-          - template_id: 200
-      - when: <% succeeded() and ctx().template = "focal" %>
-        do: clone_vm
-        publish:
-          - template_id: 201
-      - when: <% failed() or (ctx().template != "focal" and ctx().template != "bookworm") %>
+          - template_id: <% result()[ctx().node + "." + ctx().domain].stdout %>
+      - when: <% failed() %>
         do: fail
         publish:
-          - msg: "The template must be focal or bookworm."
+          - msg: "Could not retrieve the template ID."
 
   clone_vm:
     action: core.remote
@@ -287,8 +288,8 @@ tasks:
       cmd: |
         mkdir -p /etc/apt/keyrings
         apt install -y curl
-        curl -fsSL -o /etc/apt/keyrings/salt-archive-keyring-2023.gpg https://repo.saltproject.io/salt/py3/ubuntu/20.04/amd64/SALT-PROJECT-GPG-PUBKEY-2023.gpg
-        echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.gpg arch=amd64] https://repo.saltproject.io/salt/py3/ubuntu/20.04/amd64/latest focal main" | tee /etc/apt/sources.list.d/salt.list
+        curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public | sudo tee /etc/apt/keyrings/salt-archive-keyring.pgp
+        curl -fsSL https://github.com/saltstack/salt-install-guide/releases/latest/download/salt.sources | sudo tee /etc/apt/sources.list.d/salt.sources
         apt update
         apt install -y salt-minion
         echo "master: <% ctx().saltmaster %>" > /etc/salt/minion
