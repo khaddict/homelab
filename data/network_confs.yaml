@@ -2,8 +2,8 @@ gateway: "192.168.0.254"
 netmask: "255.255.255.0"
 
 dns_nameservers:
-  freebox: "192.168.0.254"
   powerdns: "192.168.0.222"
+  freebox: "192.168.0.254"
 
 network_conf:
   api.homelab.lan:
