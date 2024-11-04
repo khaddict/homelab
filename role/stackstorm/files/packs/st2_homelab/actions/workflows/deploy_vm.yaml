@@ -441,13 +441,13 @@ output:
 
       2) salt:/homelab/data/proxmox.yaml
 
-          <% ctx().vm_id %>.<% ctx().domain %>:
-            id: <% ctx().vm_id %>
-            schedule: "xxx 00:00"
+        <% ctx().vm_name %>.<% ctx().domain %>:
+          id: <% ctx().vm_id %>
+          schedule: "xxx 00:00"
 
       3) salt:/homelab/top.sls
 
-        '<% ctx().vm_name %>.<% ctx().domain %>':
+        <% ctx().vm_name %>.<% ctx().domain %>:
           - role.<role_name>
 
       If it's a new role, you also have to create salt:/homelab/role/<role_name>
