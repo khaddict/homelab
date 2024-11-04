@@ -29,11 +29,20 @@ groups:
         labels:
           severity: warning
 
-      - alert: ComponentHot
+      - alert: ProxmoxNodeHot
         annotations:
-          summary: "{{ $labels.chip }} is hot (instance {{ $labels.instance }})"
-          description: "{{ $labels.chip }} on {{ $labels.sensor }} is hot (> 70°C) (value {{ $value }})"
-        expr: node_hwmon_temp_celsius > 70
+          summary: "n1-cls1 is hot"
+          description: "n1-cls1 is hot (> 70°C) (value {{ $value }})"
+        expr: (avg(node_hwmon_temp_celsius{chip="platform_coretemp_0", instance="n1-cls1.homelab.lan"}) > 70)
+        for: 5m
+        labels:
+          severity: warning
+
+      - alert: ProxmoxNodeHot
+        annotations:
+          summary: "n2-cls1 is hot"
+          description: "n2-cls1 is hot (> 70°C) (value {{ $value }})"
+        expr: (avg(node_hwmon_temp_celsius{chip="platform_coretemp_0", instance="n2-cls1.homelab.lan"}) > 70)
         for: 5m
         labels:
           severity: warning
