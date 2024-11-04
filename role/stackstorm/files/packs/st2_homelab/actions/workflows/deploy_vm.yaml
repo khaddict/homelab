@@ -438,7 +438,13 @@ output:
           main_iface: "<% ctx().interface_name %>"
           ip_addr: "<% ctx().ip_addr %>"
 
-      2) salt:/homelab/top.sls
+      2) salt:/homelab/data/proxmox.yaml
+
+          <% ctx().vm_id %>.<% ctx().domain %>:
+            id: <% ctx().vm_id %>
+            schedule: "xxx 00:00"
+
+      3) salt:/homelab/top.sls
 
         '<% ctx().vm_name %>.<% ctx().domain %>':
           - role.<role_name>
