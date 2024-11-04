@@ -48,5 +48,4 @@ parameters:
   node:
     required: true
     type: string
-    default: "n1-cls1"
     description: The Proxmox node.
