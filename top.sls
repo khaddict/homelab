@@ -67,8 +67,8 @@
   'yacine.homelab.lan':
     - role.yacine
 
-  'knode0?.homelab.lan':
-    - role.knode
+  'kworker0?.homelab.lan':
+    - role.kworker
 
-  'kmaster.homelab.lan':
-    - role.kmaster
+  'kcontrol0?.homelab.lan':
+    - role.kcontrol
