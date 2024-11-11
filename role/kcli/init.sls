@@ -25,3 +25,19 @@ edit_inventory:
     - mode: 644
     - user: root
     - group: root
+
+edit_addons:
+  file.managed:
+    - name: /root/kubespray/inventory/sample/group_vars/k8s_cluster/addons.yml
+    - source: salt://role/kcli/files/addons.yml
+    - mode: 644
+    - user: root
+    - group: root
+
+edit_k8s_cluster:
+  file.managed:
+    - name: /root/kubespray/inventory/sample/group_vars/k8s_cluster/k8s-cluster.yml
+    - source: salt://role/kcli/files/k8s-cluster.yml
+    - mode: 644
+    - user: root
+    - group: root
