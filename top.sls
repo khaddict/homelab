@@ -72,3 +72,6 @@
 
   'kcontrol0?.homelab.lan':
     - role.kcontrol
+
+  'kcli.homelab.lan':
+    - role.kcli
