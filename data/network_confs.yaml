@@ -30,6 +30,9 @@ network_conf:
   kubernetes.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.226"
+  kmaster.homelab.lan:
+    main_iface: "ens18"
+    ip_addr: "192.168.0.236"
   knode01.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.233"
