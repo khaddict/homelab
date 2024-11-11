@@ -3,6 +3,7 @@ include:
   - base.ansible
   - base.python311_venv
   - base.virtualenv
+  - base.kubectl
 
 clone_kubespray:
   git.latest:
