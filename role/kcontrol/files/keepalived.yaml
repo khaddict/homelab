@@ -1,0 +1,12 @@
+virtual_ipaddress: 192.168.0.240
+
+keepalived:
+  kcontrol01.homelab.lan:
+    priority: 101
+    state: "MASTER"
+  kcontrol02.homelab.lan:
+    priority: 100
+    state: "BACKUP"
+  kcontrol03.homelab.lan:
+    priority: 99
+    state: "BACKUP"
