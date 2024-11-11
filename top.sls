@@ -69,3 +69,6 @@
 
   'knode0?.homelab.lan':
     - role.knode
+
+  'kmaster.homelab.lan':
+    - role.kmaster
