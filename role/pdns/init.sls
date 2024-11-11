@@ -11,6 +11,8 @@
 include:
   - base.mariadb
   - base.nginx
+  - base.virtualenv
+  - base.python311_venv
 
 pdns_dependencies:
   pkg.installed:
@@ -26,8 +28,6 @@ pdns_dependencies:
       - libffi-dev
       - pkg-config
       - apt-transport-https
-      - virtualenv
-      - python3-venv
       - build-essential
       - libmariadb-dev
       - python3-flask
