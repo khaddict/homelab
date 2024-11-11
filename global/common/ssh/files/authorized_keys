@@ -8,4 +8,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICtFdbZsatb0tUAJsOLT1Z8Yc5i0AUrL8sIp9Hxu2Tar
 {% if fqdn is match('n\d-cls\d\.homelab\.lan') %}
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBGzwaiUqwJYmLkdcw+TwDH2gAKCwLlWOvuEst3udKB2 n1-cls1.homelab.lan
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHu79pvf0D6z3WaIA2a+NvTszQ0zrVZYYNNEAf4RN35A n2-cls1.homelab.lan
+{%- endif -%}
+{% if fqdn is match('k(control|worker)0[1-3]\.homelab\.lan') %}
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHZrCpIKCUk623XJvtiZgfGEVAuj8M9X80Duzu8/CFln kcli.homelab.lan
 {%- endif %}
