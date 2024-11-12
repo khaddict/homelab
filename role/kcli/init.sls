@@ -41,3 +41,11 @@ edit_k8s_cluster:
     - mode: 644
     - user: root
     - group: root
+
+kcli_bashrc:
+  file.managed:
+    - name: /root/.bashrc.d/kcli.bashrc
+    - source: salt://role/kcli/files/kcli.bashrc
+    - mode: 644
+    - user: root
+    - group: root
