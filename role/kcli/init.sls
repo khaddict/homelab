@@ -4,6 +4,7 @@ include:
   - base.python311_venv
   - base.virtualenv
   - base.kubectl
+  - base.helm
 
 clone_kubespray:
   git.latest:
