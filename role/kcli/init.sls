@@ -11,6 +11,7 @@ clone_kubespray:
     - name: https://github.com/kubernetes-sigs/kubespray.git
     - target: /root/kubespray
     - user: root
+    - unless: test -d /root/kubespray/.git
 
 setup_venv_kubespray:
   virtualenv.managed:
