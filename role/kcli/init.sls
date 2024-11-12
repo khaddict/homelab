@@ -1,4 +1,5 @@
 {% set traefik_dashboard_secret_base64 = salt['vault'].read_secret('kv/kubernetes').traefik_dashboard_secret_base64 %}
+{% set argocd_dashboard_secret_base64 = salt['vault'].read_secret('kv/kubernetes').argocd_dashboard_secret_base64 %}
 
 include:
   - base.git
@@ -62,3 +63,4 @@ manifests_directory:
     - template: jinja
     - context:
         traefik_dashboard_secret_base64: {{ traefik_dashboard_secret_base64 }}
+        argocd_dashboard_secret_base64: {{ argocd_dashboard_secret_base64 }}
