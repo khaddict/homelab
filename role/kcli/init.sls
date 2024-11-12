@@ -1,3 +1,5 @@
+{% set traefik_dashboard_secret_base64 = salt['vault'].read_secret('kv/kubernetes').traefik_dashboard_secret_base64 %}
+
 include:
   - base.git
   - base.ansible
@@ -51,3 +53,12 @@ kcli_bashrc:
     - mode: 644
     - user: root
     - group: root
+
+manifests_directory:
+  file.recurse:
+    - name: /root/manifests
+    - source: salt://role/kcli/files/manifests
+    - include_empty: True
+    - template: jinja
+    - context:
+        traefik_dashboard_secret_base64: {{ traefik_dashboard_secret_base64 }}
