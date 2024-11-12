@@ -53,3 +53,11 @@ start_enable_vault_service:
     - enable: True
     - require:
       - file: vault_service
+
+vault_bashrc:
+  file.managed:
+    - name: /root/.bashrc.d/vault.bashrc
+    - source: salt://role/vault/files/vault.bashrc
+    - mode: 644
+    - user: root
+    - group: root
