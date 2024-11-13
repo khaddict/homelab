@@ -1,0 +1,12 @@
+app: khaddict
+namespace: khaddict
+image: khaddict/khaddict:latest
+replicas: 3
+
+deployment:
+  name: khaddict-deployment
+
+service:
+  name: khaddict-service
+  type: LoadBalancer
+  port: 80
