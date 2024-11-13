@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: khaddict.com
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/khaddict/homelab.git
+    path: role/kcli/files/khaddict.com/helm_chart
+    targetRevision: main
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: khaddict
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
