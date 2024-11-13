@@ -4,17 +4,23 @@ metadata:
   name: khaddict.com
   namespace: argocd
 spec:
-  project: default
+  destination:
+    name: ''
+    namespace: khaddict
+    server: https://kubernetes.default.svc
   source:
-    repoURL: https://github.com/khaddict/homelab.git
     path: role/kcli/files/khaddict.com/helm_chart
+    repoURL: https://github.com/khaddict/homelab.git
     targetRevision: main
     helm:
       valueFiles:
         - values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: khaddict
+  sources: []
+  project: default
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
+      - Replace=true
+    automated:
+      prune: true
+      selfHeal: true
