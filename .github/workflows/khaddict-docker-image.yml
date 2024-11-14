@@ -1,0 +1,54 @@
+name: Build and push khaddict docker image and update ArgoCD
+
+on:
+  push:
+    paths:
+      - 'role/docker/files/docker_images/khaddict.com/**'
+
+jobs:
+  build-and-update-argocd:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set TIME environment variable
+      run: |
+        echo "TIME=$(date +"%H%M%d%m%Y")" >> $GITHUB_ENV
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: main
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ vars.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build Docker image khaddict/khaddict:<timestamp>
+      env:
+        TIMESTAMP: "${{ steps.time.outputs.time }}"
+      run: |
+        docker build . --file role/docker/files/docker_images/khaddict.com/Dockerfile --tag khaddict/khaddict:${{ env.TIME }}
+
+    - name: Push Docker image khaddict/khaddict:<timestamp>
+      run: |
+        docker push khaddict/khaddict:${{ env.TIME }}
+
+    - name: Update values.yaml with timestamp for ArgoCD sync
+      run: |
+        sed -i "s|image: khaddict/khaddict:.*|image: khaddict/khaddict:${{ env.TIME }}|" role/kcli/files/khaddict.com/helm_chart/values.yaml
+
+    - name: Commit and push updated values.yaml
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git add role/kcli/files/khaddict.com/helm_chart/values.yaml
+        git commit -m "Update ArgoCD deployment with new image at ${{ env.TIME }}"
+        git push -u origin main
