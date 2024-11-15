@@ -49,26 +49,14 @@
   'docker.homelab.lan':
     - role.docker
 
-  'kubernetes.homelab.lan':
-    - role.kubernetes
-
   'build.homelab.lan':
     - role.build
 
   'aptly.homelab.lan':
     - role.aptly
 
-  'work.homelab.lan':
-    - role.work
-
   'revproxy.homelab.lan':
     - role.revproxy
-
-  'yacine.homelab.lan':
-    - role.yacine
-
-  'kworker0?.homelab.lan':
-    - role.kworker
 
   'kcontrol0?.homelab.lan':
     - role.kcontrol

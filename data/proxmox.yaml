@@ -22,9 +22,6 @@ proxmox_backups:
   grafana.homelab.lan:
     id: 115
     schedule: "sat 05:00"
-  kubernetes.homelab.lan:
-    id: 122
-    schedule: "sat 05:30"
   ldap.homelab.lan:
     id: 111
     schedule: "sat 06:00"
