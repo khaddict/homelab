@@ -1,1 +1,0 @@
-# Besoin de faire plusieurs machines et monter une vraie stack k8s
