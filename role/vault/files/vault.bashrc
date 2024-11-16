@@ -1,1 +1,1 @@
-export VAULT_ADDR="http://vault.homelab.lan:8200"
+export VAULT_ADDR="https://vault.homelab.lan:8200"
