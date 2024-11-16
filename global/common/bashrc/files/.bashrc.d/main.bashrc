@@ -105,3 +105,5 @@ if [ -x /usr/bin/dircolors ]; then
     fi
     alias ls='ls --color=auto'
 fi
+
+export REQUESTS_CA_BUNDLE="/etc/ssl/certs/ca-certificates.crt"
