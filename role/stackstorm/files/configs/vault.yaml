@@ -2,7 +2,7 @@
 default_profile: prod
 profiles:
   - name: prod
-    url: 'http://vault.homelab.lan:8200'
+    url: 'https://vault.homelab.lan:8200'
 #    ca_cert_path: /etc/ssl/certs/internal_ca.pem
 #    client_cert_path: /etc/ssl/private/client.pem
 #    client_key_path: /etc/ssl/private/client.key

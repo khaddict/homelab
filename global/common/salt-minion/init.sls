@@ -13,6 +13,10 @@ minion_config:
     - user: root
     - group: root
 
+install_vault_extension:
+  pip.installed:
+    - name: saltext-vault
+
 service_salt_minion:
   service.running:
     - name: salt-minion
