@@ -16,6 +16,7 @@ input:
 vars:
   - domain: "homelab.lan"
   - saltmaster: "saltmaster.<% ctx().domain %>"
+  - pdns: "pdns.<% ctx().domain %>"
   - disk_type: "scsi0"
   - template_id: ""
   - vm_parameters: ""
@@ -42,6 +43,7 @@ vars:
   - ssh_pubkey: ""
   - reboot: ""
   - accept_salt_key: ""
+  - pdns_service: ""
   - msg: ""
 
 tasks:
@@ -178,6 +180,7 @@ tasks:
       cmd: |
         apt install parted -y
         echo -e "Yes\nquit" | parted /dev/sda resizepart 1 100% ---pretend-input-tty
+        resize2fs /dev/sda1
     next:
       - when: <% succeeded() %>
         do: set_hostname
@@ -383,12 +386,28 @@ tasks:
       zone_name: "<% ctx().ptr_zone_name %>"
     next:
       - when: <% succeeded() %>
-        do: create_vm_netbox
+        do: restart_pdns_service
         publish:
           - ptr_record: "PTR record created for <% ctx().vm_name %>.<% ctx().domain %>."
       - when: <% failed() %>
         publish:
           - msg: "Could not create the PTR record for <% ctx().vm_name %>.<% ctx().domain %>."
+
+  restart_pdns_service:
+    action: core.remote
+    input:
+      hosts: "<% ctx().pdns %>"
+      username: root
+      cmd: |
+        systemctl restart pdns-recursor.service
+    next:
+      - when: <% succeeded() %>
+        do: create_vm_netbox
+        publish:
+          - pdns_service: "pdns-recurstor.service restarted."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not restart pdns-recurstor.service."
 
   create_vm_netbox:
     action: st2_homelab.netbox_vm
@@ -427,9 +446,10 @@ output:
   - 16_accept_salt_key: <% ctx().accept_salt_key %>
   - 17_a_record: <% ctx().a_record %>
   - 18_ptr_record: <% ctx().ptr_record %>
-  - 19_netbox_creation: <% ctx().netbox_creation %>
-  - 20_msg: <% ctx().msg %>
-  - 21_merge_request: |
+  - 19_restart_pdns_service: <% ctx().pdns_service %>
+  - 20_netbox_creation: <% ctx().netbox_creation %>
+  - 21_msg: <% ctx().msg %>
+  - 22_merge_request: |
 
       _______________________________________________________________________________                                        
 
@@ -452,4 +472,5 @@ output:
 
       If it's a new role, you also have to create salt:/homelab/role/<role_name>
 
+      4) Highstate the VM
       _______________________________________________________________________________ 
