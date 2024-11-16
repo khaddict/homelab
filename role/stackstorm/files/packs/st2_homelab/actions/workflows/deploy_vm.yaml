@@ -398,7 +398,7 @@ tasks:
       ip_addr: "<% ctx().ip_addr %>/24"
       vcpus: <% ctx().cores_resize %>
       memory: <% ctx().memory_resize %>
-      disk: <% int(ctx().disk_resize.substring(1, (len(ctx().disk_resize) - 2))) + 20 %>
+      disk: <% (int(ctx().disk_resize.substring(1, (len(ctx().disk_resize) - 2))) + 20) * 1000 %>
     next:
       - when: <% succeeded() %>
         publish:
