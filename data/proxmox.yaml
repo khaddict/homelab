@@ -78,4 +78,7 @@ proxmox_backups:
     schedule: "sat 14:30"
   kcli.homelab.lan:
     id: 136
-    schedule: "sat 14:30"
+    schedule: "sat 15:00"
+  k3s.homelab.lan:
+    id: 137
+    schedule: "sat 15:30"

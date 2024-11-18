@@ -63,3 +63,6 @@
 
   'kcli.homelab.lan':
     - role.kcli
+
+  k3s.homelab.lan:
+    - role.k3s
