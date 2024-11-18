@@ -22,9 +22,15 @@ setup_venv_kubespray:
     - require:
       - git: clone_kubespray
 
+kubespray_homelab_dir:
+  file.directory:
+    - name: /root/kubespray/inventory/homelab
+    - user: root
+    - group: root
+
 edit_inventory:
   file.managed:
-    - name: /root/kubespray/inventory/sample/inventory.ini
+    - name: /root/kubespray/inventory/homelab/inventory.ini
     - source: salt://role/kcli/files/inventory.ini
     - mode: 644
     - user: root
@@ -32,7 +38,7 @@ edit_inventory:
 
 edit_addons:
   file.managed:
-    - name: /root/kubespray/inventory/sample/group_vars/k8s_cluster/addons.yml
+    - name: /root/kubespray/inventory/homelab/group_vars/k8s_cluster/addons.yml
     - source: salt://role/kcli/files/addons.yml
     - mode: 644
     - user: root
@@ -40,8 +46,16 @@ edit_addons:
 
 edit_k8s_cluster:
   file.managed:
-    - name: /root/kubespray/inventory/sample/group_vars/k8s_cluster/k8s-cluster.yml
+    - name: /root/kubespray/inventory/homelab/group_vars/k8s_cluster/k8s-cluster.yml
     - source: salt://role/kcli/files/k8s-cluster.yml
+    - mode: 644
+    - user: root
+    - group: root
+
+edit_hosts:
+  file.managed:
+    - name: /root/kubespray/inventory/homelab/hosts.yaml
+    - source: salt://role/kcli/files/hosts.yaml
     - mode: 644
     - user: root
     - group: root
