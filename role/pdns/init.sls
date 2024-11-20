@@ -107,34 +107,6 @@ service_pdns:
       - file: gmysql_config
       - file: pdns_config
 
-install_pdns_recursor:
-  pkg.installed:
-    - name: pdns-recursor
-    - require:
-      - service: service_pdns
-
-pdns_recursor_config:
-  file.managed:
-    - name: /etc/powerdns/recursor.conf
-    - source: salt://role/pdns/files/recursor.conf
-    - mode: 644
-    - user: root
-    - group: root
-    - template: jinja
-    - context:
-        powerdns_host: {{ powerdns_host }}
-    - require:
-      - pkg: install_pdns_recursor
-
-pdns_recursor_service:
-  service.running:
-    - name: pdns-recursor
-    - enable: True
-    - require:
-      - file: pdns_recursor_config
-    - watch:
-      - file: pdns_recursor_config
-
 download_nodejs_script:
   file.managed:
     - name: /tmp/setup_20.x
