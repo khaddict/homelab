@@ -46,6 +46,9 @@
   'pdns.homelab.lan':
     - role.pdns
 
+  'recursor.homelab.lan':
+    - role.recursor
+
   'docker.homelab.lan':
     - role.docker
 
