@@ -17,6 +17,7 @@ vars:
   - domain: "homelab.lan"
   - saltmaster: "saltmaster.<% ctx().domain %>"
   - pdns: "pdns.<% ctx().domain %>"
+  - recursor: "recursor.<% ctx().domain %>"
   - disk_type: "scsi0"
   - template_id: ""
   - vm_parameters: ""
@@ -43,7 +44,8 @@ vars:
   - ssh_pubkey: ""
   - reboot: ""
   - accept_salt_key: ""
-  - pdns_service: ""
+  - recursor_service: ""
+  - highstate_vm: ""
   - msg: ""
 
 tasks:
@@ -386,17 +388,17 @@ tasks:
       zone_name: "<% ctx().ptr_zone_name %>"
     next:
       - when: <% succeeded() %>
-        do: restart_pdns_service
+        do: restart_recursor_service
         publish:
           - ptr_record: "PTR record created for <% ctx().vm_name %>.<% ctx().domain %>."
       - when: <% failed() %>
         publish:
           - msg: "Could not create the PTR record for <% ctx().vm_name %>.<% ctx().domain %>."
 
-  restart_pdns_service:
+  restart_recursor_service:
     action: core.remote
     input:
-      hosts: "<% ctx().pdns %>"
+      hosts: "<% ctx().recursor %>"
       username: root
       cmd: |
         systemctl restart pdns-recursor.service
@@ -404,7 +406,7 @@ tasks:
       - when: <% succeeded() %>
         do: create_vm_netbox
         publish:
-          - pdns_service: "pdns-recurstor.service restarted."
+          - recursor_service: "pdns-recurstor.service restarted."
       - when: <% failed() %>
         publish:
           - msg: "Could not restart pdns-recurstor.service."
@@ -420,12 +422,29 @@ tasks:
       disk: <% (int(ctx().disk_resize.substring(1, (len(ctx().disk_resize) - 2))) + 20) * 1000 %>
     next:
       - when: <% succeeded() %>
+        do: highstate_vm
         publish:
           - netbox_creation: "<% ctx().vm_name %>.<% ctx().domain %> created on NetBox side."
           - msg: "Everything is finished."
       - when: <% failed() %>
         publish:
           - msg: "Could not create <% ctx().vm_name %>.<% ctx().domain %> on NetBox side."
+
+  highstate_vm:
+    action: core.remote
+    input:
+      hosts: "<% ctx().saltmaster %>"
+      username: root
+      cmd: |
+        sleep 5
+        salt '<% ctx().vm_name %>.<% ctx().domain %>' state.highstate
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - highstate_vm: "Highstate done."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not highstate the VM."
 
 output:
   - 01_resize_cores: <% ctx().resize_cores %>
@@ -446,10 +465,11 @@ output:
   - 16_accept_salt_key: <% ctx().accept_salt_key %>
   - 17_a_record: <% ctx().a_record %>
   - 18_ptr_record: <% ctx().ptr_record %>
-  - 19_restart_pdns_service: <% ctx().pdns_service %>
+  - 19_restart_recursor_service: <% ctx().recursor_service %>
   - 20_netbox_creation: <% ctx().netbox_creation %>
-  - 21_msg: <% ctx().msg %>
-  - 22_merge_request: |
+  - 21_highstate_vm: <% ctx().highstate_vm %>
+  - 22_msg: <% ctx().msg %>
+  - 23_merge_request: |
 
       _______________________________________________________________________________                                        
 
@@ -471,6 +491,4 @@ output:
           - role.<role_name>
 
       If it's a new role, you also have to create salt:/homelab/role/<role_name>
-
-      4) Highstate the VM
       _______________________________________________________________________________ 
