@@ -28,9 +28,6 @@ network_conf:
   grafana.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.219"
-  k3s.homelab.lan:
-    main_iface: "ens18"
-    ip_addr: "192.168.0.210"
   kcontrol01.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.236"
