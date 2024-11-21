@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vault-configuration
+  namespace: argocd
+data:
+#  VAULT_ADDR: https://vault.homelab.lan:8200
+#  VAULT_TOKEN: xxxxxxxxxxxxxxxx
+#  AVP_AUTH_TYPE: token
+#  AVP_TYPE: vault
+  VAULT_ADDR: aHR0cHM6Ly92YXVsdC5ob21lbGFiLmxhbjo4MjAw
+  VAULT_TOKEN: xxxxxxxxxxxxxxxx
+  AVP_AUTH_TYPE: dG9rZW4=
+  AVP_TYPE: dmF1bHQ=
+type: Opaque
