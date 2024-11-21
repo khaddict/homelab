@@ -1,5 +1,5 @@
 ```
-kubectl create namespace tools
+kubectl create namespace argocd
 kubectl apply -f cmp-plugin.yaml -n argocd
 helm repo add argo https://argoproj.github.io/argo-helm
 helm repo update

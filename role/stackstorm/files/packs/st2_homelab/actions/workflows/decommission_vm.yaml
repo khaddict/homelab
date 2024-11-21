@@ -25,7 +25,6 @@ vars:
   - delete_a_record: ""
   - delete_ptr_record: ""
   - delete_vm_netbox: ""
-  - delete_role_netbox: ""
   - msg: ""
 
 tasks:
@@ -181,25 +180,11 @@ tasks:
       id: <% int(ctx().vm_id_netbox) %>
     next:
       - when: <% succeeded() %>
-        do: delete_role_netbox
         publish:
           - delete_vm_netbox: "VM deleted on NetBox."
       - when: <% failed() %>
         publish:
           - msg: "Could not delete the virtual machine <% ctx().fqdn %> on NetBox."
-
-  delete_role_netbox:
-    action: netbox.delete.dcim.device_roles
-    input:
-      id: <% int(ctx().role_id) %>
-    next:
-      - when: <% succeeded() %>
-        publish:
-          - delete_role_netbox: "Role deleted on NetBox."
-          - msg: "Everything is finished."
-      - when: <% failed() %>
-        publish:
-          - msg: "Could not delete the role on NetBox."
 
 output:
   - 01_get_vm_id_ip_netbox: <% ctx().get_vm_id_ip_netbox %>
@@ -211,5 +196,4 @@ output:
   - 07_delete_a_record: <% ctx().delete_a_record %>
   - 08_delete_ptr_record: <% ctx().delete_ptr_record %>
   - 09_delete_vm_netbox: <% ctx().delete_vm_netbox %>
-  - 10_delete_role_netbox: <% ctx().delete_role_netbox %>
   - msg: <% ctx().msg %>
