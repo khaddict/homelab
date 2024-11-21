@@ -2,7 +2,8 @@ gateway: "192.168.0.254"
 netmask: "255.255.255.0"
 
 dns_nameservers:
-  powerdns: "192.168.0.222"
+  powerdns_recursor: "192.168.0.223"
+  powerdns_authoritative: "192.168.0.222"
   freebox: "192.168.0.254"
 
 network_conf:

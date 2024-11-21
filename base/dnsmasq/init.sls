@@ -1,5 +1,5 @@
 {% import_yaml 'data/network_confs.yaml' as network_confs %}
-{% set powerdns = network_confs.dns_nameservers['powerdns'] %}
+{% set powerdns_recursor = network_confs.dns_nameservers['powerdns_recursor'] %}
 {% set freebox = network_confs.dns_nameservers['freebox'] %}
 
 install_dnsmasq:
@@ -16,7 +16,7 @@ dnsmasq_config:
     - group: root
     - template: jinja
     - context:
-        powerdns: {{ powerdns }}
+        powerdns_recursor: {{ powerdns_recursor }}
         freebox: {{ freebox }}
     - require:
       - pkg: install_dnsmasq

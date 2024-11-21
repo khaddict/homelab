@@ -1,6 +1,6 @@
 {% import_yaml 'data/network_confs.yaml' as network_confs %}
 
-{% set powerdns_host = network_confs.dns_nameservers['powerdns'] %}
+{% set powerdns_authoritative = network_confs.dns_nameservers['powerdns_authoritative'] %}
 
 install_pdns_recursor:
   pkg.installed:
@@ -15,7 +15,7 @@ pdns_recursor_config:
     - group: root
     - template: jinja
     - context:
-        powerdns_host: {{ powerdns_host }}
+        powerdns_authoritative: {{ powerdns_authoritative }}
     - require:
       - pkg: install_pdns_recursor
 

@@ -6,7 +6,6 @@
 {% set powerdns_api_key = salt['vault'].read_secret('kv/powerdns').powerdns_api_key %}
 {% set powerdns_salt = salt['vault'].read_secret('kv/powerdns').powerdns_salt %}
 {% set powerdns_secret_key = salt['vault'].read_secret('kv/powerdns').powerdns_secret_key %}
-{% set powerdns_host = network_confs.dns_nameservers['powerdns'] %}
 
 include:
   - base.mariadb
