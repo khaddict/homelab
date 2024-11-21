@@ -72,7 +72,7 @@ st2_homelab_folder:
     - include_empty: True
     - template: jinja
     - context:
-        dns: {{ network_confs.dns_nameservers.powerdns }}
+        dns: {{ network_confs.dns_nameservers.powerdns_recursor }}
         netmask: {{ network_confs.netmask }}
         gateway: {{ network_confs.gateway }}
         snapshot_vms_discord_webhook: {{ snapshot_vms_discord_webhook }}
