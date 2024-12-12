@@ -290,6 +290,7 @@ tasks:
     input:
       hosts: "<% ctx().temporary_ip %>"
       username: root
+      timeout: 120
       cmd: |
         mkdir -p /etc/apt/keyrings
         apt install -y curl
