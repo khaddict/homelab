@@ -50,7 +50,12 @@ repoServer:
         - name: custom-tools
           subPath: argocd-vault-plugin
           mountPath: /usr/local/bin/argocd-vault-plugin
-    
+
+        # Vault SSL secret
+        - mountPath: /vault/vault-ssl-secret
+          name: vault-ssl-secret-volume
+          readOnly: true
+
     - name: avp-helm
       command: [/var/run/argocd/argocd-cmp-server]
       image: quay.io/argoproj/argocd:v2.5.3
@@ -70,10 +75,17 @@ repoServer:
         - name: custom-tools
           subPath: argocd-vault-plugin
           mountPath: /usr/local/bin/argocd-vault-plugin
-      
+        - name: vault-ssl-secret-volume
+          mountPath: /vault/vault-ssl-secret
+          readOnly: true
+
   volumes:
     - configMap:
         name: cmp-plugin
       name: cmp-plugin
     - name: custom-tools
       emptyDir: {}
+    - name: vault-ssl-secret-volume
+      secret:
+       defaultMode: 420
+       secretName: vault-ssl-secret

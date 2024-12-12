@@ -1,0 +1,21 @@
+global:
+   enabled: true
+   tlsDisable: false
+injector:
+   enabled: true
+server:
+   extraEnvironmentVars:
+      VAULT_CACERT: /vault/vault-ssl-secret/ca-homelab.crt
+      VAULT_TLSCERT: /vault/vault-ssl-secret/vault.homelab.lan.crt
+      VAULT_TLSKEY: /vault/vault-ssl-secret/vault.homelab.lan.key
+   volumes:
+      - name: vault-ssl-secret-volume
+        secret:
+         defaultMode: 420
+         secretName: vault-ssl-secret
+   volumeMounts:
+      - mountPath: /vault/vault-ssl-secret
+        name: vault-ssl-secret-volume
+        readOnly: true
+   standalone:
+      enabled: false
