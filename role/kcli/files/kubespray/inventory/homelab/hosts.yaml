@@ -1,0 +1,48 @@
+all:
+  hosts:
+    kcontrol01.homelab.lan:
+      ansible_host: 192.168.0.236
+      ip: 192.168.0.236
+      access_ip: 192.168.0.236
+    kcontrol02.homelab.lan:
+      ansible_host: 192.168.0.237
+      ip: 192.168.0.237
+      access_ip: 192.168.0.237
+    kcontrol03.homelab.lan:
+      ansible_host: 192.168.0.238
+      ip: 192.168.0.238
+      access_ip: 192.168.0.238
+    kworker01.homelab.lan:
+      ansible_host: 192.168.0.233
+      ip: 192.168.0.233
+      access_ip: 192.168.0.233
+    kworker02.homelab.lan:
+      ansible_host: 192.168.0.234
+      ip: 192.168.0.234
+      access_ip: 192.168.0.234
+    kworker03.homelab.lan:
+      ansible_host: 192.168.0.235
+      ip: 192.168.0.235
+      access_ip: 192.168.0.235
+  children:
+    kube_control_plane:
+      hosts:
+        kcontrol01.homelab.lan:
+        kcontrol02.homelab.lan:
+        kcontrol03.homelab.lan:
+    kube_node:
+      hosts:
+        kworker01.homelab.lan:
+        kworker02.homelab.lan:
+        kworker03.homelab.lan:
+    etcd:
+      hosts:
+        kcontrol01.homelab.lan:
+        kcontrol02.homelab.lan:
+        kcontrol03.homelab.lan:
+    k8s_cluster:
+      children:
+        kube_control_plane:
+        kube_node:
+    calico_rr:
+      hosts: {}
