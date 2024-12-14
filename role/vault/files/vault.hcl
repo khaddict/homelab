@@ -4,6 +4,7 @@
 # Full configuration options can be found at https://developer.hashicorp.com/vault/docs/configuration
 
 ui = true
+max_lease_ttl = "17532h"
 
 #mlock = true
 #disable_mlock = true
