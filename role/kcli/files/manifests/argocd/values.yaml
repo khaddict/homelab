@@ -51,9 +51,9 @@ repoServer:
           subPath: argocd-vault-plugin
           mountPath: /usr/local/bin/argocd-vault-plugin
 
-        # Vault SSL secret
-        - mountPath: /vault/vault-ssl-secret
-          name: vault-ssl-secret-volume
+        # CA certificate secret
+        - mountPath: /ca
+          name: ca-homelab-volume
           readOnly: true
 
     - name: avp-helm
@@ -75,8 +75,8 @@ repoServer:
         - name: custom-tools
           subPath: argocd-vault-plugin
           mountPath: /usr/local/bin/argocd-vault-plugin
-        - name: vault-ssl-secret-volume
-          mountPath: /vault/vault-ssl-secret
+        - name: ca-homelab-volume
+          mountPath: /ca
           readOnly: true
 
   volumes:
@@ -85,7 +85,7 @@ repoServer:
       name: cmp-plugin
     - name: custom-tools
       emptyDir: {}
-    - name: vault-ssl-secret-volume
+    - name: ca-homelab-volume
       secret:
        defaultMode: 420
-       secretName: vault-ssl-secret
+       secretName: ca-homelab-secret
