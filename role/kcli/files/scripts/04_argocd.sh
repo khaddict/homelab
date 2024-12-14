@@ -16,6 +16,10 @@ kubectl create secret generic vault-configuration \
     --from-literal=AVP_AUTH_TYPE=token \
     --from-literal=AVP_TYPE=vault
 
+kubectl create secret generic ca-homelab-secret \
+    --namespace $ARGOCD_NAMESPACE \
+    --from-file=ca-homelab.crt=/usr/local/share/ca-certificates/ca-homelab.crt
+
 helm install --namespace=$ARGOCD_NAMESPACE argocd argo/argo-cd -f /root/manifests/argocd/values.yaml -f /root/manifests/argocd/overrides.yaml --set configs.params."server\.insecure"=true
 sleep 40
 kubectl apply -f /root/manifests/argocd/argocd-dashboard-ingressroute.yaml --namespace $ARGOCD_NAMESPACE

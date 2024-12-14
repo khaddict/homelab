@@ -15,8 +15,8 @@ kubectl create secret generic traefik-dashboard-secret \
     --namespace $TRAEFIK_NAMESPACE \
     --from-literal=users=$TRAEFIK_DASHBOARD_SECRET_HTPASSWD
 
-kubectl apply -f traefik-dashboard-ingressroute.yaml \
+kubectl apply -f /root/manifests/traefik/traefik-dashboard-ingressroute.yaml \
     --namespace $TRAEFIK_NAMESPACE
 
-kubectl apply -f traefik-dashboard-middleware.yaml \
+kubectl apply -f /root/manifests/traefik/traefik-dashboard-middleware.yaml \
     --namespace $TRAEFIK_NAMESPACE

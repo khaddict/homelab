@@ -5,17 +5,15 @@ injector:
    enabled: true
 server:
    extraEnvironmentVars:
-      VAULT_CACERT: /vault/vault-ssl-secret/ca-homelab.crt
-      VAULT_TLSCERT: /vault/vault-ssl-secret/vault.homelab.lan.crt
-      VAULT_TLSKEY: /vault/vault-ssl-secret/vault.homelab.lan.key
+      VAULT_CACERT: /ca/ca-homelab.crt
    volumes:
-      - name: vault-ssl-secret-volume
+      - name: ca-homelab-volume
         secret:
          defaultMode: 420
-         secretName: vault-ssl-secret
+         secretName: ca-homelab-secret
    volumeMounts:
-      - mountPath: /vault/vault-ssl-secret
-        name: vault-ssl-secret-volume
+      - mountPath: /ca
+        name: ca-homelab-volume
         readOnly: true
    standalone:
       enabled: false
