@@ -66,3 +66,6 @@
 
   'kcli.homelab.lan':
     - role.kcli
+
+  fileserver.homelab.lan:
+    - role.fileserver
