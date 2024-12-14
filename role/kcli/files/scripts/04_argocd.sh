@@ -35,13 +35,15 @@ else
 fi
 
 kubectl apply -f /root/manifests/argocd/argocd-dashboard-ingressroute.yaml --namespace $ARGOCD_NAMESPACE
+kubectl delete secret argocd-initial-admin-secret -n $ARGOCD_NAMESPACE
 
-ARGOCD_INITIAL_PASSWORD=$(kubectl -n $ARGOCD_NAMESPACE get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-
-export ARGOCD_PASSWORD=$(vault kv get -tls-skip-verify -field="argocd_dashboard_password" "kv/kubernetes")
+export ARGOCD_PASSWORD_BCRYPT=$(vault kv get -tls-skip-verify -field="argocd_dashboard_password_bcrypt" "kv/kubernetes")
 
 ARGOCD_SERVER_POD=$(kubectl get pods -n $ARGOCD_NAMESPACE | grep -i "argocd-server" | awk '{print $1}')
 ARGOCD_SERVER=$(kubectl get svc argocd-server -n $ARGOCD_NAMESPACE -o json | jq -r .spec.clusterIP)
 
-kubectl exec $ARGOCD_SERVER_POD -n $ARGOCD_NAMESPACE -- argocd login $ARGOCD_SERVER:443 --username admin --password $ARGOCD_INITIAL_PASSWORD --skip-test-tls --grpc-web --plaintext --insecure
-kubectl exec $ARGOCD_SERVER_POD -n $ARGOCD_NAMESPACE -- argocd account update-password --account admin --current-password $ARGOCD_INITIAL_PASSWORD --new-password $ARGOCD_PASSWORD --server $ARGOCD_SERVER:443
+kubectl -n $ARGOCD_NAMESPACE patch secret argocd-secret \
+  -p '{"stringData": {
+    "admin.password": "'$ARGOCD_PASSWORD_BCRYPT'",
+    "admin.passwordMtime": "'$(date +%FT%T%Z)'"
+  }}'
