@@ -69,6 +69,15 @@ if [[ $RESPONSE == "yes" ]]; then
         echo -e "${GREEN}✔ ArgoCD installation succeeded.${RESET}"
     fi
 
+    # Install khaddict.com
+    /usr/bin/bash /root/scripts/05_khaddict.sh
+    if [[ $? -ne 0 ]]; then
+        echo -e "${RED}✘ Khaddict.com installation failed. Exiting.${RESET}"
+        exit 1
+    else
+        echo -e "${GREEN}✔ Khaddict.com installation succeeded.${RESET}"
+    fi
+
 else
     echo -e "${RED}Please complete the Vault setup before proceeding.${RESET}"
     exit 1
