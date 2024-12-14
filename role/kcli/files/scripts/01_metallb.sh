@@ -16,7 +16,7 @@ if ! helm status --namespace=$METALLB_NAMESPACE metallb &> /dev/null; then
     echo "Installing Metallb Helm chart..."
     helm install --namespace=$METALLB_NAMESPACE metallb metallb/metallb
     echo "Waiting for Metallb components to initialize..."
-    sleep 30
+    sleep 60
 else
     echo "Metallb Helm release already exists, skipping installation."
 fi
