@@ -4,8 +4,13 @@ export ARGOCD_NAMESPACE="argocd"
 export VAULT_TOKEN={{ vault_token }}
 export VAULT_ADDR="https://vault.homelab.lan:8200/"
 
-kubectl create namespace $ARGOCD_NAMESPACE
-kubectl apply -f /root/manifests/argocd/cmp-plugin.yaml -n $ARGOCD_NAMESPACE
+if ! kubectl get namespace $ARGOCD_NAMESPACE &> /dev/null; then
+    echo "Creating namespace $ARGOCD_NAMESPACE..."
+    kubectl create namespace $ARGOCD_NAMESPACE
+else
+    echo "Namespace $ARGOCD_NAMESPACE already exists, skipping creation."
+fi
+
 helm repo add argo https://argoproj.github.io/argo-helm
 helm repo update
 
@@ -20,7 +25,23 @@ kubectl create secret generic ca-homelab-secret \
     --namespace $ARGOCD_NAMESPACE \
     --from-file=ca-homelab.crt=/usr/local/share/ca-certificates/ca-homelab.crt
 
-helm install --namespace=$ARGOCD_NAMESPACE argocd argo/argo-cd -f /root/manifests/argocd/values.yaml -f /root/manifests/argocd/overrides.yaml --set configs.params."server\.insecure"=true
-sleep 40
+if ! helm status --namespace=$ARGOCD_NAMESPACE argocd &> /dev/null; then
+    echo "Installing ArgoCD Helm chart..."
+    helm install --namespace=$ARGOCD_NAMESPACE argocd argo/argo-cd -f /root/manifests/argocd/values.yaml -f /root/manifests/argocd/overrides.yaml --set configs.params."server\.insecure"=true
+    echo "Waiting for ArgoCD components to initialize..."
+    sleep 40
+else
+    echo "ArgoCD Helm release already exists, skipping installation."
+fi
+
 kubectl apply -f /root/manifests/argocd/argocd-dashboard-ingressroute.yaml --namespace $ARGOCD_NAMESPACE
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+
+ARGOCD_INITIAL_PASSWORD=$(kubectl -n $ARGOCD_NAMESPACE get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+
+export ARGOCD_PASSWORD=$(vault kv get -tls-skip-verify -field="argocd_dashboard_password" "kv/kubernetes")
+
+ARGOCD_SERVER_POD=$(kubectl get pods -n $ARGOCD_NAMESPACE | grep -i "argocd-server" | awk '{print $1}')
+ARGOCD_SERVER=$(kubectl get svc argocd-server -n $ARGOCD_NAMESPACE -o json | jq -r .spec.clusterIP)
+
+kubectl exec $ARGOCD_SERVER_POD -n $ARGOCD_NAMESPACE -- argocd login $ARGOCD_SERVER:443 --username admin --password $ARGOCD_INITIAL_PASSWORD --skip-test-tls --grpc-web --plaintext --insecure
+kubectl exec $ARGOCD_SERVER_POD -n $ARGOCD_NAMESPACE -- argocd account update-password --account admin --current-password $ARGOCD_INITIAL_PASSWORD --new-password $ARGOCD_PASSWORD --server $ARGOCD_SERVER:443

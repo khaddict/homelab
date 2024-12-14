@@ -1,4 +1,3 @@
-{% set traefik_dashboard_secret_base64 = salt['vault'].read_secret('kv/kubernetes').traefik_dashboard_secret_base64 %}
 {% set vault_token = salt['vault'].read_secret('kv/kubernetes').vault_token %}
 
 include:
@@ -30,9 +29,6 @@ manifests_directory:
     - name: /root/manifests
     - source: salt://role/kcli/files/manifests
     - include_empty: True
-    - template: jinja
-    - context:
-        traefik_dashboard_secret_base64: {{ traefik_dashboard_secret_base64 }}
 
 scripts_directory:
   file.recurse:
