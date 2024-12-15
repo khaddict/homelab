@@ -1,4 +1,5 @@
 include:
-  - common.salt-minion
-  - common.sources
-
+  - global.common.salt-minion
+  - global.common.sources
+  - global.common.network
+  - base.ifupdown

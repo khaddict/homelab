@@ -13,11 +13,14 @@ minion_config:
     - user: root
     - group: root
 
-install_vault_extension:
-  pip.installed:
-    - name: saltext-vault
-
 service_salt_minion:
   service.running:
     - name: salt-minion
     - enable: True
+
+install_vault_extension:
+  cmd.run:
+    - name: "salt-pip install saltext-vault"
+    - unless: "salt-pip show saltext-vault"
+    - require:
+      - service: service_salt_minion

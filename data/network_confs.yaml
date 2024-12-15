@@ -7,6 +7,9 @@ dns_nameservers:
   freebox: "192.168.0.254"
 
 network_conf:
+  default:
+    main_iface: "ens18"
+    ip_addr: ""
   api.homelab.lan:
     main_iface: "ens18"
     ip_addr: "192.168.0.221"
