@@ -49,13 +49,6 @@ install_salt_cloud:
   pkg.installed:
     - name: salt-cloud
 
-service_salt_cloud:
-  service.running:
-    - name: salt-cloud
-    - enable: True
-    - require:
-      - pkg: install_salt_cloud
-
 install_salt_api:
   pkg.installed:
     - name: salt-api
