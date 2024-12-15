@@ -1,12 +1,12 @@
 ---
-name: deploy_vm
+name: create_vm
 pack: st2_homelab
-description: Deploy a new VM.
+description: Create a new VM.
 runner_type: orquesta
-entry_point: workflows/deploy_vm.yaml
+entry_point: workflows/create_vm.yaml
 enabled: true
 parameters:
-  vm_id:
+  vmid:
     required: true
     type: integer
     description: The VM ID (not an used one).

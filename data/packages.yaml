@@ -13,6 +13,7 @@ common_packages:
   - "lolcat"
   - "homelab-blackbox-exporter"
   - "ca-certificates"
+  - "fping"
 
 purged_packages:
   - openipmi

@@ -21,7 +21,48 @@ saltgui_user:
     - usergroup: True
     - createhome: False
 
+install_salt_master:
+  pkg.installed:
+    - name: salt-master
+
+service_salt_master:
+  service.running:
+    - name: salt-master
+    - enable: True
+    - require:
+      - pkg: install_salt_master
+
+install_salt_ssh:
+  pkg.installed:
+    - name: salt-ssh
+
+install_salt_syndic:
+  pkg.installed:
+    - name: salt-syndic
+
 stop_salt_syndic:
   service.dead:
     - name: salt-syndic
     - enable: False
+
+install_salt_cloud:
+  pkg.installed:
+    - name: salt-cloud
+
+service_salt_cloud:
+  service.running:
+    - name: salt-cloud
+    - enable: True
+    - require:
+      - pkg: install_salt_cloud
+
+install_salt_api:
+  pkg.installed:
+    - name: salt-api
+
+service_salt_api:
+  service.running:
+    - name: salt-api
+    - enable: True
+    - require:
+      - pkg: install_salt_api
