@@ -34,6 +34,7 @@ else
     echo "ArgoCD Helm release already exists, skipping installation."
 fi
 
+kubectl apply -f /root/manifests/argocd/cmp-plugin.yaml --namespace $ARGOCD_NAMESPACE
 kubectl apply -f /root/manifests/argocd/argocd-dashboard-ingressroute.yaml --namespace $ARGOCD_NAMESPACE
 kubectl delete secret argocd-initial-admin-secret -n $ARGOCD_NAMESPACE
 
