@@ -13,6 +13,7 @@ input:
   - vm_role
   - node
   - force
+  - tags
 
 vars:
   - domain: "homelab.lan"
@@ -88,7 +89,7 @@ tasks:
       hosts: <% ctx().proxmox %>
       username: root
       cmd: |
-        qm set <% ctx().vmid %> --ciuser root -ipconfig0 ip=<% ctx().ip_addr %>/24,gw={{ gateway }} --memory <% ctx().memory %> --cores <% ctx().cores %> --serial0 socket --sshkeys <(echo -e "<% ctx().st2_sshkey %>\n<% ctx().saltmaster_sshkey %>")
+        qm set <% ctx().vmid %> --tags <% ctx().tags %> --ciuser root -ipconfig0 ip=<% ctx().ip_addr %>/24,gw={{ gateway }} --memory <% ctx().memory %> --cores <% ctx().cores %> --serial0 socket --sshkeys <(echo -e "<% ctx().st2_sshkey %>\n<% ctx().saltmaster_sshkey %>")
     next:
       - when: <% succeeded() %>
         do: resize_disk
@@ -131,6 +132,7 @@ tasks:
     input:
       hosts: <% ctx().ip_addr %>
       username: root
+      timeout: 90
       cmd: |
         apt install parted -y
         echo -e "Yes\nquit" | parted /dev/sda resizepart 1 100% ---pretend-input-tty
