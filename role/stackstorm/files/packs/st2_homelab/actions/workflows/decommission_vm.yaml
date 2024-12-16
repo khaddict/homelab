@@ -16,15 +16,6 @@ vars:
   - vm_ip_netbox: ""
   - role_id: ""
   - vm_id: ""
-  - get_vm_id_ip_netbox: ""
-  - vm_existence: ""
-  - vm_status: ""
-  - stop_vm: ""
-  - delete_vm: ""
-  - delete_saltkey: ""
-  - delete_a_record: ""
-  - delete_ptr_record: ""
-  - delete_vm_netbox: ""
   - msg: ""
 
 tasks:
@@ -39,7 +30,6 @@ tasks:
           - vm_id_netbox: <% str(result().result.raw.results[0].id) %>
           - vm_ip_netbox: <% str(result().result.raw.results[0].primary_ip.address.split("/")[0]) %>
           - role_id: <% str(result().result.raw.results[0].role.id) %>
-          - get_vm_id_ip_netbox: "VM ID and VM IP successfully retrieved from NetBox."
       - when: <% failed() %>
         publish:
           - msg: "Could not get the VM ID and the VM IP on NetBox."
@@ -56,7 +46,6 @@ tasks:
         do: vm_status
         publish:
           - vm_id: <% result()[ctx().node_fqdn].stdout.split()[0] %>
-          - vm_existence: "VM retrieved on Proxmox."
       - when: <% failed() %>
         publish:
           - msg: "VM doesn't exist."
@@ -71,12 +60,8 @@ tasks:
     next:
       - when: <% succeeded() and result()[ctx().node_fqdn].stdout = "running" %>
         do: stop_vm
-        publish:
-          - vm_status: "VM running and will be stopped."
       - when: <% succeeded() and result()[ctx().node_fqdn].stdout = "stopped" %>
         do: delete_vm
-        publish:
-          - vm_status: "VM stopped."
       - when: <% failed() %>
         publish:
           - msg: "Could not retrieve the VM status."
@@ -91,8 +76,6 @@ tasks:
     next:
       - when: <% succeeded() %>
         do: delete_vm
-        publish:
-          - stop_vm: "VM stopped."
       - when: <% failed() %>
         publish:
           - msg: "Could not stop the VM."
@@ -107,8 +90,6 @@ tasks:
     next:
       - when: <% succeeded() %>
         do: delete_saltkey
-        publish:
-          - delete_vm: "VM destroyed."
       - when: <% failed() %>
         publish:
           - msg: "Could not destroy the VM."
@@ -116,15 +97,13 @@ tasks:
   delete_saltkey:
     action: core.remote
     input:
-      hosts: "<% ctx().saltmaster %>"
+      hosts: <% ctx().saltmaster %>
       username: root
       cmd: |
         salt-key -d <% ctx().fqdn %> -y
     next:
       - when: <% succeeded() %>
         do: delete_a_record
-        publish:
-          - delete_saltkey: "Salt-key deleted."
       - when: <% failed() %>
         publish:
           - msg: "Could not delete the salt-key."
@@ -140,8 +119,6 @@ tasks:
     next:
       - when: <% succeeded() %>
         do: calculate_reverse_dns
-        publish:
-          - delete_a_record: "A record deleted."
       - when: <% failed() %>
         publish:
           - msg: "Could not delete the A record."
@@ -168,8 +145,6 @@ tasks:
     next:
       - when: <% succeeded() %>
         do: delete_vm_netbox
-        publish:
-          - delete_ptr_record: "PTR record deleted."
       - when: <% failed() %>
         publish:
           - msg: "Could not delete the PTR record."
@@ -181,19 +156,10 @@ tasks:
     next:
       - when: <% succeeded() %>
         publish:
-          - delete_vm_netbox: "VM deleted on NetBox."
+          - msg: "Everything is finished."
       - when: <% failed() %>
         publish:
           - msg: "Could not delete the virtual machine <% ctx().fqdn %> on NetBox."
 
 output:
-  - 01_get_vm_id_ip_netbox: <% ctx().get_vm_id_ip_netbox %>
-  - 02_vm_existence: <% ctx().vm_existence %>
-  - 03_vm_status: <% ctx().vm_status %>
-  - 04_stop_vm: <% ctx().stop_vm %>
-  - 05_delete_vm: <% ctx().delete_vm %>
-  - 06_delete_saltkey: <% ctx().delete_saltkey %>
-  - 07_delete_a_record: <% ctx().delete_a_record %>
-  - 08_delete_ptr_record: <% ctx().delete_ptr_record %>
-  - 09_delete_vm_netbox: <% ctx().delete_vm_netbox %>
   - msg: <% ctx().msg %>
