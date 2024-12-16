@@ -7,11 +7,10 @@ entry_point: workflows/decommission_vm.yaml
 enabled: true
 parameters:
   vm_name:
-    description: The VM name.
     required: true
     type: string
+    description: The VM name.
   node:
     required: true
     type: string
-    default: "n1-cls1"
-    description: The Proxmox node.
+    description: The Proxmox node (can be n1-cls1 or n2-cls1).

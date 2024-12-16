@@ -1,7 +1,7 @@
 ---
 name: create_vm
 pack: st2_homelab
-description: Create a new VM.
+description: Create a new Proxmox VM.
 runner_type: orquesta
 entry_point: workflows/create_vm.yaml
 enabled: true
@@ -14,38 +14,44 @@ parameters:
     required: true
     type: string
     description: The VM name.
-  disk_resize:
+  disk:
     required: true
-    type: string
-    default: "+0G"
-    description: The disk resize (by default 20G, if you need 30G, disk_resize=+10G).
-  memory_resize:
+    type: integer
+    default: 20
+    description: The disk size you need (by default 20GiB, if you need 100GiB, disk=100).
+  memory:
     required: true
     type: integer
     default: 1024
-    description: The memory resize (by default 1024MiB, if you need 4096MiB, memory_resize=4096).
-  cores_resize:
+    description: The memory resize (by default 1024MiB, if you need 4096MiB, memory=4096).
+  cores:
     required: true
     type: integer
     default: 1
-    description: The cores resize (by default 1 core, if you need 2 cores, cores_resize=2).
+    description: The cores resize (by default 1 core, if you need 2 cores, cores=2).
   description:
     required: false
     type: string
-    description: The VM description.
+    default: ""
+    description: The VM description (nothing by default).
   template:
     required: true
     type: string
-    description: The VM template to use. Can be focal or bookworm.
+    description: The VM template to use (can be debian-bookworm-template or ubuntu-focal-template).
   ip_addr:
     required: true
     type: string
-    description: The VM IP address.
+    description: The VM IP address (for example 192.168.0.1).
   vm_role:
     required: true
     type: string
-    description: The VM role.
+    description: The VM role on NetBox (for example aptly).
   node:
     required: true
     type: string
-    description: The Proxmox node.
+    description: The Proxmox node (can be n1-cls1 or n2-cls1).
+  force:
+    required: true
+    type: boolean
+    default: false
+    description: Force the workflow and skip the confirmation. You must update the network configuration and proxmox data files before starting the workflow.
