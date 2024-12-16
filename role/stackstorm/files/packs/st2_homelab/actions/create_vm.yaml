@@ -55,3 +55,8 @@ parameters:
     type: boolean
     default: false
     description: Force the workflow and skip the confirmation. You must update the network configuration and proxmox data files before starting the workflow.
+  tags:
+    required: true
+    type: string
+    default: ""
+    description: Proxmox tags (Bookworm,Ansible,Salt).
