@@ -1,6 +1,6 @@
 app: khaddict
 namespace: khaddict
-image: khaddict/khaddict:000815112024
+image: khaddict/khaddict:004817122024
 replicas: 3
 
 deployment:
