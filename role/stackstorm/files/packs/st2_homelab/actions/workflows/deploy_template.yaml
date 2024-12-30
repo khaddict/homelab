@@ -7,7 +7,7 @@ input:
 
 vars:
   - debian_url: "https://cloud.debian.org/images/cloud/<% ctx().codename %>/latest/debian-<% ctx().osrelease %>-generic-amd64.qcow2"
-  - ubuntu_url: "https://cloud-images.ubuntu.com/focal/current/<% ctx().codename %>-server-cloudimg-amd64.img"
+  - ubuntu_url: "https://cloud-images.ubuntu.com/<% ctx().codename %>/current/<% ctx().codename %>-server-cloudimg-amd64.img"
   - storage: "local-lvm"
   - memory: "2048"
   - cores: "1"
