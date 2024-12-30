@@ -2,6 +2,7 @@ include:
   - base.node_exporter
   - .bashrc
   - .ca
+  - .cloud-init
   - .hosts
   - .motd
   - .network
