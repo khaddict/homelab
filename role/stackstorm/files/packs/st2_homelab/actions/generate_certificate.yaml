@@ -14,3 +14,4 @@ parameters:
     type: string
     default: "{{ '{{' }} config_context.ca_password {{ '}}' }}"
     description: The CA password.
+    secret: true

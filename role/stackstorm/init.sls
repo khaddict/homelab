@@ -1,8 +1,6 @@
 {% import_yaml 'data/network_confs.yaml' as network_confs %}
 
 {% set ca_password = salt['vault'].read_secret('kv/ca/ca').ca_password %}
-{% set role_id = salt['vault'].read_secret('kv/stackstorm/vault').role_id %}
-{% set secret_id = salt['vault'].read_secret('kv/stackstorm/vault').secret_id %}
 {% set netbox_api_token = salt['vault'].read_secret('kv/stackstorm/netbox').api_token %}
 {% set messaging_url = salt['vault'].read_secret('kv/stackstorm/st2').messaging_url %}
 {% set database_password = salt['vault'].read_secret('kv/stackstorm/st2').database_password %}
@@ -83,12 +81,6 @@ netbox_folder:
     - source: salt://role/stackstorm/files/packs/netbox
     - include_empty: True
 
-vault_folder:
-  file.recurse:
-    - name: /opt/stackstorm/packs/vault
-    - source: salt://role/stackstorm/files/packs/vault
-    - include_empty: True
-
 powerdns_folder:
   file.recurse:
     - name: /opt/stackstorm/packs/powerdns
@@ -130,18 +122,6 @@ powerdns_configs:
     - context:
         powerdns_api_key: {{ powerdns_api_key }}
 
-vault_configs:
-  file.managed:
-    - name: /opt/stackstorm/configs/vault.yaml
-    - source: salt://role/stackstorm/files/configs/vault.yaml
-    - mode: 660
-    - user: root
-    - group: st2packs
-    - template: jinja
-    - context:
-        role_id: {{ role_id }}
-        secret_id: {{ secret_id }}
-
 # Installations
 
 st2_homelab_installation:
@@ -161,15 +141,6 @@ netbox_installation:
     - onchanges:
       - file: netbox_folder
       - file: netbox_configs
-
-vault_installation:
-  cmd.run:
-    - name: "st2 pack install file:///opt/stackstorm/packs/vault/"
-    - require: 
-      - file: vault_folder
-    - onchanges:
-      - file: vault_folder
-      - file: vault_configs
 
 powerdns_installation:
   cmd.run:
