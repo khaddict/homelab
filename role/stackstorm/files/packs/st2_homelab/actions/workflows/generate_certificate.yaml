@@ -9,6 +9,7 @@ vars:
   - domain: "homelab.lan"
   - fqdn: "<% ctx().vm_name %>.<% ctx().domain %>"
   - ca_vm: "ca.<% ctx().domain %>"
+  - vault_vm: "vault.<% ctx().domain %>"
   - ca_file_name: "ca-homelab"
   - ca_path: "/root/ca/"
   - vm_path: "/root/servers/<% ctx().vm_name %>.<% ctx().domain %>/"
@@ -26,7 +27,7 @@ tasks:
         do: generate_key
       - when: <% failed() %>
         publish:
-          - msg: "Could not create <% ctx().vm_path %>."
+          - msg: "Failed to create directory <% ctx().vm_path %>."
 
   generate_key:
     action: core.remote
@@ -40,7 +41,7 @@ tasks:
         do: generate_csr
       - when: <% failed() %>
         publish:
-          - msg: "Could not generate <% ctx().vm_path %><% ctx().fqdn %>.key"
+          - msg: "Failed to generate the key file <% ctx().vm_path %><% ctx().fqdn %>.key."
 
   generate_csr:
     action: core.remote
@@ -54,7 +55,7 @@ tasks:
         do: generate_crt
       - when: <% failed() %>
         publish:
-          - msg: "Could not generate <% ctx().vm_path %><% ctx().fqdn %>.csr"
+          - msg: "Failed to generate the CSR file <% ctx().vm_path %><% ctx().fqdn %>.csr."
 
   generate_crt:
     action: core.remote
@@ -68,7 +69,7 @@ tasks:
         do: generate_pem
       - when: <% failed() %>
         publish:
-          - msg: "Could not generate <% ctx().vm_path %><% ctx().fqdn %>.crt"
+          - msg: "Failed to generate the certificate file <% ctx().vm_path %><% ctx().fqdn %>.crt."
 
   generate_pem:
     action: core.remote
@@ -82,7 +83,7 @@ tasks:
         do: send_files_to_vm
       - when: <% failed() %>
         publish:
-          - msg: "Could not generate <% ctx().vm_path %><% ctx().fqdn %>.pem"
+          - msg: "Failed to generate the PEM file <% ctx().vm_path %><% ctx().fqdn %>.pem."
 
   send_files_to_vm:
     action: core.remote
@@ -90,15 +91,93 @@ tasks:
       hosts: "<% ctx().ca_vm %>"
       username: root
       cmd: |
-        scp -O <% ctx().vm_path %><% ctx().fqdn %>.crt <% ctx().vm_path %><% ctx().fqdn %>.pem root@<% ctx().vm_path %><% ctx().fqdn %>:/etc/ssl/certs
-        scp -O <% ctx().vm_path %><% ctx().fqdn %>.key root@<% ctx().vm_path %><% ctx().fqdn %>:/etc/ssl/private
+        scp -O <% ctx().vm_path %><% ctx().fqdn %>.crt <% ctx().vm_path %><% ctx().fqdn %>.pem root@<% ctx().fqdn %>:/etc/ssl/certs
+        scp -O <% ctx().vm_path %><% ctx().fqdn %>.key root@<% ctx().fqdn %>:/etc/ssl/private
+    next:
+      - when: <% succeeded() %>
+        do: get_crt
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to transfer <% ctx().vm_path %><% ctx().fqdn %>.[crt|key|pem] to /etc/ssl/[certs|private]."
+
+  get_crt:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        cat <% ctx().vm_path %><% ctx().fqdn %>.crt
+    next:
+      - when: <% succeeded() %>
+        do: get_pem
+        publish:
+          - crt: <% result()[ctx().ca_vm].stdout %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to retrieve the certificate file <% ctx().vm_path %><% ctx().fqdn %>.crt."
+
+  get_pem:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        cat <% ctx().vm_path %><% ctx().fqdn %>.pem
+    next:
+      - when: <% succeeded() %>
+        do: get_key
+        publish:
+          - pem: <% result()[ctx().ca_vm].stdout %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to retrieve the PEM file <% ctx().vm_path %><% ctx().fqdn %>.pem."
+
+  get_key:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        cat <% ctx().vm_path %><% ctx().fqdn %>.key
+    next:
+      - when: <% succeeded() %>
+        do: get_csr
+        publish:
+          - key: <% result()[ctx().ca_vm].stdout %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to retrieve the key file <% ctx().vm_path %><% ctx().fqdn %>.key."
+
+  get_csr:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        cat <% ctx().vm_path %><% ctx().fqdn %>.csr
+    next:
+      - when: <% succeeded() %>
+        do: send_to_vault
+        publish:
+          - csr: <% result()[ctx().ca_vm].stdout %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to retrieve the CSR file <% ctx().vm_path %><% ctx().fqdn %>.csr."
+
+  send_to_vault:
+    action: core.remote
+    input:
+      hosts: "<% ctx().vault_vm %>"
+      username: root
+      cmd: |
+        vault kv put kv/ca/servers/<% ctx().fqdn %> <% ctx().fqdn %>.crt="<% ctx().crt %>" <% ctx().fqdn %>.pem="<% ctx().pem %>" <% ctx().fqdn %>.key="<% ctx().key %>" <% ctx().fqdn %>.csr="<% ctx().csr %>"
     next:
       - when: <% succeeded() %>
         publish:
-          - msg: "<% ctx().vm_path %><% ctx().fqdn %>.[crt|key|pem] generated and sent to /etc/ssl/[certs|private]."
+          - msg: "Certificate files for <% ctx().fqdn %> have been successfully generated, transferred to the VM, and uploaded to Vault."
       - when: <% failed() %>
         publish:
-          - msg: "Could not send <% ctx().vm_path %><% ctx().fqdn %>.[crt|key|pem] to /etc/ssl/[certs|private]."
+          - msg: "Failed to upload <% ctx().vm_path %><% ctx().fqdn %>.[crt|pem|key|csr] to Vault."
 
 output:
   - msg: <% ctx().msg %>
