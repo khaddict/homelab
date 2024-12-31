@@ -27,8 +27,8 @@ storage "file" {
 # HTTPS listener
 listener "tcp" {
   address       = "0.0.0.0:8200"
-  tls_cert_file = "/opt/vault/tls/vault.homelab.lan.crt"
-  tls_key_file  = "/opt/vault/tls/vault.homelab.lan.key"
+  tls_cert_file = "/etc/ssl/certs/vault.homelab.lan.crt"
+  tls_key_file  = "/etc/ssl/private/vault.homelab.lan.key"
 }
 
 # Enterprise license_path
