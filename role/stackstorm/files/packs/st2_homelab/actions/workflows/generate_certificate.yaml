@@ -1,0 +1,104 @@
+version: 1.0
+description: Generate certificate (.crt, .csr, .key, .pem) for a VM, send it to the VM, send it to Vault.
+
+input:
+  - vm_name
+  - ca_password
+
+vars:
+  - domain: "homelab.lan"
+  - fqdn: "<% ctx().vm_name %>.<% ctx().domain %>"
+  - ca_vm: "ca.<% ctx().domain %>"
+  - ca_file_name: "ca-homelab"
+  - ca_path: "/root/ca/"
+  - vm_path: "/root/servers/<% ctx().vm_name %>.<% ctx().domain %>/"
+
+tasks:
+  create_vm_path:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        mkdir -p <% ctx().vm_path %>
+    next:
+      - when: <% succeeded() %>
+        do: generate_key
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not create <% ctx().vm_path %>."
+
+  generate_key:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        openssl genrsa -out <% ctx().vm_path %><% ctx().fqdn %>.key 2048
+    next:
+      - when: <% succeeded() %>
+        do: generate_csr
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not generate <% ctx().vm_path %><% ctx().fqdn %>.key"
+
+  generate_csr:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        openssl req -new -key <% ctx().vm_path %><% ctx().fqdn %>.key -out <% ctx().vm_path %><% ctx().fqdn %>.csr -subj "/C=FR/ST=Ile-de-France/L=Paris/O=Homelab/CN=<% ctx().fqdn %>" -addext "subjectAltName=DNS:<% ctx().fqdn %>,DNS:www.<% ctx().fqdn %>"
+    next:
+      - when: <% succeeded() %>
+        do: generate_crt
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not generate <% ctx().vm_path %><% ctx().fqdn %>.csr"
+
+  generate_crt:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        openssl x509 -req -in <% ctx().vm_path %><% ctx().fqdn %>.csr -CA <% ctx().ca_path %><% ctx().ca_file_name %>.crt -CAkey <% ctx().ca_path %><% ctx().ca_file_name %>.key -CAcreateserial -out <% ctx().vm_path %><% ctx().fqdn %>.crt -days 1095 -sha256 -passin pass:<% ctx().ca_password %> -extfile <(printf "subjectAltName=DNS:<% ctx().fqdn %>,DNS:www.<% ctx().fqdn %>")
+    next:
+      - when: <% succeeded() %>
+        do: generate_pem
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not generate <% ctx().vm_path %><% ctx().fqdn %>.crt"
+
+  generate_pem:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        cat <% ctx().vm_path %><% ctx().fqdn %>.crt <% ctx().vm_path %><% ctx().fqdn %>.key > <% ctx().vm_path %><% ctx().fqdn %>.pem
+    next:
+      - when: <% succeeded() %>
+        do: send_files_to_vm
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not generate <% ctx().vm_path %><% ctx().fqdn %>.pem"
+
+  send_files_to_vm:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        scp -O <% ctx().vm_path %><% ctx().fqdn %>.crt <% ctx().vm_path %><% ctx().fqdn %>.pem root@<% ctx().vm_path %><% ctx().fqdn %>:/etc/ssl/certs
+        scp -O <% ctx().vm_path %><% ctx().fqdn %>.key root@<% ctx().vm_path %><% ctx().fqdn %>:/etc/ssl/private
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - msg: "<% ctx().vm_path %><% ctx().fqdn %>.[crt|key|pem] generated and sent to /etc/ssl/[certs|private]."
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not send <% ctx().vm_path %><% ctx().fqdn %>.[crt|key|pem] to /etc/ssl/[certs|private]."
+
+output:
+  - msg: <% ctx().msg %>

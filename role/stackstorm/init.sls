@@ -1,6 +1,6 @@
 {% import_yaml 'data/network_confs.yaml' as network_confs %}
 
-{% set ca_password = salt['vault'].read_secret('kv/ca').ca_password %}
+{% set ca_password = salt['vault'].read_secret('kv/ca/ca').ca_password %}
 {% set role_id = salt['vault'].read_secret('kv/stackstorm/vault').role_id %}
 {% set secret_id = salt['vault'].read_secret('kv/stackstorm/vault').secret_id %}
 {% set netbox_api_token = salt['vault'].read_secret('kv/stackstorm/netbox').api_token %}

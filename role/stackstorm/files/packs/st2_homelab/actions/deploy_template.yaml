@@ -1,7 +1,7 @@
 name: deploy_template
 pack: st2_homelab
 runner_type: orquesta
-description: Deploy template
+description: Deploy template.
 enabled: true
 entry_point: workflows/deploy_template.yaml
 parameters:

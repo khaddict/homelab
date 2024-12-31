@@ -1,0 +1,16 @@
+name: generate_certificate
+pack: st2_homelab
+runner_type: orquesta
+description: Generate certificate (.crt, .csr, .key, .pem) for a VM, send it to the VM, send it to Vault.
+enabled: true
+entry_point: workflows/generate_certificate.yaml
+parameters:
+  vm_name:
+    required: true
+    type: string
+    description: The VM name.
+  ca_password:
+    required: true
+    type: string
+    default: "{{ '{{' }} config_context.ca_password {{ '}}' }}"
+    description: The CA password.

@@ -1,3 +1,6 @@
+version: 1.0
+description: Deploy template.
+
 input:
   - distribution
   - codename
