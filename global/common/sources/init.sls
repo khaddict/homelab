@@ -19,3 +19,13 @@ homelab_aptly_config:
     - mode: 644
     - user: root
     - group: root
+
+apt_update:
+  cmd.wait:
+    - name: apt-get update
+    - watch:
+        - file: /etc/apt/sources.list
+        - file: /etc/apt/sources.list.d/homelab_aptly.list
+    - require:
+        - file: sources_config
+        - file: homelab_aptly_config

@@ -59,7 +59,7 @@ tasks:
   create_vm:
     action: core.remote
     input:
-      cmd: qm create <% ctx().vmid %> --tags Template --scsi0 <% ctx().storage %>:0,import-from=/var/lib/vz/images/<% ctx().template_name %>.img --efidisk0 "<% ctx().storage %>:0" --ide0 "local:cloudinit" --name "<% ctx().template_name %>" --memory <% ctx().memory %> --cores <% ctx().cores %> --net0 virtio,bridge=vmbr0 --onboot 1 --agent 1
+      cmd: qm create <% ctx().vmid %> --tags Template --scsi0 <% ctx().storage %>:0,import-from=/var/lib/vz/images/<% ctx().template_name %>.img --scsihw virtio-scsi-single --efidisk0 "<% ctx().storage %>:0" --ide0 "local:cloudinit" --name "<% ctx().template_name %>" --memory <% ctx().memory %> --cores <% ctx().cores %> --net0 virtio,bridge=vmbr0 --onboot 1 --agent 1
       hosts: <% ctx().node %>
       username: root
     next:
