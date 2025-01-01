@@ -82,9 +82,3 @@ proxmox_backups:
   recursor.homelab.lan:
     id: 119
     schedule: "sat 15:30"
-  fileserver.homelab.lan:
-    id: 137
-    schedule: "sat 16:00"
-  testing.homelab.lan:
-    id: 101
-    schedule: "sat 16:30"
