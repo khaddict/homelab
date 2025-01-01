@@ -1375,8 +1375,8 @@ rest_cherrypy:
     app: /srv/saltgui/index.html
     static: /srv/saltgui/static
     static_path: /static
-    ssl_crt: /etc/salt/saltmaster.homelab.lan.crt
-    ssl_key: /etc/salt/saltmaster.homelab.lan.key
+    ssl_crt: /etc/ssl/certs/saltmaster.homelab.lan.crt
+    ssl_key: /etc/ssl/private/saltmaster.homelab.lan.key
 
 #####         Saltenv         ######
 ####################################
