@@ -85,3 +85,6 @@ proxmox_backups:
   devstack.homelab.lan:
     id: 101
     schedule: "sat 16:00"
+  assets.homelab.lan:
+    id: 102
+    schedule: "sat 16:00"
