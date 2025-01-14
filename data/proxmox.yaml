@@ -1,4 +1,4 @@
-backup_storage: "ShadowDrive"
+backup_storage: "local"
 
 proxmox_backups:
   api.homelab.lan:

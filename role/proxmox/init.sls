@@ -55,41 +55,11 @@ ldap_pw_file:
     - context:
         ldap_password: {{ ldap_password }}
 
-shadowdrive_directory:
-  file.directory:
-    - name: /mnt/shadowdrive
-    - mode: 755
-    - user: root
-    - group: root
-    - makedirs: True
-
-shadowdrive_rclone_config:
+ksmtuned_conf:
   file.managed:
-    - name: /root/.config/rclone/rclone.conf
-    - source: salt://role/proxmox/files/rclone.conf
-    - user: root
-    - group: root
-    - mode: 600
-    - makedirs: True
-    - template: jinja
-    - context:
-        shadowdrive_user: {{ shadowdrive_user }}
-        shadowdrive_encrypted_password: {{ shadowdrive_encrypted_password }}
-
-shadowdrive_rclone_service:
-  file.managed:
-    - name: /etc/systemd/system/shadowdrive-rclone.service
-    - source: salt://role/proxmox/files/shadowdrive-rclone.service
+    - name: /etc/ksmtuned.conf
+    - source: salt://role/proxmox/files/ksmtuned.conf
     - user: root
     - group: root
     - mode: 644
     - makedirs: True
-
-enable_service_shadowdrive_rclone:
-  service.running:
-    - name: shadowdrive-rclone
-    - enable: True
-    - require:
-      - file: shadowdrive_rclone_service
-    - watch:
-      - file: shadowdrive_rclone_service
