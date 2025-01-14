@@ -5,9 +5,6 @@
 {% set fqdn = grains["fqdn"] %}
 {% set host = grains["host"] %}
 
-include:
-  - base.rclone
-
 user_cfg_file:
   file.managed:
     - name: /etc/pve/user.cfg
