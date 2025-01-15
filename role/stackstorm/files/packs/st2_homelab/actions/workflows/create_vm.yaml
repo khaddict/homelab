@@ -37,7 +37,7 @@ tasks:
       - when: <% succeeded() and ctx().force = false %>
         do: get_approval
       - when: <% succeeded() and ctx().force = true %>
-        do: get_template_id
+        do: check_vm_existence
 
   get_approval:
     action: core.ask
@@ -51,6 +51,21 @@ tasks:
             required: True
     next:
       - when: <% succeeded() %>
+        do: check_vm_existence
+
+  check_vm_existence:
+    action: core.remote
+    input:
+      hosts: <% ctx().proxmox %>
+      username: root
+      cmd: |
+        qm list | grep -w "<% ctx().vm_name %>" > /dev/null; echo $?
+    next:
+      - when: <% succeeded() and result()[ctx().proxmox].stdout = 0 %>
+        do: noop
+        publish:
+          - msg: "VM <% ctx().vm_name %> already exists."
+      - when: <% succeeded() and result()[ctx().proxmox].stdout = 1 %>
         do: get_template_id
 
   get_template_id:

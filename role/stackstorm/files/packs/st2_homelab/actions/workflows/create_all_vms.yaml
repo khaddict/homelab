@@ -1,0 +1,36 @@
+version: 1.0
+description: Deploy VMs from JSON configuration.
+
+vars:
+  - cfg_file: "/opt/stackstorm/data/proxmox_vms.json"
+
+tasks:
+  load_config:
+    action: core.local
+    input:
+      cmd: cat <% ctx().cfg_file %>
+    next:
+      - when: <% succeeded() %>
+        do: deploy_vms
+        publish:
+          - vms: <% result().stdout.proxmox_vms %>
+
+  deploy_vms:
+    with: <% ctx().vms %>
+    action: st2_homelab.create_vm
+    input:
+      vm_name: <% item().vm_name %>
+      vmid: <% item().vmid %>
+      disk: <% item().disk %>
+      memory: <% item().memory %>
+      cores: <% item().cores %>
+      description: <% item().description %>
+      template: <% item().template %>
+      ip_addr: <% item().ip_addr %>
+      vm_role: <% item().vm_role %>
+      node: <% item().node %>
+      force: <% item().force %>
+      tags: <% item().tags %>
+
+output:
+  - msg: "VM deployment process completed."

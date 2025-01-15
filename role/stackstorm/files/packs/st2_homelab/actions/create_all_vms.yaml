@@ -1,0 +1,7 @@
+---
+name: create_all_vms
+pack: st2_homelab
+description: Deploy VMs from JSON configuration.
+runner_type: orquesta
+entry_point: workflows/create_all_vms.yaml
+enabled: true

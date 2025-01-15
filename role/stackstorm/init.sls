@@ -122,6 +122,17 @@ powerdns_configs:
     - context:
         powerdns_api_key: {{ powerdns_api_key }}
 
+# Data
+
+proxmox_vms_data:
+  file.managed:
+    - name: /opt/stackstorm/data/proxmox_vms.json
+    - source: salt://data/proxmox_vms.json
+    - mode: 644
+    - user: root
+    - group: root
+    - makedirs: True
+
 # Installations
 
 st2_homelab_installation:
@@ -149,3 +160,4 @@ powerdns_installation:
       - file: powerdns_folder
     - onchanges:
       - file: powerdns_folder
+      - file: powerdns_configs
