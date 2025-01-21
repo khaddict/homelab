@@ -24,7 +24,7 @@ scrape_configs:
     static_configs:
       - targets:
           {% for host in hosts -%}
-          - '{% if host == "stackstorm.homelab.lan" %}{{ host }}:9200{% else %}{{ host }}:9100{% endif %}'{% if not loop.last %}
+          - '{% if host == "stackstorm" %}{{ host }}.{{ domain }}:9200{% else %}{{ host }}.{{ domain }}:9100{% endif %}'{% if not loop.last %}
           {% endif -%}
           {% endfor %}
     relabel_configs:
@@ -41,7 +41,7 @@ scrape_configs:
     static_configs:
       - targets:
           {% for host in hosts -%}
-          - '{{ host }}'{% if not loop.last %}
+          - '{{ host }}.{{ domain }}'{% if not loop.last %}
           {% endif -%}
           {% endfor %}
     relabel_configs:
@@ -50,16 +50,16 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: prometheus.homelab.lan:9115
+        replacement: prometheus.{{ domain }}:9115
 
   - job_name: elasticsearch
     metrics_path: /metrics
     params:
       target:
-        - 'elk.homelab.lan'
+        - 'elk.{{ domain }}'
     static_configs:
       - targets:
-          - 'elk.homelab.lan:9114'
+          - 'elk.{{ domain }}:9114'
     relabel_configs:
     - source_labels: [__address__]
       regex: '^([^:]+):[0-9]+$'

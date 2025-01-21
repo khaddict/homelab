@@ -1,5 +1,9 @@
 {% set prometheus_version = '2.53.0' %}
-{% import_yaml 'data/network_confs.yaml' as network_confs %}
+{% import_json 'data/main.json' as data %}
+{% set proxmox_nodes = data.proxmox_nodes.keys() | list %}
+{% set proxmox_vms = data.proxmox_vms | map(attribute='vm_name') | list %}
+{% set host_list = proxmox_nodes + proxmox_vms %}
+{% set domain = data.network.domain %}
 
 prometheus_user:
   user.present:
@@ -34,7 +38,8 @@ prometheus_config:
     - group: prometheus
     - template: jinja
     - context:
-        hosts: {{ network_confs.network_conf }}
+        hosts: {{ host_list }}
+        domain: {{ domain }}
     - require:
       - archive: extract_prometheus
 
