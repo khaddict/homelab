@@ -1,6 +1,6 @@
-{% import_yaml 'data/network_confs.yaml' as network_confs %}
+{% import_json 'data/main.json' as data %}
 
-{% set powerdns_authoritative = network_confs.dns_nameservers['powerdns_authoritative'] %}
+{% set powerdns_authoritative = data.network.dns_nameservers.powerdns_authoritative %}
 
 install_pdns_recursor:
   pkg.installed:

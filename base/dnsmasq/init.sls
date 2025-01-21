@@ -1,6 +1,6 @@
-{% import_json 'data/main.json' as network_confs %}
-{% set powerdns_recursor = network_confs.network.dns_nameservers.powerdns_recursor %}
-{% set freebox = network_confs.network.dns_nameservers.freebox %}
+{% import_json 'data/main.json' as data %}
+{% set powerdns_recursor = data.network.dns_nameservers.powerdns_recursor %}
+{% set freebox = data.network.dns_nameservers.freebox %}
 
 install_dnsmasq:
   pkg.installed:

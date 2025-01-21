@@ -1,4 +1,4 @@
-{% import_yaml 'data/network_confs.yaml' as network_confs %}
+{% import_json 'data/main.json' as data %}
 
 {% set ca_password = salt['vault'].read_secret('kv/ca/ca').ca_password %}
 {% set netbox_api_token = salt['vault'].read_secret('kv/stackstorm/netbox').api_token %}
@@ -70,9 +70,9 @@ st2_homelab_folder:
     - include_empty: True
     - template: jinja
     - context:
-        dns: {{ network_confs.dns_nameservers.powerdns_recursor }}
-        netmask: {{ network_confs.netmask }}
-        gateway: {{ network_confs.gateway }}
+        dns: {{ data.network.dns_nameservers.powerdns_recursor }}
+        netmask: {{ data.network.netmask }}
+        gateway: {{ data.network.gateway }}
         snapshot_vms_discord_webhook: {{ snapshot_vms_discord_webhook }}
 
 netbox_folder:
