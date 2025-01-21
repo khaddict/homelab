@@ -1,4 +1,4 @@
-{% import_yaml 'data/network_confs.yaml' as network_confs %}
+{% import_json 'data/main.json' as data %}
 {% set fqdn = grains["fqdn"] %}
 
 replace_resolv_conf:
@@ -12,7 +12,7 @@ replace_resolv_conf:
     - source: salt://global/common/resolv/files/resolv-conf
     - template: jinja
     - context:
-        dns_nameservers: {{ network_confs.dns_nameservers }}
+        dns_nameservers: {{ data.network.dns_nameservers }}
         fqdn: {{ fqdn }}
     - require:
       - file: replace_resolv_conf
