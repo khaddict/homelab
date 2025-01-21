@@ -1,21 +1,34 @@
-{% import_yaml 'data/network_confs.yaml' as network_confs %}
-{% set fqdn = grains["fqdn"] %}
+{% import_json 'data/main.json' as data %}
+{% set domain = data.network.domain %}
+{% set host = grains["host"] %}
 
-{% if fqdn in network_confs.network_conf %}
-{{ fqdn }}_network_conf:
+{% set is_proxmox_node = host is match('n\d-cls\d') %}
+{% set is_vm = host in data.proxmox_vms | map(attribute='vm_name') %}
+
+{% if is_proxmox_node %}
+{{ host }}_network_conf:
   file.managed:
     - name: /etc/network/interfaces
-    {% if fqdn is match('n\d-cls\d\.homelab\.lan') %}
     - source: salt://global/common/network/files/network-conf-proxmox
-    {% else %}
-    - source: salt://global/common/network/files/network-conf
-    {% endif %}
     - template: jinja
     - context:
-        main_iface: {{ network_confs.network_conf[fqdn].main_iface }}
-        ip_addr: {{ network_confs.network_conf[fqdn].ip_addr }}
-        netmask: {{ network_confs.netmask }}
-        gateway: {{ network_confs.gateway }}
+        netmask: {{ data.network.netmask }}
+        gateway: {{ data.network.gateway }}
+        main_iface: {{ data.proxmox_nodes[host].main_iface }}
+        ip_addr: {{ data.proxmox_nodes[host].ip_addr }}
+
+{% elif is_vm %}
+{{ host }}_network_conf:
+  file.managed:
+    - name: /etc/network/interfaces
+    - source: salt://global/common/network/files/network-conf
+    - template: jinja
+    - context:
+        netmask: {{ data.network.netmask }}
+        gateway: {{ data.network.gateway }}
+        main_iface: {{ (data.proxmox_vms | selectattr('vm_name', 'equalto', host) | first).main_iface }}
+        ip_addr: {{ (data.proxmox_vms | selectattr('vm_name', 'equalto', host) | first).ip_addr }}
+
 {% else %}
 network_conf_absent_warning:
   test.show_notification:

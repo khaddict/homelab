@@ -6,16 +6,17 @@
       "freebox": "192.168.0.254"
     },
     "gateway": "192.168.0.254",
-    "netmask": "255.255.255.0"
+    "netmask": "255.255.255.0",
+    "domain": "homelab.lan"
   },
 
   "proxmox_nodes": {
-    "n1-cls1.homelab.lan": {
+    "n1-cls1": {
       "main_iface": "enp87s0",
       "ip_addr": "192.168.0.200"
     },
 
-    "n2-cls1.homelab.lan": {
+    "n2-cls1": {
       "main_iface": "enp87s0",
       "ip_addr": "192.168.0.201"
     }
