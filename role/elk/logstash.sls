@@ -1,7 +1,8 @@
 {% set elastic_password = salt['vault'].read_secret('kv/elk').elastic_password %}
-{% import_yaml 'data/network_confs.yaml' as network_confs %}
-{% set hosts = network_confs.network_conf %}
-{% set host_list = hosts.keys() | list %}
+{% import_json 'data/main.json' as data %}
+{% set proxmox_nodes = data.proxmox_nodes.keys() | list %}
+{% set proxmox_vms = data.proxmox_vms | map(attribute='vm_name') | list %}
+{% set host_list = proxmox_nodes + proxmox_vms %}
 {% set first_host = host_list[0].split('.')[0] %}
 {% set other_hosts = host_list[1:] %}
 
