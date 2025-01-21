@@ -4,68 +4,71 @@
     - global
 
 # Per role configuration
-  'n?-cls?.homelab.lan':
-    - role.proxmox
-
-  'saltmaster.homelab.lan':
-    - role.saltmaster
-
-  'main.homelab.lan':
-    - role.main
-
-  'stackstorm.homelab.lan':
-    - role.stackstorm
-
-  'netbox.homelab.lan':
-    - role.netbox
-
-  'vault.homelab.lan':
-    - role.vault
-
-  'ldap.homelab.lan':
-    - role.ldap
-
-  'prometheus.homelab.lan':
-    - role.prometheus
-
-  'ca.homelab.lan':
-    - role.ca
-
-  'ntp.homelab.lan':
-    - role.ntp
-
-  'grafana.homelab.lan':
-    - role.grafana
-
-  'elk.homelab.lan':
-    - role.elk
-
   'api.homelab.lan':
     - role.api
-
-  'pdns.homelab.lan':
-    - role.pdns
-
-  'recursor.homelab.lan':
-    - role.recursor
-
-  'docker.homelab.lan':
-    - role.docker
-
-  'build.homelab.lan':
-    - role.build
 
   'aptly.homelab.lan':
     - role.aptly
 
-  'revproxy.homelab.lan':
-    - role.revproxy
+  'assets.homelab.lan':
+    - role.assets
 
-  'kcontrol0?.homelab.lan':
-    - role.kcontrol
+  'build.homelab.lan':
+    - role.build
+
+  'ca.homelab.lan':
+    - role.ca
+
+  'docker.homelab.lan':
+    - role.docker
+
+  'elk.homelab.lan':
+    - role.elk
+
+  'grafana.homelab.lan':
+    - role.grafana
 
   'kcli.homelab.lan':
     - role.kcli
 
-  fileserver.homelab.lan:
-    - role.fileserver
+  'kcontrol0?.homelab.lan':
+    - role.kcontrol
+
+  'ldap.homelab.lan':
+    - role.ldap
+
+  'main.homelab.lan':
+    - role.main
+
+  'n?-cls?.homelab.lan':
+    - role.proxmox
+
+  'netbox.homelab.lan':
+    - role.netbox
+
+  'ntp.homelab.lan':
+    - role.ntp
+
+  'pdns.homelab.lan':
+    - role.pdns
+
+  'prometheus.homelab.lan':
+    - role.prometheus
+
+  'recursor.homelab.lan':
+    - role.recursor
+
+  'revproxy.homelab.lan':
+    - role.revproxy
+
+  'saltmaster.homelab.lan':
+    - role.saltmaster
+
+  'stackstorm.homelab.lan':
+    - role.stackstorm
+
+  'vault.homelab.lan':
+    - role.vault
+
+  'work.homelab.lan':
+    - role.work
