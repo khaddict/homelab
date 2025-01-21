@@ -1,5 +1,3 @@
-{% import_yaml 'data/network_confs.yaml' as network_confs %}
-
 {% set osarch = grains["osarch"] %}
 {% set oscodename = grains["oscodename"] %}
 {% set powerdns_db_password = salt['vault'].read_secret('kv/powerdns').powerdns_db_password %}
