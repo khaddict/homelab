@@ -2,7 +2,7 @@ version: 1.0
 description: Deploy VMs from JSON configuration.
 
 vars:
-  - cfg_file: "/opt/stackstorm/data/proxmox_vms.json"
+  - cfg_file: "/opt/stackstorm/data/main.json"
 
 tasks:
   load_config:

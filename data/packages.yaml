@@ -14,6 +14,7 @@ common_packages:
   - "homelab-blackbox-exporter"
   - "ca-certificates"
   - "fping"
+  - "tcpdump"
 
 purged_packages:
   - openipmi

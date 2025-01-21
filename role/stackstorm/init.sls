@@ -124,10 +124,10 @@ powerdns_configs:
 
 # Data
 
-proxmox_vms_data:
+main_data:
   file.managed:
-    - name: /opt/stackstorm/data/proxmox_vms.json
-    - source: salt://data/proxmox_vms.json
+    - name: /opt/stackstorm/data/main.json
+    - source: salt://data/main.json
     - mode: 644
     - user: root
     - group: root
