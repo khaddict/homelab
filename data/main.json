@@ -10,6 +10,10 @@
     "domain": "homelab.lan"
   },
 
+  "proxmox_backups": {
+    "backup_storage": "local"
+  },
+
   "proxmox_nodes": {
     "n1-cls1": {
       "main_iface": "enp87s0",

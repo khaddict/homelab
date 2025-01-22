@@ -1,7 +1,7 @@
 {% set ldap_password = salt['vault'].read_secret('kv/ldap').proxmox_pass %}
 {% set shadowdrive_user = salt['vault'].read_secret('kv/proxmox').shadowdrive_user %}
 {% set shadowdrive_encrypted_password = salt['vault'].read_secret('kv/proxmox').shadowdrive_encrypted_password %}
-{% import_yaml 'data/proxmox.yaml' as proxmox %}
+{% import_json 'data/main.json' as data %}
 {% set fqdn = grains["fqdn"] %}
 {% set host = grains["host"] %}
 
@@ -33,11 +33,11 @@ jobs_cfg_file:
     - makedirs: True
     - template: jinja
     - context:
-        backup_storage: {{ proxmox.backup_storage }}
+        backup_storage: {{ data.proxmox_backups.backup_storage }}
         proxmox_backups:
-          {% for hostname, data in proxmox.proxmox_backups.items() %}
-          - id: {{ data.id }}
-            schedule: {{ data.schedule }}
+          {% for vm in data.proxmox_vms %}
+          - id: {{ vm.vmid }}
+            schedule: {{ vm.schedule }}
           {% endfor %}
 
 ldap_pw_file:
