@@ -474,6 +474,38 @@
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
       "schedule": "monthly"
+    },
+    {
+      "vm_name": "ssh-server",
+      "vmid": "101",
+      "disk": "20",
+      "memory": "2048",
+      "cores": "1",
+      "description": "Project EASYSSH Server",
+      "template": "debian-bookworm-template",
+      "ip_addr": "192.168.0.202",
+      "vm_role": "easyssh",
+      "node": "n1-cls1",
+      "force": "true",
+      "tags": "Bookworm,Salt",
+      "main_iface": "ens18",
+      "schedule": "monthly"
+    },
+    {
+      "vm_name": "ssh-client",
+      "vmid": "107",
+      "disk": "20",
+      "memory": "2048",
+      "cores": "1",
+      "description": "Project EASYSSH Client",
+      "template": "debian-bookworm-template",
+      "ip_addr": "192.168.0.204",
+      "vm_role": "easyssh",
+      "node": "n1-cls1",
+      "force": "true",
+      "tags": "Bookworm,Salt",
+      "main_iface": "ens18",
+      "schedule": "monthly"
     }
   ]
 }
