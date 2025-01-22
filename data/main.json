@@ -69,7 +69,7 @@
       "template": "debian-bookworm-template",
       "ip_addr": "192.168.0.203",
       "vm_role": "assets",
-      "node": "n2-cls1",
+      "node": "n1-cls1",
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
