@@ -1,0 +1,200 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.config_map.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.app }}
+data:
+  kubernetes.yaml: |
+    mode: cluster
+  settings.yaml: |
+    title: homelab.lan
+    background:
+      image: https://github.com/khaddict/homelab/blob/main/role/kcli/files/manifests/homepage/images/khazix.jpg?raw=true
+      opacity: 30
+    favicon: https://github.com/khaddict/homelab/blob/main/role/kcli/files/manifests/homepage/images/cool.png?raw=true
+    language: en
+    headerStyle: boxed
+    quicklaunch:
+      searchDescriptions: true
+      hideInternetSearch: false
+      showSearchSuggestions: true
+      hideVisitURL: true
+      provider: google
+    hideVersion: true
+  custom.css: ""
+  custom.js: ""
+  bookmarks.yaml: |
+    - Developer:
+        - Github:
+            - icon: github
+              href: https://github.com/khaddict
+              description: khaddict
+        - khaddict.com:
+            - icon: https://github.com/khaddict/homelab/blob/main/role/kcli/files/manifests/homepage/images/cool.png?raw=true
+              href: https://khaddict.com
+              description: khaddict.com
+    - Socials:
+        - Discord:
+            - icon: discord
+              description: khaddict
+        - Reddit:
+            - icon: reddit
+              href: https://www.reddit.com/user/khadddict/
+              description: khadddict
+  services.yaml: |
+    - Virtualization:
+        - Proxmox:
+            icon: proxmox
+            href: https://n1-cls1.homelab.lan:8006
+            description: n1-cls1.homelab.lan
+            widget:
+              type: proxmox
+              url: https://n1-cls1.homelab.lan:8006
+              username: api@pam!homepage
+              password: {{ .Values.services.proxmox.password }}
+              node: n1-cls1
+        - Proxmox:
+            icon: proxmox.png
+            href: https://n2-cls1.homelab.lan:8006
+            description: n2-cls1.homelab.lan
+            widget:
+              type: proxmox
+              url: https://n2-cls1.homelab.lan:8006
+              username: api@pam!homepage
+              password: {{ .Values.services.proxmox.password }}
+              node: n2-cls1
+    - Configuration Management & Automation:
+        - Saltmaster:
+            icon: https://github.com/khaddict/homelab/blob/main/role/kcli/files/manifests/homepage/images/saltstack.png?raw=true
+            href: https://saltmaster.homelab.lan:8000
+            description: saltmaster.homelab.lan
+        - Stackstorm:
+            icon: https://github.com/khaddict/homelab/blob/main/role/kcli/files/manifests/homepage/images/stackstorm.png?raw=true
+            href: https://stackstorm.homelab.lan
+            description: stackstorm.homelab.lan
+    - Kubernetes tools:
+        - ArgoCD:
+            icon: argo-cd
+            href: https://argocd.homelab.lan
+            description: argocd.homelab.lan
+            widget:
+              type: argocd
+              url: https://argocd.homelab.lan
+              key: {{ .Values.services.argocd.password }}
+        - Traefik:
+            icon: traefik
+            href: https://traefik.homelab.lan
+            description: https://traefik.homelab.lan
+            widget:
+              type: traefik
+              url: https://traefik.homelab.lan
+              username: admin
+              password: {{ .Values.services.traefik.password }}
+    - Monitoring:
+        - Prometheus:
+            icon: prometheus
+            href: http://prometheus.homelab.lan:9090
+            description: prometheus.homelab.lan
+            widget:
+              type: prometheus
+              url: http://prometheus.homelab.lan:9090
+        - Alert Manager:
+            icon: alertmanager
+            href: http://alertmanager.homelab.lan:9093
+            description: alertmanager.homelab.lan
+        - Grafana:
+            icon: grafana
+            href: https://grafana.homelab.lan:3000
+            description: grafana.homelab.lan
+    - Logs:
+        - ELK Stack:
+            icon: elastic
+            href: https://elk.homelab.lan:5601
+            description: elk.homelab.lan
+    - Management & network:
+        - TP-Link:
+            icon: tp-link
+            href: http://tp-link.homelab.lan
+            description: tp-link.homelab.lan
+        - Freebox:
+            icon: freebox-revolution
+            href: http://mafreebox.freebox.fr
+            description: mafreebox.freebox.fr
+        - PowerDNS:
+            icon: powerdns
+            href: http://pdns.homelab.lan
+            description: pdns.homelab.lan
+        - LDAP:
+            icon: phpldapadmin
+            href: http://ldap.homelab.lan/phpldapadmin
+            description: ldap.homelab.lan
+    - Tools:
+        - Orquesta Evaluator:
+            icon: https://github.com/khaddict/homelab/blob/main/role/kcli/files/manifests/homepage/images/yaql.png?raw=true
+            href: http://orquestaevaluator.homelab.lan:5000
+            description: orquestaevaluator.homelab.lan
+        - YAML Lint:
+            icon: https://github.com/khaddict/homelab/blob/main/role/kcli/files/manifests/homepage/images/yaml.png?raw=true
+            href: https://www.yamllint.com
+            description: yamllint.com
+        - JSON Lint:
+            icon: https://github.com/khaddict/homelab/blob/main/role/kcli/files/manifests/homepage/images/json.png?raw=true
+            href: https://jsonlint.com
+            description: jsonlint.com
+        - Regex101:
+            icon: https://github.com/khaddict/homelab/blob/main/role/kcli/files/manifests/homepage/images/regex101.png?raw=true
+            href: https://regex101.com
+            description: regex101.com
+    - Inventory & Vault:
+        - NetBox:
+            icon: netbox
+            href: https://netbox.homelab.lan
+            description: netbox.homelab.lan
+        - Vault:
+            icon: hashicorp-vault
+            href: https://vault.homelab.lan:8200
+            description: vault.homelab.lan
+    - API:
+        - FastAPI:
+            icon: https://github.com/khaddict/homelab/blob/main/role/kcli/files/manifests/homepage/images/fastapi.png?raw=true
+            href: https://api.homelab.lan/docs
+            description: api.homelab.lan
+    - Documentation:
+        - Wiki.js:
+            icon: wikijs
+            href: https://wiki.homelab.lan
+            description: wiki.homelab.lan
+  widgets.yaml: |
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: "cluster"
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+    - resources:
+        cpu: true
+        memory: true
+        uptime: true
+        refresh: 3000
+        network: true
+    - search:
+        provider: google
+        showSearchSuggestions: true
+        target: _blank
+    - openmeteo:
+        label: Paris
+        latitude: 48.8566
+        longitude: 2.3522
+        units: metric
+        cache: 5
+        format:
+          maximumFractionDigits: 1
+  docker.yaml: ""

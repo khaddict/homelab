@@ -24,7 +24,7 @@ else
 fi
 
 export TRAEFIK_DASHBOARD_SECRET=$(vault kv get -tls-skip-verify -field="traefik_dashboard_secret" "kv/kubernetes")
-export TRAEFIK_DASHBOARD_SECRET_HTPASSWD=$(htpasswd -nb admin "$TRAEFIK_DASHBOARD_SECRET" | base64)
+export TRAEFIK_DASHBOARD_SECRET_HTPASSWD=$(htpasswd -nb admin "$TRAEFIK_DASHBOARD_SECRET")
 
 kubectl create secret generic traefik-dashboard-secret \
     --namespace $TRAEFIK_NAMESPACE \

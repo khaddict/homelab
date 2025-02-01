@@ -26,7 +26,7 @@ data:
         command:
           - sh
           - "-c"
-          - "kustomize build . | argocd-vault-plugin generate -"
+          - "kustomize build . | argocd-vault-plugin generate -s vault-configuration -"
       lockRepo: false
   avp-helm.yaml: |
     ---
@@ -42,15 +42,22 @@ data:
             - sh
             - "-c"
             - "find . -name 'Chart.yaml' && find . -name 'values.yaml'"
+      init:
+        command:
+          - sh
+          - "-c"
+          - |
+            helm dependency build;
       generate:
         command:
           - bash
           - "-c"
           - |
-            helm template $ARGOCD_APP_NAME -n $ARGOCD_APP_NAMESPACE -f <(echo "$ARGOCD_ENV_HELM_VALUES") . |
+            helm template $ARGOCD_APP_NAME -n $ARGOCD_APP_NAMESPACE ${ARGOCD_ENV_HELM_ARGS} . |
             argocd-vault-plugin generate -s vault-configuration -
       lockRepo: false
   avp.yaml: |
+    ---
     apiVersion: argoproj.io/v1alpha1
     kind: ConfigManagementPlugin
     metadata:
@@ -71,4 +78,3 @@ data:
           - "-s"
           - "vault-configuration"
       lockRepo: false
----

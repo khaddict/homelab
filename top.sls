@@ -70,5 +70,8 @@
   'vault.homelab.lan':
     - role.vault
 
+  'wiki.homelab.lan':
+    - role.wiki
+
   'work.homelab.lan':
     - role.work
