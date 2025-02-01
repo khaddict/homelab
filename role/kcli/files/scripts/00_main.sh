@@ -78,6 +78,15 @@ if [[ $RESPONSE == "yes" ]]; then
         echo -e "${GREEN}✔ Khaddict.com installation succeeded.${RESET}"
     fi
 
+    # Install homepage
+    /usr/bin/bash /root/scripts/06_homepage.sh
+    if [[ $? -ne 0 ]]; then
+        echo -e "${RED}✘ Homepage installation failed. Exiting.${RESET}"
+        exit 1
+    else
+        echo -e "${GREEN}✔ Homepage installation succeeded.${RESET}"
+    fi
+
 else
     echo -e "${RED}Please complete the Vault setup before proceeding.${RESET}"
     exit 1

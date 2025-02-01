@@ -1,0 +1,17 @@
+name: generate_certificate_k8s
+pack: st2_homelab
+runner_type: orquesta
+description: Generate certificate (.crt, .csr, .key, .pem) for a Kubernetes application & send it to Vault.
+enabled: true
+entry_point: workflows/generate_certificate_k8s.yaml
+parameters:
+  app_name:
+    required: true
+    type: string
+    description: The Kubernetes application name.
+  ca_password:
+    required: true
+    type: string
+    default: "{{ '{{' }} config_context.ca_password {{ '}}' }}"
+    description: The CA password.
+    secret: true

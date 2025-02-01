@@ -38,3 +38,17 @@ scripts_directory:
     - template: jinja
     - context:
         vault_token: {{ vault_token }}
+
+# Charts
+
+homepage_chart:
+  file.recurse:
+    - name: /root/helms/homepage
+    - source: salt://role/kcli/files/homepage/helm_chart
+    - include_empty: True
+
+khaddict.com_chart:
+  file.recurse:
+    - name: /root/helms/khaddict.com
+    - source: salt://role/kcli/files/khaddict.com/helm_chart
+    - include_empty: True

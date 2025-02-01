@@ -4,9 +4,9 @@ image: khaddict/khaddict:004817122024
 replicas: 3
 
 deployment:
-  name: khaddict-deployment
+  name: khaddict
 
 service:
-  name: khaddict-service
-  type: LoadBalancer
+  name: khaddict
+  type: ClusterIP
   port: 80

@@ -1,0 +1,168 @@
+version: 1.0
+description: Generate certificate (.crt, .csr, .key, .pem) for a Kubernetes application & send it to Vault.
+
+input:
+  - app_name
+  - ca_password
+
+vars:
+  - domain: "homelab.lan"
+  - fqdn: "<% ctx().app_name %>.<% ctx().domain %>"
+  - ca_vm: "ca.<% ctx().domain %>"
+  - vault_vm: "vault.<% ctx().domain %>"
+  - ca_file_name: "ca-homelab"
+  - ca_path: "/root/ca/"
+  - app_path: "/root/applications/<% ctx().app_name %>.<% ctx().domain %>/"
+
+tasks:
+  create_app_path:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        mkdir -p <% ctx().app_path %>
+    next:
+      - when: <% succeeded() %>
+        do: generate_key
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to create directory <% ctx().app_path %>."
+
+  generate_key:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        openssl genrsa -out <% ctx().app_path %><% ctx().fqdn %>.key 2048
+    next:
+      - when: <% succeeded() %>
+        do: generate_csr
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to generate the key file <% ctx().app_path %><% ctx().fqdn %>.key."
+
+  generate_csr:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        openssl req -new -key <% ctx().app_path %><% ctx().fqdn %>.key -out <% ctx().app_path %><% ctx().fqdn %>.csr -subj "/C=FR/ST=Ile-de-France/L=Paris/O=Homelab/CN=<% ctx().fqdn %>" -addext "subjectAltName=DNS:<% ctx().fqdn %>,DNS:www.<% ctx().fqdn %>"
+    next:
+      - when: <% succeeded() %>
+        do: generate_crt
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to generate the CSR file <% ctx().app_path %><% ctx().fqdn %>.csr."
+
+  generate_crt:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        openssl x509 -req -in <% ctx().app_path %><% ctx().fqdn %>.csr -CA <% ctx().ca_path %><% ctx().ca_file_name %>.crt -CAkey <% ctx().ca_path %><% ctx().ca_file_name %>.key -CAcreateserial -out <% ctx().app_path %><% ctx().fqdn %>.crt -days 1095 -sha256 -passin pass:<% ctx().ca_password %> -extfile <(printf "subjectAltName=DNS:<% ctx().fqdn %>,DNS:www.<% ctx().fqdn %>")
+    next:
+      - when: <% succeeded() %>
+        do: generate_pem
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to generate the certificate file <% ctx().app_path %><% ctx().fqdn %>.crt."
+
+  generate_pem:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        cat <% ctx().app_path %><% ctx().fqdn %>.crt <% ctx().app_path %><% ctx().fqdn %>.key > <% ctx().app_path %><% ctx().fqdn %>.pem
+    next:
+      - when: <% succeeded() %>
+        do: get_crt
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to generate the PEM file <% ctx().app_path %><% ctx().fqdn %>.pem."
+
+  get_crt:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        cat <% ctx().app_path %><% ctx().fqdn %>.crt
+    next:
+      - when: <% succeeded() %>
+        do: get_pem
+        publish:
+          - crt: <% result()[ctx().ca_vm].stdout %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to retrieve the certificate file <% ctx().app_path %><% ctx().fqdn %>.crt."
+
+  get_pem:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        cat <% ctx().app_path %><% ctx().fqdn %>.pem
+    next:
+      - when: <% succeeded() %>
+        do: get_key
+        publish:
+          - pem: <% result()[ctx().ca_vm].stdout %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to retrieve the PEM file <% ctx().app_path %><% ctx().fqdn %>.pem."
+
+  get_key:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        cat <% ctx().app_path %><% ctx().fqdn %>.key
+    next:
+      - when: <% succeeded() %>
+        do: get_csr
+        publish:
+          - key: <% result()[ctx().ca_vm].stdout %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to retrieve the key file <% ctx().app_path %><% ctx().fqdn %>.key."
+
+  get_csr:
+    action: core.remote
+    input:
+      hosts: "<% ctx().ca_vm %>"
+      username: root
+      cmd: |
+        cat <% ctx().app_path %><% ctx().fqdn %>.csr
+    next:
+      - when: <% succeeded() %>
+        do: send_to_vault
+        publish:
+          - csr: <% result()[ctx().ca_vm].stdout %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to retrieve the CSR file <% ctx().app_path %><% ctx().fqdn %>.csr."
+
+  send_to_vault:
+    action: core.remote
+    input:
+      hosts: "<% ctx().vault_vm %>"
+      username: root
+      cmd: |
+        vault kv put kv/ca/applications/<% ctx().fqdn %> <% ctx().fqdn %>.crt="<% ctx().crt %>" <% ctx().fqdn %>.pem="<% ctx().pem %>" <% ctx().fqdn %>.key="<% ctx().key %>" <% ctx().fqdn %>.csr="<% ctx().csr %>"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - msg: "Certificate files for <% ctx().fqdn %> have been successfully generated and uploaded to Vault."
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to upload <% ctx().app_path %><% ctx().fqdn %>.[crt|pem|key|csr] to Vault."
+
+output:
+  - msg: <% ctx().msg %>
