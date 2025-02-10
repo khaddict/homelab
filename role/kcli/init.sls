@@ -24,10 +24,18 @@ kcli_bashrc:
     - user: root
     - group: root
 
-manifests_directory:
+homelab_app_of_apps:
+  file.managed:
+    - name: /root/homelab-app-of-apps.yaml
+    - source: salt://role/kcli/files/homelab-app-of-apps.yaml
+    - mode: 644
+    - user: root
+    - group: root
+
+apps_directory:
   file.recurse:
-    - name: /root/manifests
-    - source: salt://role/kcli/files/manifests
+    - name: /root/apps
+    - source: salt://role/kcli/files/apps
     - include_empty: True
 
 scripts_directory:
@@ -38,17 +46,3 @@ scripts_directory:
     - template: jinja
     - context:
         vault_token: {{ vault_token }}
-
-# Charts
-
-homepage_chart:
-  file.recurse:
-    - name: /root/helms/homepage
-    - source: salt://role/kcli/files/homepage/helm_chart
-    - include_empty: True
-
-khaddict.com_chart:
-  file.recurse:
-    - name: /root/helms/khaddict.com
-    - source: salt://role/kcli/files/khaddict.com/helm_chart
-    - include_empty: True

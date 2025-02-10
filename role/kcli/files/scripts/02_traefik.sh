@@ -14,6 +14,17 @@ else
     echo "Namespace $TRAEFIK_NAMESPACE already exists, skipping creation."
 fi
 
+export TRAEFIK_CERT_SECRET=$(vault kv get -tls-skip-verify -field="traefik.homelab.lan.crt" "kv/ca/applications/traefik.homelab.lan")
+export TRAEFIK_KEY_SECRET=$(vault kv get -tls-skip-verify -field="traefik.homelab.lan.key" "kv/ca/applications/traefik.homelab.lan")
+
+echo "$TRAEFIK_CERT_SECRET" > /tmp/traefik.crt
+echo "$TRAEFIK_KEY_SECRET" > /tmp/traefik.key
+
+kubectl create secret tls traefik-cert-secret \
+    --namespace $TRAEFIK_NAMESPACE \
+    --cert=/tmp/traefik.crt \
+    --key=/tmp/traefik.key
+
 if ! helm status --namespace=$TRAEFIK_NAMESPACE traefik &> /dev/null; then
     echo "Installing Traefik Helm chart..."
     helm install traefik traefik/traefik --namespace $TRAEFIK_NAMESPACE --set dashboard.enabled=true --set service.type=LoadBalancer
@@ -30,8 +41,8 @@ kubectl create secret generic traefik-dashboard-secret \
     --namespace $TRAEFIK_NAMESPACE \
     --from-literal=users=$TRAEFIK_DASHBOARD_SECRET_HTPASSWD
 
-kubectl apply -f /root/manifests/traefik/traefik-dashboard-ingressroute.yaml \
+kubectl apply -f /root/apps/traefik/traefik_ingressroute.yaml \
     --namespace $TRAEFIK_NAMESPACE
 
-kubectl apply -f /root/manifests/traefik/traefik-dashboard-middleware.yaml \
+kubectl apply -f /root/apps/traefik/traefik_middleware.yaml \
     --namespace $TRAEFIK_NAMESPACE

@@ -22,5 +22,5 @@ else
 fi
 
 echo "Applying Metallb configurations..."
-kubectl apply -f /root/manifests/metallb/metallb-homelab-pool.yaml --namespace $METALLB_NAMESPACE
-kubectl apply -f /root/manifests/metallb/metallb-homelab-l2.yaml --namespace $METALLB_NAMESPACE
+kubectl apply -f /root/apps/metallb/metallb_pool.yaml --namespace $METALLB_NAMESPACE
+kubectl apply -f /root/apps/metallb/metallb_l2.yaml --namespace $METALLB_NAMESPACE
