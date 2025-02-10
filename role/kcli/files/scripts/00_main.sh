@@ -51,40 +51,13 @@ if [[ $RESPONSE == "yes" ]]; then
         echo -e "${GREEN}✔ Traefik installation succeeded.${RESET}"
     fi
 
-    # Install tools
-    /usr/bin/bash /root/scripts/03_tools.sh
-    if [[ $? -ne 0 ]]; then
-        echo -e "${RED}✘ Tools installation failed. Exiting.${RESET}"
-        exit 1
-    else
-        echo -e "${GREEN}✔ Tools installation succeeded.${RESET}"
-    fi
-
     # Install argocd
-    /usr/bin/bash /root/scripts/04_argocd.sh
+    /usr/bin/bash /root/scripts/03_argocd.sh
     if [[ $? -ne 0 ]]; then
         echo -e "${RED}✘ ArgoCD installation failed. Exiting.${RESET}"
         exit 1
     else
         echo -e "${GREEN}✔ ArgoCD installation succeeded.${RESET}"
-    fi
-
-    # Install khaddict.com
-    /usr/bin/bash /root/scripts/05_khaddict.sh
-    if [[ $? -ne 0 ]]; then
-        echo -e "${RED}✘ Khaddict.com installation failed. Exiting.${RESET}"
-        exit 1
-    else
-        echo -e "${GREEN}✔ Khaddict.com installation succeeded.${RESET}"
-    fi
-
-    # Install homepage
-    /usr/bin/bash /root/scripts/06_homepage.sh
-    if [[ $? -ne 0 ]]; then
-        echo -e "${RED}✘ Homepage installation failed. Exiting.${RESET}"
-        exit 1
-    else
-        echo -e "${GREEN}✔ Homepage installation succeeded.${RESET}"
     fi
 
 else
