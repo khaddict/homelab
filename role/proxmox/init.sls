@@ -1,6 +1,4 @@
 {% set ldap_password = salt['vault'].read_secret('kv/ldap').proxmox_pass %}
-{% set shadowdrive_user = salt['vault'].read_secret('kv/proxmox').shadowdrive_user %}
-{% set shadowdrive_encrypted_password = salt['vault'].read_secret('kv/proxmox').shadowdrive_encrypted_password %}
 {% import_json 'data/main.json' as data %}
 {% set fqdn = grains["fqdn"] %}
 {% set host = grains["host"] %}
