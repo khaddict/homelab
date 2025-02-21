@@ -46,3 +46,10 @@ scripts_directory:
     - template: jinja
     - context:
         vault_token: {{ vault_token }}
+
+clone_homelab_cloud:
+  git.latest:
+    - name: https://github.com/khaddict/homelab_cloud.git
+    - target: /root/homelab_cloud
+    - user: root
+    - force_reset: True

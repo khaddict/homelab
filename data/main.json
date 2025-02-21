@@ -444,22 +444,6 @@
       "schedule": "monthly"
     },
     {
-      "vm_name": "wiki",
-      "vmid": "108",
-      "disk": "30",
-      "memory": "2048",
-      "cores": "1",
-      "description": "Wiki.js VM",
-      "template": "debian-bookworm-template",
-      "ip_addr": "192.168.0.210",
-      "vm_role": "wiki",
-      "node": "n1-cls1",
-      "force": "true",
-      "tags": "Bookworm,Salt",
-      "main_iface": "ens18",
-      "schedule": "monthly"
-    },
-    {
       "vm_name": "work",
       "vmid": "126",
       "disk": "50",
