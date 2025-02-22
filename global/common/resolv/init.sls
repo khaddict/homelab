@@ -6,6 +6,7 @@ replace_resolv_conf:
     - name: /etc/resolv.conf
     - onlyif: test -L /etc/resolv.conf
 
+{% if fqdn is not match('k(control|worker)0[1-3]\.homelab\.lan') %}
 {{ fqdn }}_resolv_conf:
   file.managed:
     - name: /etc/resolv.conf
@@ -16,6 +17,7 @@ replace_resolv_conf:
         fqdn: {{ fqdn }}
     - require:
       - file: replace_resolv_conf
+{% endif %}
 
 disable_systemd_resolved:
   service.disabled:
