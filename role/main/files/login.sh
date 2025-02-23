@@ -2,6 +2,8 @@
 
 WEBHOOK_URL="{{ login_webhook_url }}"
 
+WHITELISTED_IPS=("192.168.0.34" "192.168.27.65")
+
 send_discord_alert() {
     local message="$1"
     curl -H "Content-Type: application/json" \
@@ -14,7 +16,13 @@ tail -Fn0 /var/log/auth.log | while read line; do
     if echo "$line" | grep "Accepted" | grep "ssh"; then
         username=$(echo "$line" | grep -oP '(?<=for )[^ ]+')
         ip_address=$(echo "$line" | grep -oP '(?<=from )[^ ]+')
-        message="L'utilisateur $username s'est connecté au serveur depuis $ip_address"
+
+        if printf "%s\n" "${WHITELISTED_IPS[@]}" | grep -Fxq "$ip_address"; then
+            echo "Login from $ip_address ignored (whitelisted)"
+            continue
+        fi
+
+        message="User $username logged into the server from $ip_address"
         send_discord_alert "$message"
     fi
 done
