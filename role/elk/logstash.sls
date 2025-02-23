@@ -29,6 +29,14 @@ pipelines_config:
     - user: root
     - group: root
 
+jvm_options:
+  file.managed:
+    - name: /etc/logstash/jvm.options
+    - source: salt://role/elk/files/jvm.options
+    - mode: 644
+    - user: root
+    - group: root
+
 service_logstash:
   service.running:
     - name: logstash
@@ -38,3 +46,4 @@ service_logstash:
     - watch:
       - file: logstash_conf_directory
       - file: pipelines_config
+      - file: jvm_options
