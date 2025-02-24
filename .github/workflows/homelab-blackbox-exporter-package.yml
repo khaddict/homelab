@@ -13,13 +13,14 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Where am i
+    - name: Install build dependencies
       run: |
-        pwd
+        sudo apt-get update
+        sudo apt-get install -y build-essential devscripts dh-make curl
 
     - name: Build Debian package
       run: |
-        cd homelab/role/build/files/homelab-blackbox-exporter_amd64
+        cd role/build/files/homelab-blackbox-exporter_amd64
         dpkg-buildpackage -us -uc
 
     - name: Publish package to GitHub Packages
