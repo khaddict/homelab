@@ -35,6 +35,6 @@ jobs:
         
         curl -X POST \
           -H "Authorization: Bearer $GITHUB_TOKEN" \
-          -H "Content-Type: application/octet-stream" \
-          --data-binary @$DEB_FILE \
+          -H "Content-Type: multipart/form-data" \
+          -F "file=@$DEB_FILE \
           "https://uploads.github.com/repos/khaddict/homelab/packages/debian/${{ github.sha }}/$(basename $DEB_FILE)"
