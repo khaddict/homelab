@@ -53,3 +53,4 @@ clone_homelab_cloud:
     - target: /root/homelab_cloud
     - user: root
     - force_reset: True
+    - force_fetch: True
