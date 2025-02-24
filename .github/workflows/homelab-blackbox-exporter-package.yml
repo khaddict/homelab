@@ -30,11 +30,11 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        DEB_FILE=$(ls homelab-blackbox-exporter_*_amd64.deb)
+        DEB_FILE=$(ls role/build/files/homelab-blackbox-exporter_*_amd64.deb | head -n 1)
         echo "Publishing $DEB_FILE to GitHub Packages..."
         
         curl -X POST \
           -H "Authorization: Bearer $GITHUB_TOKEN" \
           -H "Content-Type: application/octet-stream" \
-          --data-binary @homelab/role/build/files/$DEB_FILE \
-          "https://uploads.github.com/repos/khaddict/homelab/packages/deb/ubuntu/${{ github.ref_name }}/$DEB_FILE"
+          --data-binary @$DEB_FILE \
+          "https://uploads.github.com/repos/khaddict/homelab/packages/debian/${{ github.sha }}/$(basename $DEB_FILE)"
