@@ -23,6 +23,9 @@ jobs:
         cd role/build/files/homelab-blackbox-exporter_amd64
         dpkg-buildpackage -us -uc
 
+    - name: List generated .deb files
+      run: ls role/build/files/*.deb
+
     - name: Publish package to GitHub Packages
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
