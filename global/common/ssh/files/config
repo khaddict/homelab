@@ -1,10 +1,10 @@
-{%- if fqdn == 'work.homelab.lan' %}
+{%- if fqdn == 'work.homelab.lan' -%}
 Host *.blade-group.net
     User root
     IdentityFile /root/ssh/work_ssh
     StrictHostKeyChecking no
-{%- endif %}
 
+{% endif -%}
 Host *
     User root
     IdentityFile /root/.ssh/id_ed25519
