@@ -1,3 +1,7 @@
+{% import_yaml 'data/packages.yaml' as pkgs %}
+{% set homelab_blackbox_exporter_version = pkgs.homelab_packages.homelab_blackbox_exporter_amd64 %}
+{% set homelab_elastic_exporter_version = pkgs.homelab_packages.homelab_elastic_exporter_amd64 %}
+
 install_aptly:
   pkg.installed:
     - name: aptly
@@ -16,3 +20,25 @@ start_enable_aptly_service:
     - enable: True
     - watch:
       - file: aptly_service
+
+homelab_packages_dir:
+  file.directory:
+    - name: /root/homelab_packages
+    - user: root
+    - group: root
+
+download_homelab_elastic_exporter_pkg:
+  file.managed:
+    - name: /root/homelab_packages/homelab-elastic-exporter_{{ homelab_elastic_exporter_version }}_amd64.deb
+    - source: https://github.com/khaddict/homelab/releases/download/homelab-elastic-exporter-v{{ homelab_elastic_exporter_version }}/homelab-elastic-exporter_{{ homelab_elastic_exporter_version }}_amd64.deb
+    - skip_verify: True
+    - require:
+      - file: homelab_packages_dir
+
+download_homelab_blackbox_exporter_pkg:
+  file.managed:
+    - name: /root/homelab_packages/homelab-blackbox-exporter_{{ homelab_blackbox_exporter_version }}_amd64.deb
+    - source: https://github.com/khaddict/homelab/releases/download/homelab-blackbox-exporter-v{{ homelab_blackbox_exporter_version }}/homelab-blackbox-exporter_{{ homelab_blackbox_exporter_version }}_amd64.deb
+    - skip_verify: True
+    - require:
+      - file: homelab_packages_dir

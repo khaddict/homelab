@@ -19,3 +19,7 @@ common_packages:
 
 purged_packages:
   - openipmi
+
+homelab_packages:
+  homelab_blackbox_exporter_amd64: "1.0.0"
+  homelab_elastic_exporter_amd64: "1.0.0"
