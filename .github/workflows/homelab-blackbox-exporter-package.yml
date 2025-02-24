@@ -1,0 +1,60 @@
+name: Build and publish homelab-blackbox-exporter_amd64 debian package
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "role/build/files/homelab-blackbox-exporter_amd64/debian/changelog"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential devscripts dh-make curl jq git
+
+    - name: Build Debian packages
+      run: |
+        cd role/build/files/homelab-blackbox-exporter_amd64
+        dpkg-buildpackage -us -uc
+
+    - name: Extract package name and version
+      id: get_name
+      run: |
+        DEB_FILE=$(ls role/build/files/*.deb | head -n 1)
+        PACKAGE_NAME=$(basename "$DEB_FILE" | sed -E 's/_[0-9]+\.[0-9]+\.[0-9]+_amd64\.deb//')
+        echo "DEB_FILE=$DEB_FILE" >> $GITHUB_ENV
+        echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
+
+    - name: Get version from changelog
+      id: get_version_from_changelog
+      run: |
+        VERSION=$(grep -m 1 -oP '\(\K[0-9]+\.[0-9]+\.[0-9]+' role/build/files/homelab-blackbox-exporter_amd64/debian/changelog)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: "${{ env.PACKAGE_NAME }}-v${{ env.VERSION }}"
+        name: "${{ env.PACKAGE_NAME }} v${{ env.VERSION }}"
+        body: "Release of ${{ env.PACKAGE_NAME }} v${{ env.VERSION }}"
+        draft: false
+        prerelease: false
+
+    - name: Upload Debian package to Release
+      uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: "${{ env.PACKAGE_NAME }}-v${{ env.VERSION }}"
+        files: ${{ env.DEB_FILE }}
