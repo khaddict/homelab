@@ -20,7 +20,7 @@ jobs:
 
     - name: Build Debian package
       run: |
-        cd homelab/role/build/files
+        cd homelab/role/build/files/homelab-blackbox-exporter_amd64
         dpkg-buildpackage -us -uc
 
     - name: Publish package to GitHub Packages
