@@ -49,6 +49,9 @@
   'ntp.homelab.lan':
     - role.ntp
 
+  'pbs.homelab.lan':
+    - role.pbs
+
   'pdns.homelab.lan':
     - role.pdns
 
@@ -66,6 +69,9 @@
 
   'stackstorm.homelab.lan':
     - role.stackstorm
+
+  'storage.homelab.lan':
+    - role.storage
 
   'vault.homelab.lan':
     - role.vault
