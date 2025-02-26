@@ -35,7 +35,7 @@ jobs_cfg_file:
         proxmox_backups:
           {% for vm in data.proxmox_vms %}
           - id: {{ vm.vmid }}
-            schedule: {{ vm.schedule }}
+            schedule: "{{ vm.schedule }}"
           {% endfor %}
 
 ldap_pw_file:

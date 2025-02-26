@@ -11,7 +11,7 @@
   },
 
   "proxmox_backups": {
-    "backup_storage": "local"
+    "backup_storage": "pbs"
   },
 
   "proxmox_nodes": {
@@ -41,7 +41,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 00:00:00"
     },
     {
       "vm_name": "aptly",
@@ -57,7 +57,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 00:30:00"
     },
     {
       "vm_name": "assets",
@@ -73,7 +73,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 01:00:00"
     },
     {
       "vm_name": "build",
@@ -89,7 +89,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 01:30:00"
     },
     {
       "vm_name": "ca",
@@ -105,7 +105,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 02:00:00"
     },
     {
       "vm_name": "docker",
@@ -121,7 +121,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 02:30:00"
     },
     {
       "vm_name": "elk",
@@ -137,7 +137,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 03:00:00"
     },
     {
       "vm_name": "grafana",
@@ -153,7 +153,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 03:30:00"
     },
     {
       "vm_name": "kcli",
@@ -169,7 +169,7 @@
       "force": "true",
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 04:00:00"
     },
     {
       "vm_name": "kcontrol01",
@@ -185,7 +185,7 @@
       "force": "true",
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 04:30:00"
     },
     {
       "vm_name": "kcontrol02",
@@ -201,7 +201,7 @@
       "force": "true",
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 05:00:00"
     },
     {
       "vm_name": "kcontrol03",
@@ -217,7 +217,7 @@
       "force": "true",
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 05:30:00"
     },
     {
       "vm_name": "kworker01",
@@ -233,7 +233,7 @@
       "force": "true",
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 06:00:00"
     },
     {
       "vm_name": "kworker02",
@@ -249,7 +249,7 @@
       "force": "true",
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 06:30:00"
     },
     {
       "vm_name": "kworker03",
@@ -265,7 +265,7 @@
       "force": "true",
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 07:00:00"
     },
     {
       "vm_name": "ldap",
@@ -281,7 +281,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 07:30:00"
     },
     {
       "vm_name": "main",
@@ -297,7 +297,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 08:00:00"
     },
     {
       "vm_name": "netbox",
@@ -313,7 +313,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 08:30:00"
     },
     {
       "vm_name": "ntp",
@@ -329,7 +329,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 09:00:00"
     },
     {
       "vm_name": "pbs",
@@ -345,7 +345,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 09:30:00"
     },
     {
       "vm_name": "pdns",
@@ -361,7 +361,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 10:00:00"
     },
     {
       "vm_name": "prometheus",
@@ -377,7 +377,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 10:30:00"
     },
     {
       "vm_name": "recursor",
@@ -393,7 +393,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 11:00:00"
     },
     {
       "vm_name": "revproxy",
@@ -409,7 +409,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 11:30:00"
     },
     {
       "vm_name": "saltmaster",
@@ -425,7 +425,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 12:00:00"
     },
     {
       "vm_name": "stackstorm",
@@ -441,7 +441,7 @@
       "force": "true",
       "tags": "Focal,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 12:30:00"
     },
     {
       "vm_name": "storage",
@@ -457,7 +457,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 13:00:00"
     },
     {
       "vm_name": "vault",
@@ -473,7 +473,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 13:30:00"
     },
     {
       "vm_name": "work",
@@ -489,7 +489,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 14:00:00"
     },
     {
       "vm_name": "yacine",
@@ -505,7 +505,7 @@
       "force": "true",
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "monthly"
+      "schedule": "*-*-01 14:30:00"
     }
   ]
 }
