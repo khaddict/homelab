@@ -1,0 +1,10 @@
+[Unit]
+Description=Synchronizes PBS backups to Shadow Drive in real-time
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/rclone sync /mnt/pbs-storage shadowDrive:/pbs_backups --progress --transfers=4 --checkers=8 --bwlimit=10M
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
