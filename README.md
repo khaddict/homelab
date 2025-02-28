@@ -98,4 +98,9 @@ I have a two-node Proxmox cluster running virtual machines. Most of these VMs ar
 
 - 🔧 `kcontrol0[1-3].homelab.lan` ➞ Kubernetes control plane nodes.
 
+- 💾 `pbs.homelab.lan` ➞ [Proxmox Backup Server](https://www.proxmox.com/en/products/proxmox-backup-server/overview)<br>
+  - Proxmox Backup Server for backing up & restoring VMs.
+
+- 🗃️ `storage.homelab.lan` ➞ NFS storage to handle Proxmox backups via PBS.
+
 This documentation provides an overview of my homelab and the various technologies I am working with. More details will be added over time as I refine and expand my setup.
