@@ -38,10 +38,11 @@
       "ip_addr": "192.168.0.221",
       "vm_role": "api",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 00:00:00"
+      "schedule": "*-*-01 00:00:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "aptly",
@@ -54,10 +55,11 @@
       "ip_addr": "192.168.0.228",
       "vm_role": "aptly",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 00:30:00"
+      "schedule": "*-*-01 00:30:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "assets",
@@ -70,10 +72,11 @@
       "ip_addr": "192.168.0.203",
       "vm_role": "assets",
       "node": "n2-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 01:00:00"
+      "schedule": "*-*-01 01:00:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "build",
@@ -86,10 +89,11 @@
       "ip_addr": "192.168.0.227",
       "vm_role": "build",
       "node": "n2-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 01:30:00"
+      "schedule": "*-*-01 01:30:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "ca",
@@ -102,10 +106,11 @@
       "ip_addr": "192.168.0.217",
       "vm_role": "ca",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 02:00:00"
+      "schedule": "*-*-01 02:00:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "docker",
@@ -118,10 +123,11 @@
       "ip_addr": "192.168.0.225",
       "vm_role": "docker",
       "node": "n2-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 02:30:00"
+      "schedule": "*-*-01 02:30:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "elk",
@@ -134,10 +140,11 @@
       "ip_addr": "192.168.0.220",
       "vm_role": "elk",
       "node": "n2-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 03:00:00"
+      "schedule": "*-*-01 03:00:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "grafana",
@@ -150,10 +157,11 @@
       "ip_addr": "192.168.0.219",
       "vm_role": "grafana",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 03:30:00"
+      "schedule": "*-*-01 03:30:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "kcli",
@@ -166,10 +174,11 @@
       "ip_addr": "192.168.0.239",
       "vm_role": "kubernetes",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 04:00:00"
+      "schedule": "*-*-01 04:00:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "kcontrol01",
@@ -182,10 +191,11 @@
       "ip_addr": "192.168.0.236",
       "vm_role": "kubernetes",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 04:30:00"
+      "schedule": "*-*-01 04:30:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "kcontrol02",
@@ -198,10 +208,11 @@
       "ip_addr": "192.168.0.237",
       "vm_role": "kubernetes",
       "node": "n2-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 05:00:00"
+      "schedule": "*-*-01 05:00:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "kcontrol03",
@@ -214,10 +225,11 @@
       "ip_addr": "192.168.0.238",
       "vm_role": "kubernetes",
       "node": "n2-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 05:30:00"
+      "schedule": "*-*-01 05:30:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "kworker01",
@@ -230,10 +242,11 @@
       "ip_addr": "192.168.0.233",
       "vm_role": "kubernetes",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 06:00:00"
+      "schedule": "*-*-01 06:00:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "kworker02",
@@ -246,10 +259,11 @@
       "ip_addr": "192.168.0.234",
       "vm_role": "kubernetes",
       "node": "n2-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 06:30:00"
+      "schedule": "*-*-01 06:30:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "kworker03",
@@ -262,10 +276,11 @@
       "ip_addr": "192.168.0.235",
       "vm_role": "kubernetes",
       "node": "n2-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 07:00:00"
+      "schedule": "*-*-01 07:00:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "ldap",
@@ -278,10 +293,11 @@
       "ip_addr": "192.168.0.215",
       "vm_role": "ldap",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 07:30:00"
+      "schedule": "*-*-01 07:30:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "main",
@@ -294,10 +310,11 @@
       "ip_addr": "192.168.0.206",
       "vm_role": "main",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 08:00:00"
+      "schedule": "*-*-01 08:00:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "netbox",
@@ -310,10 +327,11 @@
       "ip_addr": "192.168.0.208",
       "vm_role": "netbox",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 08:30:00"
+      "schedule": "*-*-01 08:30:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "ntp",
@@ -326,10 +344,11 @@
       "ip_addr": "192.168.0.218",
       "vm_role": "ntp",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 09:00:00"
+      "schedule": "*-*-01 09:00:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "pbs",
@@ -342,10 +361,11 @@
       "ip_addr": "192.168.0.210",
       "vm_role": "pbs",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 09:30:00"
+      "schedule": "*-*-01 09:30:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "pdns",
@@ -358,10 +378,11 @@
       "ip_addr": "192.168.0.222",
       "vm_role": "pdns",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 10:00:00"
+      "schedule": "*-*-01 10:00:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "prometheus",
@@ -374,10 +395,11 @@
       "ip_addr": "192.168.0.216",
       "vm_role": "prometheus",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 10:30:00"
+      "schedule": "*-*-01 10:30:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "recursor",
@@ -390,10 +412,11 @@
       "ip_addr": "192.168.0.223",
       "vm_role": "pdns",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 11:00:00"
+      "schedule": "*-*-01 11:00:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "revproxy",
@@ -406,10 +429,11 @@
       "ip_addr": "192.168.0.232",
       "vm_role": "revproxy",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 11:30:00"
+      "schedule": "*-*-01 11:30:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "saltmaster",
@@ -422,10 +446,11 @@
       "ip_addr": "192.168.0.205",
       "vm_role": "saltmaster",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 12:00:00"
+      "schedule": "*-*-01 12:00:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "stackstorm",
@@ -438,10 +463,11 @@
       "ip_addr": "192.168.0.207",
       "vm_role": "stackstorm",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Focal,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 12:30:00"
+      "schedule": "*-*-01 12:30:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "storage",
@@ -454,10 +480,11 @@
       "ip_addr": "192.168.0.202",
       "vm_role": "storage",
       "node": "n2-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 13:00:00"
+      "schedule": "0000-00-00 00:00:00",
+      "backup_enabled": false
     },
     {
       "vm_name": "vault",
@@ -470,10 +497,11 @@
       "ip_addr": "192.168.0.209",
       "vm_role": "vault",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 13:30:00"
+      "schedule": "*-*-01 13:30:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "work",
@@ -486,10 +514,11 @@
       "ip_addr": "192.168.0.230",
       "vm_role": "work",
       "node": "n1-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 14:00:00"
+      "schedule": "*-*-01 14:00:00",
+      "backup_enabled": true
     },
     {
       "vm_name": "yacine",
@@ -502,10 +531,11 @@
       "ip_addr": "192.168.0.231",
       "vm_role": "yacine",
       "node": "n2-cls1",
-      "force": "true",
+      "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 14:30:00"
+      "schedule": "*-*-01 14:30:00",
+      "backup_enabled": true
     }
   ]
 }
