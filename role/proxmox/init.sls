@@ -31,12 +31,8 @@ jobs_cfg_file:
     - makedirs: True
     - template: jinja
     - context:
-        backup_storage: {{ data.proxmox_backups.backup_storage }}
-        proxmox_backups:
-          {% for vm in data.proxmox_vms %}
-          - id: {{ vm.vmid }}
-            schedule: "{{ vm.schedule }}"
-          {% endfor %}
+        storage: {{ data.proxmox_backups.backup_storage }}
+        vms: {{ data.proxmox_vms }}
 
 ldap_pw_file:
   file.managed:
