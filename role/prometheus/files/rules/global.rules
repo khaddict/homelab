@@ -31,18 +31,9 @@ groups:
 
       - alert: ProxmoxNodeHot
         annotations:
-          summary: "n1-cls1 is hot"
-          description: "n1-cls1 is hot (> 70°C) (value {{ $value }})"
-        expr: (avg(node_hwmon_temp_celsius{chip="platform_coretemp_0", instance="n1-cls1.homelab.lan"}) > 70)
-        for: 5m
-        labels:
-          severity: warning
-
-      - alert: ProxmoxNodeHot
-        annotations:
-          summary: "n2-cls1 is hot"
-          description: "n2-cls1 is hot (> 70°C) (value {{ $value }})"
-        expr: (avg(node_hwmon_temp_celsius{chip="platform_coretemp_0", instance="n2-cls1.homelab.lan"}) > 70)
+          summary: "{{ $labels.instance }} is overheating"
+          description: "{{ $labels.instance }} is overheating (> 75°C) (value {{ $value }})"
+        expr: (avg by (instance)(node_hwmon_temp_celsius{chip="platform_coretemp_0", instance=~"n1-cls1.homelab.lan|n2-cls1.homelab.lan"}) > 75)
         for: 5m
         labels:
           severity: warning
