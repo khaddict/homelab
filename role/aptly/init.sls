@@ -21,24 +21,22 @@ start_enable_aptly_service:
     - watch:
       - file: aptly_service
 
-homelab_packages_dir:
-  file.directory:
-    - name: /root/homelab_packages
-    - user: root
-    - group: root
-
 download_homelab_elastic_exporter_pkg:
   file.managed:
     - name: /root/homelab_packages/homelab-elastic-exporter_{{ homelab_elastic_exporter_version }}_amd64.deb
     - source: https://github.com/khaddict/homelab/releases/download/homelab-elastic-exporter-v{{ homelab_elastic_exporter_version }}/homelab-elastic-exporter_{{ homelab_elastic_exporter_version }}_amd64.deb
+    - makedirs: True
+    - user: root
+    - group: root
+    - mode: 644
     - skip_verify: True
-    - require:
-      - file: homelab_packages_dir
 
 download_homelab_blackbox_exporter_pkg:
   file.managed:
     - name: /root/homelab_packages/homelab-blackbox-exporter_{{ homelab_blackbox_exporter_version }}_amd64.deb
     - source: https://github.com/khaddict/homelab/releases/download/homelab-blackbox-exporter-v{{ homelab_blackbox_exporter_version }}/homelab-blackbox-exporter_{{ homelab_blackbox_exporter_version }}_amd64.deb
+    - makedirs: True
+    - user: root
+    - group: root
+    - mode: 644
     - skip_verify: True
-    - require:
-      - file: homelab_packages_dir
