@@ -24,14 +24,6 @@ kcli_bashrc:
     - user: root
     - group: root
 
-homelab_app_of_apps:
-  file.managed:
-    - name: /root/homelab-app-of-apps.yaml
-    - source: salt://role/kcli/files/homelab-app-of-apps.yaml
-    - mode: 644
-    - user: root
-    - group: root
-
 apps_directory:
   file.recurse:
     - name: /root/apps
