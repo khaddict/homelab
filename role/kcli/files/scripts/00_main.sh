@@ -60,6 +60,15 @@ if [[ $RESPONSE == "yes" ]]; then
         echo -e "${GREEN}✔ ArgoCD installation succeeded.${RESET}"
     fi
 
+    # Install random things
+    /usr/bin/bash /root/scripts/04_random.sh
+    if [[ $? -ne 0 ]]; then
+        echo -e "${RED}✘ Random things installation failed. Exiting.${RESET}"
+        exit 1
+    else
+        echo -e "${GREEN}✔ Random things installation succeeded.${RESET}"
+    fi
+
 else
     echo -e "${RED}Please complete the Vault setup before proceeding.${RESET}"
     exit 1

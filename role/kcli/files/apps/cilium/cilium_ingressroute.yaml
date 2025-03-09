@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: hubble
+  namespace: kube-system
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`hubble.homelab.lan`)
+      services:
+        - name: hubble-ui
+          port: 80
+  tls:
+    secretName: hubble-cert-secret
