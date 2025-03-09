@@ -1,0 +1,3 @@
+{%- for host in hosts_list if host != "main" %}
+{{ host }}.homelab.lan
+{%- endfor %}
