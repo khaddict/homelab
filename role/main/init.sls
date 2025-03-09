@@ -3,6 +3,13 @@
 {% set pull_webhook_url = salt['vault'].read_secret('kv/main').pull_webhook_url %}
 {% set github_commits_khaddict_webhook_url = salt['vault'].read_secret('kv/main').github_commits_khaddict_webhook_url %}
 {% set github_pull_token = salt['vault'].read_secret('kv/main').github_pull_token %}
+{% import_json 'data/main.json' as data %}
+{% set proxmox_nodes = data.proxmox_nodes.keys() | list %}
+{% set proxmox_vms = data.proxmox_vms | map(attribute='vm_name') | list %}
+{% set hosts_list = proxmox_nodes + proxmox_vms %}
+
+include:
+  - base.pssh
 
 vars_bashrc:
   file.managed:
@@ -76,3 +83,24 @@ github_pull_timer:
       - file: github_pull_script
     - watch:
       - file: github_pull_script
+
+pssh_all_hosts:
+  file.managed:
+    - name: /root/pssh/pssh_all_hosts
+    - source: salt://role/main/files/pssh_all_hosts
+    - makedirs: True
+    - mode: 644
+    - user: root
+    - group: root
+    - template: jinja
+    - context:
+        hosts_list: {{ hosts_list }}
+
+pssh_hosts:
+  file.managed:
+    - name: /root/pssh/pssh_hosts
+    - source: salt://role/main/files/pssh_hosts
+    - makedirs: True
+    - mode: 644
+    - user: root
+    - group: root
