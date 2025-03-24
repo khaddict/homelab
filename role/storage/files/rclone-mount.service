@@ -1,0 +1,18 @@
+[Unit]
+Description=Mount Shadow Drive with rclone
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/rclone mount shadowDrive:pbs_backups /mnt/pbs-storage \
+    --config=/root/.config/rclone/rclone.conf \
+    --allow-other \
+    --vfs-cache-mode writes
+ExecStop=/bin/fusermount -u /mnt/pbs-storage
+Restart=always
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
