@@ -1,4 +1,4 @@
-virtual_ipaddress: 192.168.0.240
+virtual_ipaddress: 192.168.0.181
 
 keepalived:
   kcontrol01.homelab.lan:
