@@ -4,6 +4,7 @@
 include:
   - base.nfs_kernel_server
   - base.rclone
+  - base.fuse
 
 exports_config:
   file.managed:
@@ -42,9 +43,24 @@ rclone_sync_service:
     - user: root
     - group: root
 
+rclone_mount_service:
+  file.managed:
+    - name: /etc/systemd/system/rclone-mount.service
+    - source: salt://role/storage/files/rclone-mount.service
+    - mode: 644
+    - user: root
+    - group: root
+
 start_enable_rclone_sync_service:
   service.running:
     - name: rclone-sync
     - enable: True
     - require:
       - file: rclone_sync_service
+
+start_enable_rclone_mount_service:
+  service.running:
+    - name: rclone-mount
+    - enable: True
+    - require:
+      - file: rclone_mount_service
