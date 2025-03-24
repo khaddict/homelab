@@ -49,7 +49,7 @@ parameters:
   node:
     required: true
     type: string
-    description: The Proxmox node (can be n1-cls1 or n2-cls1).
+    description: The Proxmox node (can be n1-cls1, n2-cls1 or n3-cls1).
   force:
     required: true
     type: boolean

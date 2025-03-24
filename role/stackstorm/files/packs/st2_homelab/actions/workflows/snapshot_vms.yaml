@@ -3,7 +3,7 @@ description: Snapshot all VMs on Proxmox and retain only the last 3 snapshots fo
 
 vars:
   - snapshot_name: "auto_snapshot_<% '{}{:02}{:02}_{:02}{:02}{:02}'.format(now().year, now().month, now().day, (now().hour + 1), now().minute, now().second) %>"
-  - nodes: ["n1-cls1", "n2-cls1"]
+  - nodes: ["n1-cls1", "n2-cls1", "n3-cls1"]
 
 tasks:
   snapshot_vms:

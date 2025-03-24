@@ -10,9 +10,6 @@
   'aptly.homelab.lan':
     - role.aptly
 
-  'assets.homelab.lan':
-    - role.assets
-
   'build.homelab.lan':
     - role.build
 
@@ -75,6 +72,3 @@
 
   'vault.homelab.lan':
     - role.vault
-
-  'work.homelab.lan':
-    - role.work
