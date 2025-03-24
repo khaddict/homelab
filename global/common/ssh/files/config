@@ -1,6 +1,10 @@
 Host *
     User root
+{%- if fqdn is match('n\d-cls\d\.homelab\.lan') %}
+    IdentityFile /root/.ssh/id_rsa
+{%- else %}
     IdentityFile /root/.ssh/id_ed25519
+{%- endif %}
     ForwardAgent yes
     StrictHostKeyChecking no
     UserKnownHostsFile /dev/null
