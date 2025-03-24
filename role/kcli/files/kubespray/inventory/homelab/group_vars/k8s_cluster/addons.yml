@@ -260,7 +260,7 @@ argocd_enabled: false
 kube_vip_enabled: true
 kube_vip_arp_enabled: true
 kube_vip_controlplane_enabled: true
-kube_vip_address: 192.168.0.240
+kube_vip_address: 192.168.0.181
 loadbalancer_apiserver:
   address: "{{ kube_vip_address }}"
   port: 6443
