@@ -6,7 +6,7 @@ The goal of this project is to experiment and practice on a daily basis with tec
 
 ## 2) Hardware 🛰
 
-- `[x2] GEEKOM Mini IT13 Mini-PC Intel Core i9 upgraded to 64GB` ➞ [Link](https://www.geekom.fr/geekom-mini-it13-mini-pc/)
+- `[x3] GEEKOM Mini IT13 Mini-PC Intel Core i9 upgraded to 64GB` ➞ [Link](https://www.geekom.fr/geekom-mini-it13-mini-pc/)
 - `[x1] TP-Link TL-SG108E 8-Port Gigabit Ethernet Switch` ➞ [Link](https://www.tp-link.com/fr/business-networking/easy-smart-switch/tl-sg108e/)
 
 ## 3) Issues 📝
@@ -27,16 +27,13 @@ A proper system and network architecture diagram will be added later (when I hav
 
 ![image](https://github.com/user-attachments/assets/30f609d1-74c2-4b75-bbcc-80f2a8fd390c)
 
-I have a two-node Proxmox cluster running virtual machines. Most of these VMs are managed with SaltStack. The technologies used include:
+I have a three-node Proxmox cluster running virtual machines. Most of these VMs are managed with SaltStack. The technologies used include:
 
 - 🔐 `main.homelab.lan` ➞ The main entry point to my infrastructure.<br>
   - All SSH access to other machines is blocked by default.
   - This machine can access all others and is actively monitored.
   - Any connection from a non-whitelisted IP triggers a Discord notification.
   - It is also responsible for pushing changes to GitHub and pulling updates for `/srv/salt` to `saltmaster.homelab.lan` upon receiving push events.
-
-- 📈 `assets.homelab.lan` ➞ Test machine for a personal finance tracking project.<br>
-  - Instead of using Excel, I plan to develop an application with a GUI, API, and database to track my finances in real time, generate graphs, filter by asset type, and more.
 
 - 🧂 `saltmaster.homelab.lan` ➞ [SaltStack](https://saltproject.io)<br>
   - The Salt master manages all my minions (other VMs).

@@ -23,7 +23,7 @@ vars:
   - recursor: "recursor.<% ctx().domain %>"
   - proxmox: "<% ctx().node %>.<% ctx().domain %>"
   - template_id: ""
-  - storage: "local-lvm"
+  - storage: "cls1pool"
   - st2_sshkey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMe90Wiw4mR6NRi6lQ1qBmDHHzweeMSeksqUd38GpR2e stackstorm.homelab.lan"
   - saltmaster_sshkey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ3swvmrdQSe+f3QsuNdBtMl8WIQePhU2KDLiy9RozWU saltmaster.homelab.lan"
   - a_zone_name: "<% ctx().domain %>."
@@ -47,7 +47,7 @@ tasks:
         properties:
           approved:
             type: boolean
-            description: "You must update the network configuration and proxmox data files before starting the workflow. Continue ?"
+            description: "You must update the main.json data file before starting the workflow. Continue ?"
             required: True
     next:
       - when: <% succeeded() %>
