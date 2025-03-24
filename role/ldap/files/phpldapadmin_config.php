@@ -319,7 +319,7 @@ $servers->setValue('server','name','Homelab LDAP server');
    'ldaps://ldap.example.com/',
    'ldapi://%2fusr%local%2fvar%2frun%2fldapi'
            (Unix socket at /usr/local/var/run/ldap) */
-$servers->setValue('server','host','192.168.0.215');
+$servers->setValue('server','host','192.168.0.159');
 
 /* The port your LDAP server listens on (no quotes). 389 is standard. */
 // $servers->setValue('server','port',389);

@@ -1,11 +1,6 @@
-{%- if fqdn == 'work.homelab.lan' -%}
-# DNS server: localhost (dnsmasq)
-nameserver 127.0.0.1
-{%- else -%}
 domain homelab.lan
 search homelab.lan
 {%- for ip in dns_nameservers.values() %}
 nameserver {{ ip }}
 {%- endfor %}
-{%- endif %}
 options timeout:2 attempts:1
