@@ -213,24 +213,25 @@ tasks:
         salt-key -a <% ctx().vm_fqdn %> -y
     next:
       - when: <% succeeded() %>
-        do: highstate_vm
+        do: global_state_vm
       - when: <% failed() %>
         publish:
           - msg: "Could not accept the salt-key for <% ctx().vm_fqdn %>."
 
-  highstate_vm:
+  global_state_vm:
     action: core.remote
     input:
       hosts: <% ctx().ip_addr %>
       username: root
+      timeout: 120
       cmd: |
-        salt-call state.highstate
+        salt-call state.sls global
     next:
       - when: <% succeeded() %>
         do: reboot_vm
       - when: <% failed() %>
         publish:
-          - msg: "Could not highstate <% ctx().vm_fqdn %>."
+          - msg: "Could not apply the global state on <% ctx().vm_fqdn %>."
 
   reboot_vm:
     action: core.remote
