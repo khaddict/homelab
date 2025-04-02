@@ -4,17 +4,15 @@
 include:
   - base.rclone
 
-mnt_pbs_backups_dir:
+/mnt/shadowDrive/pbs_backups/.chunks:
   file.directory:
-    - name: /mnt/shadowDrive/pbs_backups
     - user: root
     - group: root
     - mode: 755
     - makedirs: True
 
-rclone_config:
+/root/.config/rclone/rclone.conf:
   file.managed:
-    - name: /root/.config/rclone/rclone.conf
     - source: salt://role/pbs/files/rclone.conf
     - mode: 600
     - user: root
@@ -25,56 +23,51 @@ rclone_config:
         shadowdrive_user: {{ shadowdrive_user }}
         shadowdrive_encrypted_password: {{ shadowdrive_encrypted_password }}
 
-rclone_sync_service:
+/etc/systemd/system/rclone-sync.service:
   file.managed:
-    - name: /etc/systemd/system/rclone-sync.service
     - source: salt://role/pbs/files/rclone-sync.service
     - mode: 644
     - user: root
     - group: root
 
-rclone_sync_timer:
+/etc/systemd/system/rclone-sync.timer:
   file.managed:
-    - name: /etc/systemd/system/rclone-sync.timer
     - source: salt://role/pbs/files/rclone-sync.timer
     - mode: 644
     - user: root
     - group: root
 
-start_enable_rclone_sync_service:
-  service.running:
+enable_rclone_sync_service:
+  service.enabled:
     - name: rclone-sync.service
-    - enable: True
     - require:
-      - file: rclone_sync_service
+      - file: /etc/systemd/system/rclone-sync.service
     - watch:
-      - file: rclone_sync_service
+      - file: /etc/systemd/system/rclone-sync.service
 
-start_enable_rclone_sync_timer:
+enable_rclone_sync_timer:
   service.running:
     - name: rclone-sync.timer
     - enable: True
     - require:
-      - file: rclone_sync_timer
+      - file: /etc/systemd/system/rclone-sync.service
+      - file: /etc/systemd/system/rclone-sync.timer
     - watch:
-      - file: rclone_sync_timer
+      - file: /etc/systemd/system/rclone-sync.timer
 
-pbs_gpg_key:
+/etc/apt/trusted.gpg.d/proxmox-backup-server-bookworm.gpg:
   file.managed:
-    - name: /etc/apt/trusted.gpg.d/proxmox-backup-server-bookworm.gpg
     - source: salt://role/pbs/files/proxmox-backup-server-bookworm.gpg
-    - makedirs: True
+    - mode: 644
     - user: root
     - group: root
-    - mode: 644
 
-pbs_repo_pkg:
+proxmox-backup-server-bookworm.list:
   pkgrepo.managed:
     - name: deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/proxmox-backup-server-bookworm.gpg] http://download.proxmox.com/debian/pbs bookworm pbs-no-subscription
     - file: /etc/apt/sources.list.d/proxmox-backup-server-bookworm.list
     - require:
-      - file: pbs_gpg_key
+      - file: /etc/apt/trusted.gpg.d/proxmox-backup-server-bookworm.gpg
 
-install_pbs:
-  pkg.installed:
-    - name: proxmox-backup-server
+proxmox-backup-server:
+  pkg.installed
