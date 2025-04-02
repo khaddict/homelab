@@ -3,7 +3,7 @@ Description=Synchronizes /mnt/shadowDrive/pbs_backups to shadowDrive:/pbs_backup
 After=network-online.target
 
 [Service]
-ExecStart=/usr/bin/rclone sync /mnt/pbs-storage shadowDrive:/pbs_backups --progress --transfers=4 --checkers=8 --bwlimit=10M
+ExecStart=/usr/bin/rclone sync /mnt/shadowDrive/pbs_backups shadowDrive:/pbs_backups --progress --transfers=4 --checkers=8 --bwlimit=10M
 Restart=always
 
 [Install]
