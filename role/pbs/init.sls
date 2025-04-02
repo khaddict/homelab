@@ -47,6 +47,8 @@ start_enable_rclone_sync_service:
     - enable: True
     - require:
       - file: rclone_sync_service
+    - watch:
+      - file: rclone_sync_service
 
 start_enable_rclone_sync_timer:
   service.running:
@@ -54,3 +56,25 @@ start_enable_rclone_sync_timer:
     - enable: True
     - require:
       - file: rclone_sync_timer
+    - watch:
+      - file: rclone_sync_timer
+
+pbs_gpg_key:
+  file.managed:
+    - name: /etc/apt/trusted.gpg.d/proxmox-backup-server-bookworm.gpg
+    - source: salt://role/pbs/files/proxmox-backup-server-bookworm.gpg
+    - makedirs: True
+    - user: root
+    - group: root
+    - mode: 644
+
+pbs_repo_pkg:
+  pkgrepo.managed:
+    - name: deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/proxmox-backup-server-bookworm.gpg] http://download.proxmox.com/debian/pbs bookworm pbs-no-subscription
+    - file: /etc/apt/sources.list.d/proxmox-backup-server-bookworm.list
+    - require:
+      - file: pbs_gpg_key
+
+install_pbs:
+  pkg.installed:
+    - name: proxmox-backup-server
