@@ -67,8 +67,5 @@
   'stackstorm.homelab.lan':
     - role.stackstorm
 
-  'storage.homelab.lan':
-    - role.storage
-
   'vault.homelab.lan':
     - role.vault
