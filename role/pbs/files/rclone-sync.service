@@ -1,5 +1,5 @@
 [Unit]
-Description=Synchronizes PBS backups to Shadow Drive in real-time
+Description=Synchronizes /mnt/shadowDrive/pbs_backups to shadowDrive:/pbs_backups
 After=network-online.target
 
 [Service]

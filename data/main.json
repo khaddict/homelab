@@ -339,10 +339,10 @@
     {
       "vm_name": "pbs",
       "vmid": "119",
-      "disk": "50",
+      "disk": "400",
       "memory": "6144",
       "cores": "3",
-      "description": "Proxmox Backup Server VM installed manually with PBS ISO",
+      "description": "Proxmox Backup Server VM",
       "template": "debian-bookworm-template",
       "ip_addr": "192.168.0.172",
       "vm_role": "pbs",
@@ -351,7 +351,7 @@
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
       "schedule": "*-*-01 09:30:00",
-      "backup_enabled": true
+      "backup_enabled": false
     },
     {
       "vm_name": "pdns",
@@ -454,23 +454,6 @@
       "main_iface": "ens18",
       "schedule": "*-*-01 12:30:00",
       "backup_enabled": true
-    },
-    {
-      "vm_name": "storage",
-      "vmid": "101",
-      "disk": "300",
-      "memory": "4096",
-      "cores": "3",
-      "description": "Storage VM to receive backups (via Proxmox Backup Server) and upload them to Shadow Drive",
-      "template": "debian-bookworm-template",
-      "ip_addr": "192.168.0.173",
-      "vm_role": "storage",
-      "node": "n1-cls1",
-      "force": true,
-      "tags": "Bookworm,Salt",
-      "main_iface": "ens18",
-      "schedule": "0000-00-00 00:00:00",
-      "backup_enabled": false
     },
     {
       "vm_name": "vault",
