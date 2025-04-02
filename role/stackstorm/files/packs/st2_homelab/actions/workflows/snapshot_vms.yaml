@@ -12,7 +12,7 @@ tasks:
     input:
       hosts: "<% item() %>"
       username: root
-      timeout: 600
+      timeout: 1800
       cmd: |
         VMIDS=$(pvesh get /nodes/<% item() %>/qemu --output-format json | jq -r '.[] | select(.vmid < 200) | .vmid')
 
@@ -25,7 +25,7 @@ tasks:
             for SNAPSHOT in $SNAPSHOTS; do
                 COUNT=$((COUNT+1))
                 if [ $COUNT -gt 4 ]; then
-                    pvesh delete /nodes/<% item() %>/qemu/$VMID/snapshot/$SNAPSHOT
+                    pvesh delete /nodes/<% item() %>/qemu/$VMID/snapshot/$SNAPSHOT --force
                 fi
             done
         done
