@@ -4,6 +4,14 @@
 include:
   - base.rclone
 
+mnt_pbs_backups_dir:
+  file.directory:
+    - name: /mnt/shadowDrive/pbs_backups
+    - user: root
+    - group: root
+    - mode: 755
+    - makedirs: True
+
 rclone_config:
   file.managed:
     - name: /root/.config/rclone/rclone.conf
@@ -11,6 +19,7 @@ rclone_config:
     - mode: 600
     - user: root
     - group: root
+    - makedirs: True
     - template: jinja
     - context:
         shadowdrive_user: {{ shadowdrive_user }}
@@ -26,8 +35,8 @@ rclone_sync_service:
 
 rclone_sync_timer:
   file.managed:
-    - name: /etc/systemd/system/rclone-mount.timer
-    - source: salt://role/pbs/files/rclone-mount.timer
+    - name: /etc/systemd/system/rclone-sync.timer
+    - source: salt://role/pbs/files/rclone-sync.timer
     - mode: 644
     - user: root
     - group: root
