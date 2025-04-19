@@ -469,7 +469,7 @@
       "force": true,
       "tags": "Bookworm,Salt",
       "main_iface": "ens18",
-      "schedule": "*-*-01 13:30:00",
+      "schedule": "*-*-01 13:00:00",
       "backup_enabled": true
     }
   ]
