@@ -1,14 +1,15 @@
 {% set shadowdrive_user = salt['vault'].read_secret('kv/proxmox').shadowdrive_user %}
 {% set shadowdrive_encrypted_password = salt['vault'].read_secret('kv/proxmox').shadowdrive_encrypted_password %}
+{% set ldap_password = salt['vault'].read_secret('kv/ldap').proxmox_pass %}
 
 include:
   - base.rclone
 
 /mnt/shadowDrive/pbs_backups/.chunks:
   file.directory:
-    - user: root
-    - group: root
-    - mode: 755
+    - user: backup
+    - group: backup
+    - mode: 750
     - makedirs: True
 
 /root/.config/rclone/rclone.conf:
@@ -71,3 +72,24 @@ proxmox-backup-server-bookworm.list:
 
 proxmox-backup-server:
   pkg.installed
+
+domains_cfg_file:
+  file.managed:
+    - name: /etc/proxmox-backup/domains.cfg
+    - source: salt://role/pbs/files/domains.cfg
+    - user: root
+    - group: backup
+    - mode: 640
+    - makedirs: True
+
+ldap_passwords_file:
+  file.managed:
+    - name: /etc/proxmox-backup/ldap_passwords.json
+    - source: salt://role/pbs/files/ldap_passwords.json
+    - user: root
+    - group: www-data
+    - mode: 600
+    - makedirs: True
+    - template: jinja
+    - context:
+        ldap_password: {{ ldap_password }}
