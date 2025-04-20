@@ -2,7 +2,7 @@
 
 WEBHOOK_URL="{{ login_webhook_url }}"
 
-WHITELISTED_IPS=("192.168.0.34" "192.168.27.65")
+WHITELISTED_IPS=("192.168.0.20" "192.168.27.65" "192.168.0.46")
 
 send_discord_alert() {
     local message="$1"

@@ -181,7 +181,7 @@
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
       "schedule": "*-*-01 04:30:00",
-      "backup_enabled": true
+      "backup_enabled": false
     },
     {
       "vm_name": "kcontrol02",
@@ -198,7 +198,7 @@
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
       "schedule": "*-*-01 05:00:00",
-      "backup_enabled": true
+      "backup_enabled": false
     },
     {
       "vm_name": "kcontrol03",
@@ -215,7 +215,7 @@
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
       "schedule": "*-*-01 05:30:00",
-      "backup_enabled": true
+      "backup_enabled": false
     },
     {
       "vm_name": "kworker01",
@@ -232,7 +232,7 @@
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
       "schedule": "*-*-01 06:00:00",
-      "backup_enabled": true
+      "backup_enabled": false
     },
     {
       "vm_name": "kworker02",
@@ -249,7 +249,7 @@
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
       "schedule": "*-*-01 06:30:00",
-      "backup_enabled": true
+      "backup_enabled": false
     },
     {
       "vm_name": "kworker03",
@@ -266,7 +266,7 @@
       "tags": "Ansible,Bookworm,Salt",
       "main_iface": "ens18",
       "schedule": "*-*-01 07:00:00",
-      "backup_enabled": true
+      "backup_enabled": false
     },
     {
       "vm_name": "ldap",
