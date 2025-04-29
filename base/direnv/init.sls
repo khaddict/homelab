@@ -1,3 +1,2 @@
-install_direnv:
-  pkg.installed:
-    - name: direnv
+direnv:
+  pkg.installed

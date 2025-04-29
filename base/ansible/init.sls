@@ -1,3 +1,2 @@
-install_ansible:
-  pkg.installed:
-    - name: ansible
+ansible:
+  pkg.installed

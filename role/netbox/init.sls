@@ -6,9 +6,8 @@ include:
   - base.redis
   - base.nginx
 
-netbox_db_script:
+/tmp/netbox_db.sh:
   file.managed:
-    - name: /tmp/netbox_db.sh
     - source: salt://role/netbox/files/netbox_db.sh
     - mode: 755
     - user: root
@@ -30,9 +29,8 @@ netbox_dependencies:
       - zlib1g-dev
       - git
 
-opt_netbox_dir:
+/opt/netbox:
   file.directory:
-    - name: /opt/netbox
     - mode: 755
 
 netbox_repo:
@@ -43,34 +41,29 @@ netbox_repo:
     - rev: master
     - depth: 1
     - require:
-      - file: opt_netbox_dir
+      - file: /opt/netbox
 
-netbox_user:
+netbox:
   user.present:
-    - name: netbox
     - usergroup: True
 
-netbox_media_chown:
+/opt/netbox/netbox/media:
   file.directory:
-    - name: /opt/netbox/netbox/media
     - user: netbox
     - group: netbox
 
-netbox_reports_chown:
+/opt/netbox/netbox/reports:
   file.directory:
-    - name: /opt/netbox/netbox/reports
     - user: netbox
     - group: netbox
 
-netbox_scripts_chown:
+/opt/netbox/netbox/scripts:
   file.directory:
-    - name: /opt/netbox/netbox/scripts
     - user: netbox
     - group: netbox
 
-configuration_file:
+/opt/netbox/netbox/netbox/configuration.py:
   file.managed:
-    - name: /opt/netbox/netbox/netbox/configuration.py
     - source: salt://role/netbox/files/configuration.py
     - mode: 644
     - user: root
@@ -80,73 +73,66 @@ configuration_file:
         database_password: {{ database_password }}
         secret_key: {{ secret_key }}
 
-gunicorn_config:
+/opt/netbox/gunicorn.py:
   file.managed:
-    - name: /opt/netbox/gunicorn.py
     - source: salt://role/netbox/files/gunicorn.py
     - mode: 644
     - user: root
     - group: root
 
-netbox_housekeeping_service:
+/etc/systemd/system/netbox-housekeeping.service:
   file.managed:
-    - name: /etc/systemd/system/netbox-housekeeping.service
     - source: salt://role/netbox/files/netbox-housekeeping.service
     - mode: 644
     - user: root
     - group: root
 
-netbox_service:
+/etc/systemd/system/netbox.service:
   file.managed:
-    - name: /etc/systemd/system/netbox.service
     - source: salt://role/netbox/files/netbox.service
     - mode: 644
     - user: root
     - group: root
 
-netbox_rq_service:
+/etc/systemd/system/netbox-rq.service:
   file.managed:
-    - name: /etc/systemd/system/netbox-rq.service
     - source: salt://role/netbox/files/netbox-rq.service
     - mode: 644
     - user: root
     - group: root
 
-start_enable_netbox_service:
+netbox_service:
   service.running:
     - name: netbox
     - enable: True
     - watch:
-      - file: netbox_service
+      - file: /etc/systemd/system/netbox.service
 
-start_enable_netbox_rq_service:
+netbox_rq_service:
   service.running:
     - name: netbox-rq
     - enable: True
     - watch:
-      - file: netbox_rq_service
+      - file: /etc/systemd/system/netbox-rq.service
 
-netbox_config:
+/etc/nginx/sites-available/netbox:
   file.managed:
-    - name: /etc/nginx/sites-available/netbox
     - source: salt://role/netbox/files/netbox
     - mode: 644
     - user: root
     - group: root
 
-remove_nginx_default:
-  file.absent:
-    - name: /etc/nginx/sites-enabled/default
+/etc/nginx/sites-enabled/default:
+  file.absent
 
-create_netbox_symlink:
+/etc/nginx/sites-enabled/netbox:
   file.symlink:
-    - name: /etc/nginx/sites-enabled/netbox
     - target: /etc/nginx/sites-available/netbox
 
-restart_nginx_service:
+nginx_service:
   service.running:
     - name: nginx
     - enable: True
     - reload: True
     - watch:
-      - file: netbox_config
+      - file: /etc/nginx/sites-available/netbox

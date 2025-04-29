@@ -1,17 +1,16 @@
-manage_docker_asc:
+/etc/apt/keyrings/docker.asc:
   file.managed:
-    - name: /etc/apt/keyrings/docker.asc
     - source: salt://role/docker/files/docker.asc
     - mode: 644
     - user: root
     - group: root
 
-docker_repo_pkg:
+/etc/apt/sources.list.d/docker.list:
   pkgrepo.managed:
     - name: deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian bookworm stable
     - file: /etc/apt/sources.list.d/docker.list
     - require:
-      - file: manage_docker_asc
+      - file: /etc/apt/keyrings/docker.asc
 
 install_docker:
   pkg.installed:

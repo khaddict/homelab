@@ -5,16 +5,14 @@
 {% set host_list = proxmox_nodes + proxmox_vms %}
 {% set domain = data.network.domain %}
 
-prometheus_user:
+prometheus:
   user.present:
-    - name: prometheus
     - usergroup: True
     - createhome: False
     - system: True
 
-extract_prometheus:
+/etc/prometheus-{{ prometheus_version }}.linux-amd64:
   archive.extracted:
-    - name: /etc/
     - source: https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz
     - user: prometheus
     - group: prometheus
@@ -22,16 +20,14 @@ extract_prometheus:
     - if_missing: /etc/prometheus
     - skip_verify: True
 
-rename_prometheus_directory:
+/etc/prometheus:
   file.rename:
-    - name: /etc/prometheus
     - source: /etc/prometheus-{{ prometheus_version }}.linux-amd64
     - require:
-      - archive: extract_prometheus
+      - archive: /etc/prometheus-{{ prometheus_version }}.linux-amd64
 
-prometheus_config:
+/etc/prometheus/prometheus.yml:
   file.managed:
-    - name: /etc/prometheus/prometheus.yml
     - source: salt://role/prometheus/files/prometheus.yml
     - mode: 644
     - user: prometheus
@@ -41,28 +37,24 @@ prometheus_config:
         hosts: {{ host_list }}
         domain: {{ domain }}
     - require:
-      - archive: extract_prometheus
+      - file: /etc/prometheus
 
-prometheus_rules:
+/etc/prometheus/rules:
   file.recurse:
-    - name: /etc/prometheus/rules
     - source: salt://role/prometheus/files/rules
     - include_empty: True
 
-prometheus_service:
+/etc/systemd/system/prometheus.service:
   file.managed:
-    - name: /etc/systemd/system/prometheus.service
     - source: salt://role/prometheus/files/prometheus.service
     - mode: 755
     - user: root
     - group: root
-    - require:
-      - archive: extract_prometheus
 
-start_enable_prometheus_service:
+prometheus_service:
   service.running:
     - name: prometheus
     - enable: True
     - watch:
-      - file: prometheus_config
-      - file: prometheus_rules
+      - file: /etc/prometheus/prometheus.yml
+      - file: /etc/prometheus/rules

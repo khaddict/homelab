@@ -11,9 +11,8 @@
 include:
   - base.pssh
 
-vars_bashrc:
+/root/.bashrc.d/vars.bashrc:
   file.managed:
-    - name: /root/.bashrc.d/vars.bashrc
     - source: salt://role/main/files/vars.bashrc
     - mode: 700
     - user: root
@@ -22,9 +21,8 @@ vars_bashrc:
     - context:
         admin_api_key: {{ admin_api_key }}
 
-login_script:
+/root/login/login.sh:
   file.managed:
-    - name: /root/login/login.sh
     - source: salt://role/main/files/login.sh
     - mode: 755
     - user: root
@@ -33,24 +31,22 @@ login_script:
     - context:
         login_webhook_url: {{ login_webhook_url }}
 
-login_service:
+/etc/systemd/system/login.service:
   file.managed:
-    - name: /etc/systemd/system/login.service
     - source: salt://role/main/files/login.service
     - mode: 644
     - user: root
     - group: root
 
-start_enable_login_service:
+login_service:
   service.running:
     - name: login
     - enable: True
     - watch:
-      - file: login_service
+      - file: /etc/systemd/system/login.service
 
-github_pull_script:
+/root/github_pull/github_pull.sh:
   file.managed:
-    - name: /root/github_pull/github_pull.sh
     - source: salt://role/main/files/github_pull.sh
     - mode: 755
     - user: root
@@ -60,33 +56,30 @@ github_pull_script:
         github_pull_token: {{ github_pull_token }}
         pull_webhook_url: {{ pull_webhook_url }}
 
-github_pull_service:
+/etc/systemd/system/github_pull.service:
   file.managed:
-    - name: /etc/systemd/system/github_pull.service
     - source: salt://role/main/files/github_pull.service
     - mode: 644
     - user: root
     - group: root
     - require:
-      - file: github_pull_script
+      - file: /root/github_pull/github_pull.sh
     - watch:
-      - file: github_pull_script
+      - file: /root/github_pull/github_pull.sh
 
-github_pull_timer:
+/etc/systemd/system/github_pull.timer:
   file.managed:
-    - name: /etc/systemd/system/github_pull.timer
     - source: salt://role/main/files/github_pull.timer
     - mode: 644
     - user: root
     - group: root
     - require:
-      - file: github_pull_script
+      - file: /root/github_pull/github_pull.sh
     - watch:
-      - file: github_pull_script
+      - file: /root/github_pull/github_pull.sh
 
-pssh_all_hosts:
+/root/pssh/pssh_all_hosts:
   file.managed:
-    - name: /root/pssh/pssh_all_hosts
     - source: salt://role/main/files/pssh_all_hosts
     - makedirs: True
     - mode: 644
@@ -96,9 +89,8 @@ pssh_all_hosts:
     - context:
         hosts_list: {{ hosts_list }}
 
-pssh_hosts:
+/root/pssh/pssh_hosts:
   file.managed:
-    - name: /root/pssh/pssh_hosts
     - source: salt://role/main/files/pssh_hosts
     - makedirs: True
     - mode: 644

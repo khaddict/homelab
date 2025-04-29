@@ -1,6 +1,5 @@
-install_prometheus_node_exporter:
-  pkg.installed:
-    - name: prometheus-node-exporter
+prometheus-node-exporter:
+  pkg.installed
 
 service_prometheus_node_exporter:
   service.running:

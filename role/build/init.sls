@@ -1,25 +1,20 @@
-install_build_essential:
-  pkg.installed:
-    - name: build-essential
+build-essential:
+  pkg.installed
 
-install_debhelper:
-  pkg.installed:
-    - name: debhelper
+debhelper:
+  pkg.installed
 
-homelab_blackbox_exporter_amd64_directory:
+/root/homelab-blackbox-exporter_amd64:
   file.recurse:
-    - name: /root/homelab-blackbox-exporter_amd64
     - source: salt://role/build/files/homelab-blackbox-exporter_amd64
     - include_empty: True
 
-homelab_elastic_exporter_amd64_directory:
+/root/homelab-elastic-exporter_amd64:
   file.recurse:
-    - name: /root/homelab-elastic-exporter_amd64
     - source: salt://role/build/files/homelab-elastic-exporter_amd64
     - include_empty: True
 
-packages_dir:
+/root/packages:
   file.directory:
-    - name: /root/packages
     - user: root
     - group: root

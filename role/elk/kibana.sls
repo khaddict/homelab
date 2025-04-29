@@ -3,13 +3,11 @@
 {% set xpack_security_encryptionKey = salt['vault'].read_secret('kv/elk').xpack_security_encryptionKey %}
 {% set elasticsearch_serviceAccountToken = salt['vault'].read_secret('kv/elk').elasticsearch_serviceAccountToken %}
 
-install_kibana:
-  pkg.installed:
-    - name: kibana
+kibana:
+  pkg.installed
 
-kibana_config:
+/etc/kibana/kibana.yml:
   file.managed:
-    - name: /etc/kibana/kibana.yml
     - source: salt://role/elk/files/kibana.yml
     - mode: 660
     - user: root
@@ -26,6 +24,6 @@ service_kibana:
     - name: kibana
     - enable: True
     - require:
-      - pkg: install_kibana
+      - pkg: kibana
     - watch:
-      - file: kibana_config
+      - file: /etc/kibana/kibana.yml

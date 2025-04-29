@@ -1,3 +1,2 @@
-install_openvpn:
-  pkg.installed:
-    - name: openvpn
+openvpn:
+  pkg.installed

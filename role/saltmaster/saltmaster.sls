@@ -1,61 +1,47 @@
 include:
   - base.saltstack
+  - role.saltmaster.service_salt_master
 
-saltgui_directory:
+/srv/saltgui:
   file.recurse:
-    - name: /srv/saltgui
     - source: salt://role/saltmaster/files/saltgui
     - include_empty: True
 
-master_config:
+/etc/salt/master:
   file.managed:
-    - name: /etc/salt/master
     - source: salt://role/saltmaster/files/master
     - mode: 644
     - user: root
     - group: root
 
-saltgui_user:
+saltgui:
   user.present:
-    - name: saltgui
     - usergroup: True
     - createhome: False
 
-install_salt_master:
-  pkg.installed:
-    - name: salt-master
+salt-master:
+  pkg.installed
 
-service_salt_master:
-  service.running:
-    - name: salt-master
-    - enable: True
-    - require:
-      - pkg: install_salt_master
+salt-ssh:
+  pkg.installed
 
-install_salt_ssh:
-  pkg.installed:
-    - name: salt-ssh
+salt-syndic:
+  pkg.installed
 
-install_salt_syndic:
-  pkg.installed:
-    - name: salt-syndic
-
-stop_salt_syndic:
+service_salt_syndic:
   service.dead:
     - name: salt-syndic
     - enable: False
 
-install_salt_cloud:
-  pkg.installed:
-    - name: salt-cloud
+salt-cloud:
+  pkg.installed
 
-install_salt_api:
-  pkg.installed:
-    - name: salt-api
+salt-api:
+  pkg.installed
 
 service_salt_api:
   service.running:
     - name: salt-api
     - enable: True
     - require:
-      - pkg: install_salt_api
+      - pkg: salt-api

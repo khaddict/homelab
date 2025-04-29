@@ -3,27 +3,24 @@
 {% set fqdn = grains["fqdn"] %}
 {% set host = grains["host"] %}
 
-user_cfg_file:
+/etc/pve/user.cfg:
   file.managed:
-    - name: /etc/pve/user.cfg
     - source: salt://role/proxmox/files/user.cfg
     - user: root
     - group: www-data
     - mode: 640
     - makedirs: True
 
-domains_cfg_file:
+/etc/pve/domains.cfg:
   file.managed:
-    - name: /etc/pve/domains.cfg
     - source: salt://role/proxmox/files/domains.cfg
     - user: root
     - group: www-data
     - mode: 640
     - makedirs: True
 
-jobs_cfg_file:
+/etc/pve/jobs.cfg:
   file.managed:
-    - name: /etc/pve/jobs.cfg
     - source: salt://role/proxmox/files/jobs.cfg
     - user: root
     - group: www-data
@@ -34,9 +31,8 @@ jobs_cfg_file:
         storage: {{ data.proxmox_backups.backup_storage }}
         vms: {{ data.proxmox_vms }}
 
-ldap_pw_file:
+/etc/pve/priv/ldap/ldap.pw:
   file.managed:
-    - name: /etc/pve/priv/ldap/ldap.pw
     - source: salt://role/proxmox/files/ldap.pw
     - user: root
     - group: www-data
@@ -46,9 +42,8 @@ ldap_pw_file:
     - context:
         ldap_password: {{ ldap_password }}
 
-ksmtuned_conf:
+/etc/ksmtuned.conf:
   file.managed:
-    - name: /etc/ksmtuned.conf
     - source: salt://role/proxmox/files/ksmtuned.conf
     - user: root
     - group: root

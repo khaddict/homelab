@@ -1,3 +1,2 @@
-install_fuse:
-  pkg.installed:
-    - name: fuse
+fuse:
+  pkg.installed

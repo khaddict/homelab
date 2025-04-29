@@ -1,12 +1,10 @@
 {% set fqdn = grains["fqdn"] %}
 
-install_ssh:
-  pkg.installed:
-    - name: openssh-server
+openssh-server:
+  pkg.installed
 
-sshd_config:
+/etc/ssh/sshd_config:
   file.managed:
-    - name: /etc/ssh/sshd_config
     - source: salt://global/common/ssh/files/sshd_config
     - mode: 644
     - user: root
@@ -15,15 +13,15 @@ sshd_config:
     - context:
         fqdn: {{ fqdn }}
 
-authorized_keys_file:
+{% if fqdn is match('n\d-cls\d\.homelab\.lan') %}
+/etc/pve/priv/authorized_keys:
   file.managed:
-    {% if fqdn is match('n\d-cls\d\.homelab\.lan') %}
-    - name: /etc/pve/priv/authorized_keys
     - group: www-data
-    {% else %}
-    - name: /root/.ssh/authorized_keys
+{% else %}
+/root/.ssh/authorized_keys:
+  file.managed:
     - group: root
-    {% endif %}
+{% endif %}
     - source: salt://global/common/ssh/files/authorized_keys
     - mode: 600
     - user: root
@@ -31,9 +29,8 @@ authorized_keys_file:
     - context:
         fqdn: {{ fqdn }}
 
-ssh_config_file:
+/root/.ssh/config:
   file.managed:
-    - name: /root/.ssh/config
     - source: salt://global/common/ssh/files/config
     - mode: 644
     - user: root
@@ -42,12 +39,16 @@ ssh_config_file:
     - context:
         fqdn: {{ fqdn }}
 
-reload_service_ssh:
+service_ssh:
   service.running:
     - name: ssh
     - enable: True
     - reload: True
     - watch:
-      - file: sshd_config
-      - file: authorized_keys_file
-      - file: ssh_config_file
+      - file: /etc/ssh/sshd_config
+      {% if fqdn is match('n\d-cls\d\.homelab\.lan') %}
+      - file: /etc/pve/priv/authorized_keys
+      {% else %}
+      - file: /root/.ssh/authorized_keys
+      {% endif %}
+      - file: /root/.ssh/config

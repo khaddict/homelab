@@ -4,9 +4,8 @@ mariadb_dependencies:
       - software-properties-common
       - gnupg2
 
-download_mariadb_script:
+/tmp/mariadb_repo_setup:
   file.managed:
-    - name: /tmp/mariadb_repo_setup
     - source: https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
     - makedirs: True
     - user: root
@@ -16,13 +15,13 @@ download_mariadb_script:
     - require:
       - pkg: mariadb_dependencies
 
-execute_mariadb_script:
+execute_mariadb_repo_setup_script:
   cmd.run :
     - name: /usr/bin/bash /tmp/mariadb_repo_setup
     - require:
-      - file: download_mariadb_script
+      - file: /tmp/mariadb_repo_setup
     - onchanges:
-      - download_mariadb_script
+      - /tmp/mariadb_repo_setup
 
 install_mariadb:
   pkg.installed:
@@ -30,7 +29,7 @@ install_mariadb:
       - mariadb-server
       - mariadb-client
     - require:
-      - cmd: execute_mariadb_script
+      - cmd: execute_mariadb_repo_setup_script
 
 service_mariadb:
   service.running:

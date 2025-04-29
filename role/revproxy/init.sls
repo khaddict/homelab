@@ -3,18 +3,17 @@
 include:
   - base.haproxy
 
-haproxy_config:
+/etc/haproxy/haproxy.cfg:
   file.managed:
-    - name: /etc/haproxy/haproxy.cfg
     - source: salt://role/revproxy/files/haproxy.cfg
     - mode: 644
     - user: root
     - group: root
 
-restart_haproxy_service:
+haproxy_service:
   service.running:
     - name: haproxy
     - enable: True
     - reload: True
     - watch:
-      - file: haproxy_config
+      - file: /etc/haproxy/haproxy.cfg

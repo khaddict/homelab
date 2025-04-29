@@ -1,3 +1,2 @@
-install_nfs_kernel_server:
-  pkg.installed:
-    - name: nfs-kernel-server
+nfs-kernel-server:
+  pkg.installed

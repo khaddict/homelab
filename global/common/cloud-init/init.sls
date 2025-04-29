@@ -1,6 +1,5 @@
-disable_cloud_init:
+/etc/cloud/cloud-init.disabled:
   file.managed:
-    - name: /etc/cloud/cloud-init.disabled
     - mode: 644
     - user: root
     - group: root
