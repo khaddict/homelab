@@ -1,6 +1,5 @@
-hostname_motd_config:
+/etc/update-motd.d/20-hostname:
   file.managed:
-    - name: /etc/update-motd.d/20-hostname
     - source: salt://global/common/motd/files/20-hostname
     - mode: 755
     - user: root

@@ -1,3 +1,2 @@
-install_pssh:
-  pkg.installed:
-    - name: pssh
+pssh:
+  pkg.installed

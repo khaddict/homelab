@@ -1,3 +1,2 @@
-install_haproxy:
-  pkg.installed:
-    - name: haproxy
+haproxy:
+  pkg.installed

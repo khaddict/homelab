@@ -1,3 +1,2 @@
-install_git:
-  pkg.installed:
-    - name: git
+git:
+  pkg.installed

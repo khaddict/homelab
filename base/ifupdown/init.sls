@@ -1,3 +1,2 @@
-install_ifupdown:
-  pkg.installed:
-    - name: ifupdown
+ifupdown:
+  pkg.installed

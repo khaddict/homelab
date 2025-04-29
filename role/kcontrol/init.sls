@@ -8,9 +8,8 @@
 include:
   - base.keepalived
 
-keepalived_conf:
+/etc/keepalived/keepalived.conf:
   file.managed:
-    - name: /etc/keepalived/keepalived.conf
     - source: salt://role/kcontrol/files/keepalived.conf
     - mode: 644
     - user: root
@@ -21,10 +20,10 @@ keepalived_conf:
         state: {{ state }}
         virtual_ipaddress: {{ virtual_ipaddress }}
 
-restart_keepalived_service:
+keepalived_service:
   service.running:
     - name: keepalived
     - enable: True
     - reload: True
     - watch:
-      - file: keepalived_conf
+      - file: /etc/keepalived/keepalived.conf

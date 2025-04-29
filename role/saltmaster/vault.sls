@@ -1,8 +1,7 @@
 {% set salt_policy_token = salt['vault'].read_secret('kv/vault_tokens').salt_policy_token %}
 
-vault_config:
+/etc/salt/master.d/vault.conf:
   file.managed:
-    - name: /etc/salt/master.d/vault.conf
     - source: salt://role/saltmaster/files/vault.conf
     - mode: 644
     - user: root
@@ -10,20 +9,14 @@ vault_config:
     - template: jinja
     - context:
         salt_policy_token: {{ salt_policy_token }}
+    - watch_in:
+      - service: service_salt_master
 
-peer_run_config:
+/etc/salt/master.d/peer_run.conf:
   file.managed:
-    - name: /etc/salt/master.d/peer_run.conf
     - source: salt://role/saltmaster/files/peer_run.conf
     - mode: 644
     - user: root
     - group: root
-
-reload_service_salt_master:
-  service.running:
-    - name: salt-master
-    - enable: True
-    - reload: True
-    - watch:
-      - file: vault_config
-      - file: peer_run_config
+    - watch_in:
+      - service: service_salt_master

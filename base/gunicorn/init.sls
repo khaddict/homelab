@@ -1,3 +1,2 @@
-install_gunicorn:
-  pkg.installed:
-    - name: gunicorn
+gunicorn:
+  pkg.installed

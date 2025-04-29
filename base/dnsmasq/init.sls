@@ -2,13 +2,11 @@
 {% set powerdns_recursor = data.network.dns_nameservers.powerdns_recursor %}
 {% set freebox = data.network.dns_nameservers.freebox %}
 
-install_dnsmasq:
-  pkg.installed:
-    - name: dnsmasq
+dnsmasq:
+  pkg.installed
 
-dnsmasq_config:
+/etc/dnsmasq.conf:
   file.managed:
-    - name: /etc/dnsmasq.conf
     - source: salt://base/dnsmasq/files/dnsmasq.conf
     - makedirs: True
     - mode: 644
@@ -19,4 +17,4 @@ dnsmasq_config:
         powerdns_recursor: {{ powerdns_recursor }}
         freebox: {{ freebox }}
     - require:
-      - pkg: install_dnsmasq
+      - pkg: dnsmasq

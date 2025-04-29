@@ -38,7 +38,7 @@ include:
     - user: root
     - group: root
 
-enable_rclone_sync_service:
+rclone_sync_service:
   service.enabled:
     - name: rclone-sync.service
     - require:
@@ -46,7 +46,7 @@ enable_rclone_sync_service:
     - watch:
       - file: /etc/systemd/system/rclone-sync.service
 
-enable_rclone_sync_timer:
+rclone_sync_timer:
   service.running:
     - name: rclone-sync.timer
     - enable: True
@@ -63,7 +63,7 @@ enable_rclone_sync_timer:
     - user: root
     - group: root
 
-proxmox-backup-server-bookworm.list:
+/etc/apt/sources.list.d/proxmox-backup-server-bookworm.list:
   pkgrepo.managed:
     - name: deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/proxmox-backup-server-bookworm.gpg] http://download.proxmox.com/debian/pbs bookworm pbs-no-subscription
     - file: /etc/apt/sources.list.d/proxmox-backup-server-bookworm.list
@@ -73,18 +73,16 @@ proxmox-backup-server-bookworm.list:
 proxmox-backup-server:
   pkg.installed
 
-domains_cfg_file:
+/etc/proxmox-backup/domains.cfg:
   file.managed:
-    - name: /etc/proxmox-backup/domains.cfg
     - source: salt://role/pbs/files/domains.cfg
     - user: root
     - group: backup
     - mode: 640
     - makedirs: True
 
-ldap_passwords_file:
+/etc/proxmox-backup/ldap_passwords.json:
   file.managed:
-    - name: /etc/proxmox-backup/ldap_passwords.json
     - source: salt://role/pbs/files/ldap_passwords.json
     - user: root
     - group: www-data

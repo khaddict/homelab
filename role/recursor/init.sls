@@ -2,13 +2,11 @@
 
 {% set powerdns_authoritative = data.network.dns_nameservers.powerdns_authoritative %}
 
-install_pdns_recursor:
-  pkg.installed:
-    - name: pdns-recursor
+pdns-recursor:
+  pkg.installed
 
-pdns_recursor_config:
+/etc/powerdns/recursor.conf:
   file.managed:
-    - name: /etc/powerdns/recursor.conf
     - source: salt://role/recursor/files/recursor.conf
     - mode: 644
     - user: root
@@ -17,13 +15,13 @@ pdns_recursor_config:
     - context:
         powerdns_authoritative: {{ powerdns_authoritative }}
     - require:
-      - pkg: install_pdns_recursor
+      - pkg: pdns-recursor
 
 pdns_recursor_service:
   service.running:
     - name: pdns-recursor
     - enable: True
     - require:
-      - file: pdns_recursor_config
+      - file: /etc/powerdns/recursor.conf
     - watch:
-      - file: pdns_recursor_config
+      - file: /etc/powerdns/recursor.conf

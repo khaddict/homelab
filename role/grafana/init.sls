@@ -7,36 +7,32 @@ grafana_dependencies:
       - software-properties-common
       - wget
 
-manage_grafana_key:
+/usr/share/keyrings/grafana.key:
   file.managed:
-    - name: /usr/share/keyrings/grafana.key
     - source: salt://role/grafana/files/grafana.key
     - mode: 644
     - user: root
     - group: root
 
-grafana_repo_pkg:
+/etc/apt/sources.list.d/grafana.list:
   pkgrepo.managed:
     - name: deb [signed-by=/usr/share/keyrings/grafana.key] https://apt.grafana.com stable main
     - file: /etc/apt/sources.list.d/grafana.list
     - require:
-      - file: manage_grafana_key
+      - file: /usr/share/keyrings/grafana.key
 
-install_grafana:
-  pkg.installed:
-    - name: grafana
+grafana:
+  pkg.installed
 
-ldap_config:
+/etc/grafana/ldap.toml:
   file.managed:
-    - name: /etc/grafana/ldap.toml
     - source: salt://role/grafana/files/ldap.toml
     - mode: 640
     - user: root
     - group: grafana
 
-grafana_config:
+/etc/grafana/grafana.ini:
   file.managed:
-    - name: /etc/grafana/grafana.ini
     - source: salt://role/grafana/files/grafana.ini
     - mode: 640
     - user: root
@@ -47,7 +43,7 @@ service_grafana:
     - name: grafana-server
     - enable: True
     - require:
-      - pkg: install_grafana
+      - pkg: grafana
     - watch:
-      - file: ldap_config
-      - file: grafana_config
+      - file: /etc/grafana/ldap.toml
+      - file: /etc/grafana/grafana.ini

@@ -1,3 +1,2 @@
-install_redis:
-  pkg.installed:
-    - name: redis-server
+redis-server:
+  pkg.installed

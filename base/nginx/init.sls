@@ -1,3 +1,2 @@
-install_nginx:
-  pkg.installed:
-    - name: nginx
+nginx:
+  pkg.installed

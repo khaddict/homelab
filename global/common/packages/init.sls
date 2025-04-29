@@ -7,8 +7,8 @@ common_packages:
   pkg.installed:
     - pkgs: {{ pkgs.common_packages }}
     - require:
-      - file: homelab_aptly_config
-      - file: sources_config
+      - file: /etc/apt/sources.list.d/homelab_aptly.list
+      - file: /etc/apt/sources.list
 
 purged_packages:
   pkg.purged:

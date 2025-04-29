@@ -6,13 +6,11 @@
 {% set first_host = host_list[0].split('.')[0] %}
 {% set other_hosts = host_list[1:] %}
 
-install_logstash:
-  pkg.installed:
-    - name: logstash
+logstash:
+  pkg.installed
 
-logstash_conf_directory:
+/etc/logstash/conf.d:
   file.recurse:
-    - name: /etc/logstash/conf.d
     - source: salt://role/elk/files/logstash_conf
     - include_empty: True
     - template: jinja
@@ -21,17 +19,15 @@ logstash_conf_directory:
         first_host: {{ first_host }}
         other_hosts: {{ other_hosts }}
 
-pipelines_config:
+/etc/logstash/pipelines.yml:
   file.managed:
-    - name: /etc/logstash/pipelines.yml
     - source: salt://role/elk/files/pipelines.yml
     - mode: 644
     - user: root
     - group: root
 
-jvm_options:
+/etc/logstash/jvm.options:
   file.managed:
-    - name: /etc/logstash/jvm.options
     - source: salt://role/elk/files/jvm.options
     - mode: 644
     - user: root
@@ -42,8 +38,8 @@ service_logstash:
     - name: logstash
     - enable: True
     - require:
-      - pkg: install_logstash
+      - pkg: logstash
     - watch:
-      - file: logstash_conf_directory
-      - file: pipelines_config
-      - file: jvm_options
+      - file: /etc/logstash/conf.d
+      - file: /etc/logstash/pipelines.yml
+      - file: /etc/logstash/jvm.options

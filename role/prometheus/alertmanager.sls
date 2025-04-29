@@ -1,16 +1,14 @@
 {% set alertmanager_version = '0.27.0' %}
 {% set webhook_url = salt['vault'].read_secret('kv/prometheus').webhook_url %}
 
-alertmanager_user:
+alertmanager:
   user.present:
-    - name: alertmanager
     - usergroup: True
     - createhome: False
     - system: True
 
-extract_alertmanager:
+/etc/alertmanager-{{ alertmanager_version }}.linux-amd64:
   archive.extracted:
-    - name: /etc/
     - source: https://github.com/prometheus/alertmanager/releases/download/v{{ alertmanager_version }}/alertmanager-{{ alertmanager_version }}.linux-amd64.tar.gz
     - user: alertmanager
     - group: alertmanager
@@ -18,39 +16,36 @@ extract_alertmanager:
     - if_missing: /etc/alertmanager
     - skip_verify: True
 
-rename_alertmanager_directory:
+/etc/alertmanager:
   file.rename:
-    - name: /etc/alertmanager
     - source: /etc/alertmanager-{{ alertmanager_version }}.linux-amd64
     - require:
-      - archive: extract_alertmanager
+      - archive: /etc/alertmanager-{{ alertmanager_version }}.linux-amd64
 
-alertmanager_config:
+/etc/alertmanager/alertmanager.yml:
   file.managed:
-    - name: /etc/alertmanager/alertmanager.yml
     - source: salt://role/prometheus/files/alertmanager.yml
     - mode: 644
     - user: alertmanager
     - group: alertmanager
     - require:
-      - archive: extract_alertmanager
+      - file: /etc/alertmanager
     - template: jinja
     - context:
         webhook_url: {{ webhook_url }}
 
-alertmanager_service:
+/etc/systemd/system/alertmanager.service:
   file.managed:
-    - name: /etc/systemd/system/alertmanager.service
     - source: salt://role/prometheus/files/alertmanager.service
     - mode: 755
     - user: root
     - group: root
     - require:
-      - archive: extract_alertmanager
+      - file: /etc/alertmanager
 
-start_enable_alertmanager_service:
+alertmanager_service:
   service.running:
     - name: alertmanager
     - enable: True
     - watch:
-      - file: alertmanager_config
+      - file: /etc/alertmanager/alertmanager.yml

@@ -8,17 +8,15 @@
 {% set powerdns_api_key = salt['vault'].read_secret('kv/stackstorm/powerdns').api_key %}
 {% set snapshot_vms_discord_webhook = salt['vault'].read_secret('kv/stackstorm/st2_homelab').snapshot_vms_discord_webhook %}
 
-st2actionrunner_file:
+/etc/default/st2actionrunner:
   file.managed:
-    - name: /etc/default/st2actionrunner
     - source: salt://role/stackstorm/files/st2actionrunner
     - mode: 644
     - user: root
     - group: root
 
-st2_config:
+/etc/st2/st2.conf:
   file.managed:
-    - name: /etc/st2/st2.conf
     - source: salt://role/stackstorm/files/st2.conf
     - mode: 644
     - user: root
@@ -28,44 +26,40 @@ st2_config:
         messaging_url: {{ messaging_url }}
         database_password: {{ database_password }}
 
-st2_nginx_config:
+/etc/nginx/conf.d/st2.conf:
   file.managed:
-    - name: /etc/nginx/conf.d/st2.conf
     - source: salt://role/stackstorm/files/st2_nginx.conf
     - mode: 644
     - user: root
     - group: root
 
-clone_orquesta_evaluator:
+https://github.com/khaddict/orquestaevaluator.git:
   git.latest:
-    - name: https://github.com/khaddict/orquestaevaluator.git
     - target: /opt/orquestaevaluator
     - user: root
 
-orquesta_evaluator_service:
+/etc/systemd/system/orquesta_evaluator.service:
   file.managed:
-    - name: /etc/systemd/system/orquesta_evaluator.service
     - source: salt://role/stackstorm/files/orquesta_evaluator.service
     - mode: 644
     - user: root
     - group: root
     - require:
-      - git: clone_orquesta_evaluator
+      - git: https://github.com/khaddict/orquestaevaluator.git
 
-start_enable_orquesta_evaluator_service:
+orquesta_evaluator_service:
   service.running:
     - name: orquesta_evaluator
     - enable: True
     - require:
-      - file: orquesta_evaluator_service
+      - file: /etc/systemd/system/orquesta_evaluator.service
     - watch:
-      - file: orquesta_evaluator_service
+      - file: /etc/systemd/system/orquesta_evaluator.service
 
 # Packs
 
-st2_homelab_folder:
+/opt/stackstorm/packs/st2_homelab:
   file.recurse:
-    - name: /opt/stackstorm/packs/st2_homelab
     - source: salt://role/stackstorm/files/packs/st2_homelab
     - include_empty: True
     - template: jinja
@@ -75,23 +69,20 @@ st2_homelab_folder:
         gateway: {{ data.network.gateway }}
         snapshot_vms_discord_webhook: {{ snapshot_vms_discord_webhook }}
 
-netbox_folder:
+/opt/stackstorm/packs/netbox:
   file.recurse:
-    - name: /opt/stackstorm/packs/netbox
     - source: salt://role/stackstorm/files/packs/netbox
     - include_empty: True
 
-powerdns_folder:
+/opt/stackstorm/packs/powerdns:
   file.recurse:
-    - name: /opt/stackstorm/packs/powerdns
     - source: salt://role/stackstorm/files/packs/powerdns
     - include_empty: True
 
 # Configs
 
-st2_homelab_configs:
+/opt/stackstorm/configs/st2_homelab.yaml:
   file.managed:
-    - name: /opt/stackstorm/configs/st2_homelab.yaml
     - source: salt://role/stackstorm/files/configs/st2_homelab.yaml
     - mode: 660
     - user: root
@@ -100,9 +91,8 @@ st2_homelab_configs:
     - context:
         ca_password: {{ ca_password }}
 
-netbox_configs:
+/opt/stackstorm/configs/netbox.yaml:
   file.managed:
-    - name: /opt/stackstorm/configs/netbox.yaml
     - source: salt://role/stackstorm/files/configs/netbox.yaml
     - mode: 660
     - user: root
@@ -111,9 +101,8 @@ netbox_configs:
     - context:
         netbox_api_token: {{ netbox_api_token }}
 
-powerdns_configs:
+/opt/stackstorm/configs/powerdns.yaml:
   file.managed:
-    - name: /opt/stackstorm/configs/powerdns.yaml
     - source: salt://role/stackstorm/files/configs/powerdns.yaml
     - mode: 660
     - user: root
@@ -124,9 +113,8 @@ powerdns_configs:
 
 # Data
 
-main_data:
+/opt/stackstorm/data/main.json:
   file.managed:
-    - name: /opt/stackstorm/data/main.json
     - source: salt://data/main.json
     - mode: 644
     - user: root
@@ -139,25 +127,25 @@ st2_homelab_installation:
   cmd.run:
     - name: "st2 pack install file:///opt/stackstorm/packs/st2_homelab/"
     - require: 
-      - file: st2_homelab_folder
+      - file: /opt/stackstorm/packs/st2_homelab
     - onchanges:
-      - file: st2_homelab_folder
-      - file: st2_homelab_configs
+      - file: /opt/stackstorm/packs/st2_homelab
+      - file: /opt/stackstorm/configs/st2_homelab.yaml
 
 netbox_installation:
   cmd.run:
     - name: "st2 pack install file:///opt/stackstorm/packs/netbox/"
     - require: 
-      - file: netbox_folder
+      - file: /opt/stackstorm/packs/netbox
     - onchanges:
-      - file: netbox_folder
-      - file: netbox_configs
+      - file: /opt/stackstorm/packs/netbox
+      - file: /opt/stackstorm/configs/netbox.yaml
 
 powerdns_installation:
   cmd.run:
     - name: "st2 pack install file:///opt/stackstorm/packs/powerdns/"
     - require: 
-      - file: powerdns_folder
+      - file: /opt/stackstorm/packs/powerdns
     - onchanges:
-      - file: powerdns_folder
-      - file: powerdns_configs
+      - file: /opt/stackstorm/packs/powerdns
+      - file: /opt/stackstorm/configs/powerdns.yaml

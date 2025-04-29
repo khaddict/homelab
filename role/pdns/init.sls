@@ -29,30 +29,27 @@ pdns_dependencies:
       - libmariadb-dev
       - python3-flask
 
-pdns_db_script:
+/tmp/pdns_db.sh:
   file.managed:
-    - name: /tmp/pdns_db.sh
     - source: salt://role/pdns/files/pdns_db.sh
     - mode: 755
     - user: root
     - group: root
 
-pdns_repo_pkg:
+/etc/apt/sources.list.d/pdns.list:
   pkgrepo.managed:
     - name: deb [signed-by=/etc/apt/keyrings/auth-49-pub.asc] http://repo.powerdns.com/debian {{ oscodename }}-auth-49 main
     - file: /etc/apt/sources.list.d/pdns.list
 
-pdns_preferences:
+/etc/apt/preferences.d/auth-49:
   file.managed:
-    - name: /etc/apt/preferences.d/auth-49
     - source: salt://role/pdns/files/auth-49
     - mode: 644
     - user: root
     - group: root
 
-pdns_keyrings:
+/etc/apt/keyrings/auth-49-pub.asc:
   file.managed:
-    - name: /etc/apt/keyrings/auth-49-pub.asc
     - source: salt://role/pdns/files/auth-49-pub.asc
     - mode: 644
     - user: root
@@ -64,13 +61,12 @@ install_pdns:
       - pdns-server
       - pdns-backend-mysql
     - require:
-      - file: pdns_keyrings
-      - pkgrepo: pdns_repo_pkg
-      - file: pdns_preferences
+      - file: /etc/apt/keyrings/auth-49-pub.asc
+      - pkgrepo: /etc/apt/sources.list.d/pdns.list
+      - file: /etc/apt/preferences.d/auth-49
 
-gmysql_config:
+/etc/powerdns/pdns.d/pdns.local.gmysql.conf:
   file.managed:
-    - name: /etc/powerdns/pdns.d/pdns.local.gmysql.conf
     - source: salt://role/pdns/files/pdns.local.gmysql.conf
     - mode: 640
     - user: pdns
@@ -81,9 +77,8 @@ gmysql_config:
     - require:
       - pkg: install_pdns
 
-pdns_config:
+/etc/powerdns/pdns.conf:
   file.managed:
-    - name: /etc/powerdns/pdns.conf
     - source: salt://role/pdns/files/pdns.conf
     - mode: 640
     - user: root
@@ -99,14 +94,13 @@ service_pdns:
     - name: pdns
     - enable: True
     - require:
-      - file: gmysql_config
+      - file: /etc/powerdns/pdns.d/pdns.local.gmysql.conf
     - watch:
-      - file: gmysql_config
-      - file: pdns_config
+      - file: /etc/powerdns/pdns.d/pdns.local.gmysql.conf
+      - file: /etc/powerdns/pdns.conf
 
-download_nodejs_script:
+/tmp/setup_20.x:
   file.managed:
-    - name: /tmp/setup_20.x
     - source: https://deb.nodesource.com/setup_20.x
     - makedirs: True
     - user: root
@@ -115,56 +109,50 @@ download_nodejs_script:
     - skip_verify: True
 
 execute_nodejs_script:
-  cmd.run :
+  cmd.run:
     - name: /usr/bin/bash /tmp/setup_20.x
     - require:
-      - file: download_nodejs_script
+      - file: /tmp/setup_20.x
     - onchanges:
-      - download_nodejs_script
+      - /tmp/setup_20.x
 
-install_nodejs:
+nodejs:
   pkg.installed:
-    - name: nodejs
     - require:
-      - file: download_nodejs_script
+      - file: /tmp/setup_20.x
       - cmd: execute_nodejs_script
 
-yarnkey_keyrings:
+/usr/share/keyrings/yarnkey.gpg:
   file.managed:
-    - name: /usr/share/keyrings/yarnkey.gpg
     - source: salt://role/pdns/files/yarnkey.gpg
     - mode: 644
     - user: root
     - group: root
 
-yarnkey_repo_pkg:
+/etc/apt/sources.list.d/yarn.list:
   pkgrepo.managed:
     - name: deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main
     - file: /etc/apt/sources.list.d/yarn.list
 
-install_yarn:
+yarn:
   pkg.installed:
-    - name: yarn
     - require:
-      - file: yarnkey_keyrings
-      - pkgrepo: yarnkey_repo_pkg
+      - file: /usr/share/keyrings/yarnkey.gpg
+      - pkgrepo: /etc/apt/sources.list.d/yarn.list
 
-clone_powerdns_admin:
+https://github.com/ngoduykhanh/PowerDNS-Admin.git:
   git.latest:
-    - name: https://github.com/ngoduykhanh/PowerDNS-Admin.git
     - target: /var/www/html/pdns
     - user: root
 
-setup_venv_flask:
+/var/www/html/pdns/flask:
   virtualenv.managed:
-    - name: /var/www/html/pdns/flask
     - requirements: /var/www/html/pdns/requirements.txt
     - require:
-      - git: clone_powerdns_admin
+      - git: https://github.com/ngoduykhanh/PowerDNS-Admin.git
 
-pdns_default_config:
+/var/www/html/pdns/powerdnsadmin/default_config.py:
   file.managed:
-    - name: /var/www/html/pdns/powerdnsadmin/default_config.py
     - source: salt://role/pdns/files/default_config.py
     - mode: 644
     - user: root
@@ -175,70 +163,65 @@ pdns_default_config:
         powerdns_secret_key: {{ powerdns_secret_key }}
         powerdns_salt: {{ powerdns_salt }}
     - require:
-      - virtualenv: setup_venv_flask
+      - virtualenv: /var/www/html/pdns/flask
 
-remove_nginx_default:
-  file.absent:
-    - name: /etc/nginx/sites-enabled/default
+/etc/nginx/sites-enabled/default:
+  file.absent
 
-pdns_nginx_config:
+/etc/nginx/conf.d/powerdns-admin.conf:
   file.managed:
-    - name: /etc/nginx/conf.d/powerdns-admin.conf
     - source: salt://role/pdns/files/powerdns-admin.conf
     - mode: 644
     - user: root
     - group: root
     - require:
-      - file: remove_nginx_default
+      - file: /etc/nginx/sites-enabled/default
 
 service_nginx:
   service.running:
     - name: nginx
     - enable: True
     - require:
-      - file: pdns_nginx_config
+      - file: /etc/nginx/conf.d/powerdns-admin.conf
     - watch:
-      - file: pdns_nginx_config
+      - file: /etc/nginx/conf.d/powerdns-admin.conf
 
-pdnsadmin_service:
+/etc/systemd/system/pdnsadmin.service:
   file.managed:
-    - name: /etc/systemd/system/pdnsadmin.service
     - source: salt://role/pdns/files/pdnsadmin.service
     - mode: 644
     - user: root
     - group: root
 
-pdnsadmin_socket:
+/etc/systemd/system/pdnsadmin.socket:
   file.managed:
-    - name: /etc/systemd/system/pdnsadmin.socket
     - source: salt://role/pdns/files/pdnsadmin.socket
     - mode: 644
     - user: root
     - group: root
 
-pdnsadmin_config:
+/etc/tmpfiles.d/pdnsadmin.conf:
   file.managed:
-    - name: /etc/tmpfiles.d/pdnsadmin.conf
     - source: salt://role/pdns/files/pdnsadmin.conf
     - mode: 644
     - user: root
     - group: root
 
-start_enable_pdnsadmin_service:
+pdnsadmin_service:
   service.running:
     - name: pdnsadmin.service
     - enable: True
     - watch:
-      - file: pdnsadmin_service
-      - file: pdnsadmin_socket
-      - file: pdnsadmin_config
+      - file: /etc/systemd/system/pdnsadmin.service
+      - file: /etc/systemd/system/pdnsadmin.socket
+      - file: /etc/tmpfiles.d/pdnsadmin.conf
 
-start_enable_pdnsadmin_socket:
+pdnsadmin_socket:
   service.running:
     - name: pdnsadmin.socket
     - enable: True
     - watch:
-      - file: pdnsadmin_service
-      - file: pdnsadmin_socket
-      - file: pdnsadmin_config
-      - service: start_enable_pdnsadmin_service
+      - file: /etc/systemd/system/pdnsadmin.service
+      - file: /etc/systemd/system/pdnsadmin.socket
+      - file: /etc/tmpfiles.d/pdnsadmin.conf
+      - service: pdnsadmin_service

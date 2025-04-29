@@ -1,3 +1,2 @@
-install_rclone:
-  pkg.installed:
-    - name: rclone
+rclone:
+  pkg.installed
