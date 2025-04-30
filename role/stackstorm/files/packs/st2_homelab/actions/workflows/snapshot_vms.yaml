@@ -19,6 +19,8 @@ tasks:
         for VMID in $VMIDS; do
             pvesh create /nodes/<% item() %>/qemu/$VMID/snapshot --snapname <% ctx().snapshot_name %> --description "Automated snapshot" --vmstate true
             
+            sleep 20
+
             SNAPSHOTS=$(pvesh get /nodes/<% item() %>/qemu/$VMID/snapshot --output-format json | jq -r '.[].name' | sort -r)
             COUNT=0
             
@@ -28,6 +30,8 @@ tasks:
                     pvesh delete /nodes/<% item() %>/qemu/$VMID/snapshot/$SNAPSHOT --force
                 fi
             done
+
+            sleep 20
         done
     next:
       - when: <% succeeded() %>
