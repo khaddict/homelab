@@ -65,6 +65,23 @@
       "backup_enabled": true
     },
     {
+      "vm_name": "assets",
+      "vmid": "101",
+      "disk": "20",
+      "memory": "2048",
+      "cores": "1",
+      "description": "Assets VM",
+      "template": "debian-bookworm-template",
+      "ip_addr": "192.168.0.173",
+      "vm_role": "assets",
+      "node": "n3-cls1",
+      "force": true,
+      "tags": "Bookworm,Salt",
+      "main_iface": "ens18",
+      "schedule": "*-*-01 13:30:00",
+      "backup_enabled": true
+    },
+    {
       "vm_name": "build",
       "vmid": "116",
       "disk": "30",

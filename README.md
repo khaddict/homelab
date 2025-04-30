@@ -21,11 +21,11 @@ I use them to write down ideas and things to do, and it's often easier to do thi
 For now, I'll summarize my setup with a screenshot of my homepage.<br>
 A proper system and network architecture diagram will be added later (when I have time to make it clean and organized).
 
-![image](https://github.com/user-attachments/assets/34d3af20-d285-4984-bb89-580f5b5441e1)
+![image](https://github.com/user-attachments/assets/508b9814-880b-4612-b5ed-5dac7c06c672)
 
 ## 5) Infrastructure Overview 🌟
 
-![image](https://github.com/user-attachments/assets/30f609d1-74c2-4b75-bbcc-80f2a8fd390c)
+![image](https://github.com/user-attachments/assets/32fa0544-b78d-4873-bb69-f9d625e816bc)
 
 I have a three-node Proxmox cluster running virtual machines. Most of these VMs are managed with SaltStack. The technologies used include:
 
@@ -72,6 +72,9 @@ I have a three-node Proxmox cluster running virtual machines. Most of these VMs 
 - 🚀 `api.homelab.lan` ➞ [FastAPI](https://fastapi.tiangolo.com/)<br>
   - An API server for practice and development.
 
+- 🪙 `assets.homelab.lan` ➞ [Assets](https://github.com/khaddict/assets)<br>
+  - An application to track my assets.
+
 - 📚 `pdns.homelab.lan` ➞ [PowerDNS Authoritative Server](https://doc.powerdns.com/authoritative/index.html)<br>
   - Authoritative DNS server.
 
@@ -97,7 +100,9 @@ I have a three-node Proxmox cluster running virtual machines. Most of these VMs 
 
 - 💾 `pbs.homelab.lan` ➞ [Proxmox Backup Server](https://www.proxmox.com/en/products/proxmox-backup-server/overview)<br>
   - Proxmox Backup Server for backing up & restoring VMs.
-
-- 🗃️ `storage.homelab.lan` ➞ NFS storage to handle Proxmox backups via PBS.
+  - Local NFS storage to handle Proxmox backups.
+  - Synchronization to Shadow Drive :
+  
+  ![image](https://github.com/user-attachments/assets/9f6dad07-560e-4bf7-9b3d-b19eb50ca988)
 
 This documentation provides an overview of my homelab and the various technologies I am working with. More details will be added over time as I refine and expand my setup.
