@@ -10,6 +10,9 @@
   'aptly.homelab.lan':
     - role.aptly
 
+  'assets.homelab.lan':
+    - role.assets
+
   'build.homelab.lan':
     - role.build
 
