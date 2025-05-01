@@ -9,5 +9,5 @@ ubuntu:
     - purge: True
 
 root:
-   user.present:
-     - password: {{ root_hash }}
+  user.present:
+    - password: {{ root_hash }}
