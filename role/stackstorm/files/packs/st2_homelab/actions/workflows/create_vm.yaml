@@ -168,12 +168,26 @@ tasks:
         hostnamectl set-hostname "<% ctx().vm_fqdn %>"
     next:
       - when: <% succeeded() %>
-        do: install_salt_minion
+        do: ssh_keygen
       - when: <% failed() %>
         publish:
           - msg: "The hostname could not be set."
 
-  install_salt_minion:
+  ssh_keygen:
+    action: core.remote
+    input:
+      hosts: <% ctx().ip_addr %>
+      username: root
+      cmd: |
+        ssh-keygen -t ed25519 -C "<% ctx().vm_fqdn %>" -f /root/.ssh/id_ed25519 -q -N ""
+    next:
+      - when: <% succeeded() %>
+        do: independent_minion
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not generate the SSH public key."
+
+  independent_minion:
     action: core.remote
     input:
       hosts: <% ctx().saltmaster %>
@@ -183,20 +197,18 @@ tasks:
         salt-ssh --user=root -i --priv=/root/.ssh/id_ed25519 <% ctx().ip_addr %> state.sls independent
     next:
       - when: <% succeeded() %>
-        do: ssh_keygen
+        do: restart_salt_minion
       - when: <% failed() %>
         publish:
-          - msg: "Could not install & configure salt-minion."
+          - msg: "Could not install & configure salt-minion as independent minion."
 
-  ssh_keygen:
+  restart_salt_minion:
     action: core.remote
     input:
       hosts: <% ctx().ip_addr %>
       username: root
       cmd: |
-        systemctl restart salt-minion
-        sleep 20
-        ssh-keygen -t ed25519 -C "<% ctx().vm_fqdn %>" -f /root/.ssh/id_ed25519 -q -N ""
+        systemctl restart salt-minion && sleep 5
     next:
       - when: <% succeeded() %>
         do: accept_salt_key
@@ -213,36 +225,10 @@ tasks:
         salt-key -a <% ctx().vm_fqdn %> -y
     next:
       - when: <% succeeded() %>
-        do: global_state_vm
+        do: create_a_record
       - when: <% failed() %>
         publish:
           - msg: "Could not accept the salt-key for <% ctx().vm_fqdn %>."
-
-  global_state_vm:
-    action: core.remote
-    input:
-      hosts: <% ctx().ip_addr %>
-      username: root
-      timeout: 120
-      cmd: |
-        salt-call state.sls global
-    next:
-      - when: <% succeeded() %>
-        do: reboot_vm
-      - when: <% failed() %>
-        publish:
-          - msg: "Could not apply the global state on <% ctx().vm_fqdn %>."
-
-  reboot_vm:
-    action: core.remote
-    input:
-      hosts: <% ctx().ip_addr %>
-      username: root
-      cmd: |
-        reboot now
-    next:
-      - when: <% succeeded() or failed() %>
-        do: create_a_record
 
   create_a_record:
     action: powerdns.create_records
@@ -273,24 +259,10 @@ tasks:
       zone_name: "<% ctx().ptr_zone_name %>"
     next:
       - when: <% succeeded() %>
-        do: restart_recursor_service
-      - when: <% failed() %>
-        publish:
-          - msg: "Could not create the PTR record for <% ctx().vm_fqdn %>."
-
-  restart_recursor_service:
-    action: core.remote
-    input:
-      hosts: <% ctx().recursor %>
-      username: root
-      cmd: |
-        systemctl restart pdns-recursor.service
-    next:
-      - when: <% succeeded() %>
         do: create_vm_netbox
       - when: <% failed() %>
         publish:
-          - msg: "Could not restart pdns-recurstor.service."
+          - msg: "Could not create the PTR record for <% ctx().vm_fqdn %>."
 
   create_vm_netbox:
     action: st2_homelab.netbox_vm
@@ -303,11 +275,51 @@ tasks:
       disk: <% int(ctx().disk) * 1000 %>
     next:
       - when: <% succeeded() %>
+        do: global_state_vm
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not create <% ctx().vm_fqdn %> on NetBox side."
+
+  global_state_vm:
+    action: core.remote
+    input:
+      hosts: <% ctx().ip_addr %>
+      username: root
+      timeout: 180
+      cmd: |
+        salt-call state.sls global
+    next:
+      - when: <% succeeded() %>
+        do: reboot_vm
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not apply the global state on <% ctx().vm_fqdn %>."
+
+  reboot_vm:
+    action: core.remote
+    input:
+      hosts: <% ctx().ip_addr %>
+      username: root
+      cmd: |
+        reboot now
+    next:
+      - when: <% succeeded() or failed() %>
+        do: restart_recursor_service
+
+  restart_recursor_service:
+    action: core.remote
+    input:
+      hosts: <% ctx().recursor %>
+      username: root
+      cmd: |
+        systemctl restart pdns-recursor.service
+    next:
+      - when: <% succeeded() %>
         publish:
           - msg: "Everything is finished."
       - when: <% failed() %>
         publish:
-          - msg: "Could not create <% ctx().vm_fqdn %> on NetBox side."
+          - msg: "Could not restart pdns-recurstor.service."
 
 output:
   - msg: <% ctx().msg %>
