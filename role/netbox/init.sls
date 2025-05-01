@@ -37,8 +37,8 @@ netbox_repo:
   git.latest:
     - name: https://github.com/netbox-community/netbox.git
     - target: /opt/netbox
-    - branch: master
-    - rev: master
+    - branch: main
+    - rev: main
     - depth: 1
     - require:
       - file: /opt/netbox
