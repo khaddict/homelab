@@ -304,7 +304,32 @@ tasks:
         reboot now
     next:
       - when: <% succeeded() or failed() %>
-        do: restart_recursor_service
+        do: delete_cloudinit_efi
+
+  delete_cloudinit_efi:
+    action: core.remote
+    input:
+      hosts: <% ctx().proxmox %>
+      username: root
+      cmd: |
+        # Identifie les disques associés à la VM
+        qm disk list <% ctx().vmid %> | grep -E 'cloudinit|efi' | awk '{print $1}' | while read disk; do
+          # Supprime le volume cloud-init/efi
+          qm disk del <% ctx().vmid %> $disk
+        done
+    next:
+      - when: <% succeeded() %>
+        do: final_cleanup
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not delete cloud-init or EFI volume."
+
+  final_cleanup:
+    action: core.echo
+    input:
+      message: "VM creation process completed and cloud-init/EFI volume deleted."
+    next:
+      - do: restart_recursor_service # Si tu veux continuer avec ton service recursor
 
   restart_recursor_service:
     action: core.remote
