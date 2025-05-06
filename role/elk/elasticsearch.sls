@@ -25,13 +25,6 @@ elasticsearch:
     - user: root
     - group: elasticsearch
 
-/etc/elasticsearch/jvm.options.d/jvm-heap.options:
-  file.managed:
-    - source: salt://role/elk/files/jvm-heap.options
-    - mode: 644
-    - user: root
-    - group: elasticsearch
-
 service_elasticsearch:
   service.running:
     - name: elasticsearch
@@ -40,4 +33,3 @@ service_elasticsearch:
       - pkg: elasticsearch
     - watch:
       - file: /etc/elasticsearch/elasticsearch.yml
-      - file: /etc/elasticsearch/jvm.options.d/jvm-heap.options
