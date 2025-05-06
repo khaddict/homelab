@@ -2,5 +2,5 @@
 # For more information on multiple pipelines, see the documentation:
 #   https://www.elastic.co/guide/en/logstash/current/multiple-pipelines.html
 
-- pipeline.id: server
-  path.config: "/etc/logstash/conf.d/01-*-server.conf"
+- pipeline.id: syslog
+  path.config: "/etc/logstash/conf.d/syslog.conf"
