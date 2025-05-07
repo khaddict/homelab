@@ -290,10 +290,24 @@ tasks:
         salt-call state.sls global
     next:
       - when: <% succeeded() %>
-        do: reboot_vm
+        do: remove_ide_efidisk
       - when: <% failed() %>
         publish:
           - msg: "Could not apply the global state on <% ctx().vm_fqdn %>."
+
+  remove_ide_efidisk:
+    action: core.remote
+    input:
+      hosts: <% ctx().proxmox %>
+      username: root
+      cmd: |
+        for device in ide0 efidisk0; do qm set <% ctx().vmid %> -delete $device; done
+    next:
+      - when: <% succeeded() %>
+        do: reboot_vm
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not delete cloud-init or EFI volume."
 
   reboot_vm:
     action: core.remote
@@ -304,32 +318,7 @@ tasks:
         reboot now
     next:
       - when: <% succeeded() or failed() %>
-        do: delete_cloudinit_efi
-
-  delete_cloudinit_efi:
-    action: core.remote
-    input:
-      hosts: <% ctx().proxmox %>
-      username: root
-      cmd: |
-        # Identifie les disques associés à la VM
-        qm disk list <% ctx().vmid %> | grep -E 'cloudinit|efi' | awk '{print $1}' | while read disk; do
-          # Supprime le volume cloud-init/efi
-          qm disk del <% ctx().vmid %> $disk
-        done
-    next:
-      - when: <% succeeded() %>
-        do: final_cleanup
-      - when: <% failed() %>
-        publish:
-          - msg: "Could not delete cloud-init or EFI volume."
-
-  final_cleanup:
-    action: core.echo
-    input:
-      message: "VM creation process completed and cloud-init/EFI volume deleted."
-    next:
-      - do: restart_recursor_service # Si tu veux continuer avec ton service recursor
+        do: restart_recursor_service
 
   restart_recursor_service:
     action: core.remote
