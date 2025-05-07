@@ -28,7 +28,7 @@ logstash:
 
 /etc/logstash/jvm.options:
   file.managed:
-    - source: salt://role/elk/files/jvm.options
+    - source: salt://role/elk/files/jvm_logstash.options
     - mode: 644
     - user: root
     - group: root

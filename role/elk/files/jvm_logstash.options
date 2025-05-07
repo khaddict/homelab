@@ -1,5 +1,5 @@
--Xms1g
--Xmx2g
+-Xms512m
+-Xmx1g
 -XX:+UseG1GC
 -XX:MaxGCPauseMillis=200
 -XX:ParallelGCThreads=4
