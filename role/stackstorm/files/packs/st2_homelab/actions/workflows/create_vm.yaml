@@ -121,12 +121,12 @@ tasks:
         qm disk resize <% ctx().vmid %> scsi0 "+<% int(ctx().disk) - 2 %>G"
     next:
       - when: <% succeeded() %>
-        do: start_vm
+        do: first_start_vm
       - when: <% failed() %>
         publish:
           - msg: "Could not resize the disk."
 
-  start_vm:
+  first_start_vm:
     action: core.remote
     input:
       hosts: <% ctx().proxmox %>
@@ -290,35 +290,51 @@ tasks:
         salt-call state.sls global
     next:
       - when: <% succeeded() %>
-        do: remove_ide_efidisk
+        do: remove_useless_devices
       - when: <% failed() %>
         publish:
           - msg: "Could not apply the global state on <% ctx().vm_fqdn %>."
 
-  remove_ide_efidisk:
+  remove_useless_devices:
     action: core.remote
     input:
       hosts: <% ctx().proxmox %>
       username: root
       cmd: |
-        for device in ide0 efidisk0; do qm set <% ctx().vmid %> -delete $device; done
+        for device in efidisk0 ide0 serial0; do qm set <% ctx().vmid %> --delete $device; done
     next:
       - when: <% succeeded() %>
-        do: reboot_vm
+        do: shutdown_vm
       - when: <% failed() %>
         publish:
           - msg: "Could not delete cloud-init or EFI volume."
 
-  reboot_vm:
+  shutdown_vm:
     action: core.remote
     input:
       hosts: <% ctx().ip_addr %>
       username: root
       cmd: |
-        reboot now
+        shutdown now
     next:
       - when: <% succeeded() or failed() %>
+        do: second_start_vm
+
+  second_start_vm:
+    action: core.remote
+    input:
+      hosts: <% ctx().proxmox %>
+      username: root
+      cmd: |
+        sleep 10
+        qm start <% ctx().vmid %>
+        qm set <% ctx().vmid %> --delete unused0
+    next:
+      - when: <% succeeded() %>
         do: restart_recursor_service
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not start the VM."
 
   restart_recursor_service:
     action: core.remote
@@ -333,7 +349,7 @@ tasks:
           - msg: "Everything is finished."
       - when: <% failed() %>
         publish:
-          - msg: "Could not restart pdns-recurstor.service."
+          - msg: "Could not restart pdns-recursor.service."
 
 output:
   - msg: <% ctx().msg %>
