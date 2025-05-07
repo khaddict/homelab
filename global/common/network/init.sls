@@ -32,5 +32,5 @@
 {% else %}
 network_conf_absent_warning:
   test.show_notification:
-    - text: "COMPLETE THE NETWORK CONFIGURATION FOR {{ fqdn }} IN DATA/MAIN.JSON"
+    - text: "COMPLETE THE NETWORK CONFIGURATION FOR {{ host }} IN DATA/MAIN.JSON"
 {% endif %}
