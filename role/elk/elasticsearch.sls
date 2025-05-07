@@ -25,6 +25,13 @@ elasticsearch:
     - user: root
     - group: elasticsearch
 
+/etc/elasticsearch/jvm.options:
+  file.managed:
+    - source: salt://role/elk/files/jvm_elasticsearch.options
+    - mode: 660
+    - user: root
+    - group: elasticsearch
+
 service_elasticsearch:
   service.running:
     - name: elasticsearch
