@@ -102,4 +102,11 @@ tasks:
       url: "{{ snapshot_vms_discord_webhook }}"
       headers:
         Content-Type: application/json
-      body: "{'content': '```' + ctx().first_node_stdout + '\\n' + ctx().second_node_stdout + '\\n' + ctx().third_node_stdout + '```' | to_json_string }"
+      body: |
+        {
+          "content": """
+                     ```<% str(ctx().first_node_stdout) %>
+                     <% str(ctx().second_node_stdout) %>
+                     <% str(ctx().third_node_stdout) %>```
+                     """
+        }
