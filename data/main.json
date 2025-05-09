@@ -167,6 +167,23 @@
       "backup_enabled": true
     },
     {
+      "vm_name": "ai",
+      "vmid": "127",
+      "disk": "20",
+      "memory": "4096",
+      "cores": "2",
+      "description": "AI VM",
+      "template": "debian-bookworm-template",
+      "ip_addr": "192.168.0.182",
+      "vm_role": "ai",
+      "node": "n3-cls1",
+      "force": true,
+      "tags": "Bookworm,Salt",
+      "main_iface": "ens18",
+      "schedule": "*-*-01 13:30:00",
+      "backup_enabled": true
+    },
+    {
       "vm_name": "kcli",
       "vmid": "126",
       "disk": "50",
