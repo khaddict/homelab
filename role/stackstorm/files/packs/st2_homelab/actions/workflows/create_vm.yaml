@@ -147,7 +147,7 @@ tasks:
     input:
       hosts: <% ctx().ip_addr %>
       username: root
-      timeout: 90
+      timeout: 150
       cmd: |
         apt install parted -y
         echo -e "Yes\nquit" | parted /dev/sda resizepart 1 100% ---pretend-input-tty
