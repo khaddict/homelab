@@ -7,19 +7,19 @@ grafana_dependencies:
       - software-properties-common
       - wget
 
-/usr/share/keyrings/grafana.key:
+/etc/apt/keyrings/grafana.gpg:
   file.managed:
-    - source: salt://role/grafana/files/grafana.key
+    - source: salt://role/grafana/files/grafana.gpg
     - mode: 644
     - user: root
     - group: root
 
 /etc/apt/sources.list.d/grafana.list:
   pkgrepo.managed:
-    - name: deb [signed-by=/usr/share/keyrings/grafana.key] https://apt.grafana.com stable main
+    - name: deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main
     - file: /etc/apt/sources.list.d/grafana.list
     - require:
-      - file: /usr/share/keyrings/grafana.key
+      - file: /etc/apt/keyrings/grafana.gpg
 
 grafana:
   pkg.installed
