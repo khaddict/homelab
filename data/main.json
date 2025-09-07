@@ -505,6 +505,23 @@
       "main_iface": "ens18",
       "schedule": "*-*-01 13:00:00",
       "backup_enabled": true
+    },
+    {
+      "vm_name": "lfs",
+      "vmid": "500",
+      "disk": "30",
+      "memory": "16384",
+      "cores": "8",
+      "description": "Linux From Scratch",
+      "template": "debian-bookworm-template",
+      "ip_addr": "192.168.0.190",
+      "vm_role": "lfs",
+      "node": "n2-cls1",
+      "force": true,
+      "tags": "Bookworm,Salt",
+      "main_iface": "ens18",
+      "schedule": "*-*-01 13:30:00",
+      "backup_enabled": false
     }
   ]
 }
