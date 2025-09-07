@@ -192,7 +192,7 @@ tasks:
     input:
       hosts: <% ctx().saltmaster %>
       username: root
-      timeout: 120
+      timeout: 300
       cmd: |
         salt-ssh --user=root -i --priv=/root/.ssh/id_ed25519 <% ctx().ip_addr %> state.sls independent
     next:
