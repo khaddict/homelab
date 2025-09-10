@@ -1,0 +1,27 @@
+Package: salt-master
+Pin: version 3007.6*
+Pin-Priority: 1001
+
+Package: salt-minion
+Pin: version 3007.6*
+Pin-Priority: 1001
+
+Package: salt-common
+Pin: version 3007.6*
+Pin-Priority: 1001
+
+Package: salt-api
+Pin: version 3007.6*
+Pin-Priority: 1001
+
+Package: salt-cloud
+Pin: version 3007.6*
+Pin-Priority: 1001
+
+Package: salt-ssh
+Pin: version 3007.6*
+Pin-Priority: 1001
+
+Package: salt-syndic
+Pin: version 3007.6*
+Pin-Priority: 1001

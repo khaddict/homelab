@@ -1,0 +1,9 @@
+[Match]
+Name=vmbr0
+
+[Network]
+Address={{ ip_addr }}/24
+Gateway={{ gateway }}
+DNS={{ powerdns_recursor }}
+Domains={{ domain }}
+IPv6AcceptRA=no

@@ -1,3 +1,5 @@
+{% import_json 'data/main.json' as data %}
+{% set powerdns_authoritative = data.network.dns_nameservers.powerdns_authoritative %}
 {% set osarch = grains["osarch"] %}
 {% set oscodename = grains["oscodename"] %}
 {% set powerdns_db_password = salt['vault'].read_secret('kv/powerdns').powerdns_db_password %}
@@ -5,11 +7,11 @@
 {% set powerdns_salt = salt['vault'].read_secret('kv/powerdns').powerdns_salt %}
 {% set powerdns_secret_key = salt['vault'].read_secret('kv/powerdns').powerdns_secret_key %}
 
+
 include:
   - base.mariadb
   - base.nginx
   - base.virtualenv
-  - base.python311_venv
 
 pdns_dependencies:
   pkg.installed:
@@ -29,7 +31,7 @@ pdns_dependencies:
       - libmariadb-dev
       - python3-flask
 
-/tmp/pdns_db.sh:
+/opt/pdns_db.sh:
   file.managed:
     - source: salt://role/pdns/files/pdns_db.sh
     - mode: 755
@@ -38,19 +40,19 @@ pdns_dependencies:
 
 /etc/apt/sources.list.d/pdns.list:
   pkgrepo.managed:
-    - name: deb [signed-by=/etc/apt/keyrings/auth-49-pub.asc] http://repo.powerdns.com/debian {{ oscodename }}-auth-49 main
+    - name: deb [signed-by=/etc/apt/keyrings/auth-50-pub.asc] http://repo.powerdns.com/debian {{ oscodename }}-auth-50 main
     - file: /etc/apt/sources.list.d/pdns.list
 
-/etc/apt/preferences.d/auth-49:
+/etc/apt/preferences.d/auth-50:
   file.managed:
-    - source: salt://role/pdns/files/auth-49
+    - source: salt://role/pdns/files/auth-50
     - mode: 644
     - user: root
     - group: root
 
-/etc/apt/keyrings/auth-49-pub.asc:
+/etc/apt/keyrings/auth-50-pub.asc:
   file.managed:
-    - source: salt://role/pdns/files/auth-49-pub.asc
+    - source: salt://role/pdns/files/auth-50-pub.asc
     - mode: 644
     - user: root
     - group: root
@@ -61,9 +63,9 @@ install_pdns:
       - pdns-server
       - pdns-backend-mysql
     - require:
-      - file: /etc/apt/keyrings/auth-49-pub.asc
+      - file: /etc/apt/keyrings/auth-50-pub.asc
       - pkgrepo: /etc/apt/sources.list.d/pdns.list
-      - file: /etc/apt/preferences.d/auth-49
+      - file: /etc/apt/preferences.d/auth-50
 
 /etc/powerdns/pdns.d/pdns.local.gmysql.conf:
   file.managed:
@@ -86,6 +88,7 @@ install_pdns:
     - template: jinja
     - context:
         powerdns_api_key: {{ powerdns_api_key }}
+        powerdns_authoritative: {{ powerdns_authoritative }}
     - require:
       - pkg: install_pdns
 
@@ -99,7 +102,7 @@ service_pdns:
       - file: /etc/powerdns/pdns.d/pdns.local.gmysql.conf
       - file: /etc/powerdns/pdns.conf
 
-/tmp/setup_20.x:
+/opt/setup_20.x:
   file.managed:
     - source: https://deb.nodesource.com/setup_20.x
     - makedirs: True
@@ -110,16 +113,16 @@ service_pdns:
 
 execute_nodejs_script:
   cmd.run:
-    - name: /usr/bin/bash /tmp/setup_20.x
+    - name: /usr/bin/bash /opt/setup_20.x
     - require:
-      - file: /tmp/setup_20.x
+      - file: /opt/setup_20.x
     - onchanges:
-      - /tmp/setup_20.x
+      - /opt/setup_20.x
 
 nodejs:
   pkg.installed:
     - require:
-      - file: /tmp/setup_20.x
+      - file: /opt/setup_20.x
       - cmd: execute_nodejs_script
 
 /usr/share/keyrings/yarnkey.gpg:

@@ -5,8 +5,8 @@ After=network.target
 
 [Service]
 PIDFile=/run/pdnsadmin/pid
-User=pdns
-Group=pdns
+User=root
+Group=root
 WorkingDirectory=/var/www/html/pdns
 ExecStart=/var/www/html/pdns/flask/bin/gunicorn --pid /run/pdnsadmin/pid --bind unix:/run/pdnsadmin/socket 'powerdnsadmin:create_app()'
 ExecReload=/bin/kill -s HUP $MAINPID

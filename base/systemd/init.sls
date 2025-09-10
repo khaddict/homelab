@@ -1,2 +1,2 @@
-ifupdown:
+systemd:
   pkg.installed

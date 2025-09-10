@@ -1,1 +1,0 @@
-deb [trusted=yes] http://aptly.homelab.lan:8080/ stable main

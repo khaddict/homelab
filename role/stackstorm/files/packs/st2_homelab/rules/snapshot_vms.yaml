@@ -2,7 +2,7 @@
 name: snapshot_vms
 pack: st2_homelab
 enabled: true
-description: "Snapshot all VMs on Proxmox every friday and retain only the last 3 snapshots for each node."
+description: "Snapshot all VMs on Proxmox every friday and retain only the last snapshot for each node."
 trigger:
   type: "core.st2.CronTimer"
   parameters:
