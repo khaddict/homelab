@@ -1,2 +1,0 @@
-ifupdown:
-  pkg.installed
