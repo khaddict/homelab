@@ -4,6 +4,6 @@ Name={{ main_iface }}
 [Network]
 Address={{ ip_addr }}/24
 Gateway={{ gateway }}
-DNS={{ dns_nameservers|join(' ') }}
+DNS={{ dns_nameservers.values()|list|join(' ') }}
 Domains=homelab.lan
 IPv6AcceptRA=no
