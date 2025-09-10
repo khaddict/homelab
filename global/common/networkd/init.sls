@@ -8,20 +8,22 @@
 {% if is_proxmox_node %}
 {{ host }}_network_conf:
   file.managed:
-    - name: /etc/network/interfaces
-    - source: salt://global/common/network/files/network-conf-proxmox
+    - name: /etc/systemd/network/10-eth0.network
+    - source: salt://global/common/networkd/files/network-conf
     - template: jinja
     - context:
         netmask: {{ data.network.netmask }}
         gateway: {{ data.network.gateway }}
         main_iface: {{ data.proxmox_nodes[host].main_iface }}
         ip_addr: {{ data.proxmox_nodes[host].ip_addr }}
+        dns_nameservers: {{ data.network.dns_nameservers }}
+        fqdn: {{ fqdn }}
 
 {% elif is_vm %}
 {{ host }}_network_conf:
   file.managed:
-    - name: /etc/network/interfaces
-    - source: salt://global/common/network/files/network-conf
+    - name: /etc/systemd/network/10-eth0.network
+    - source: salt://global/common/networkd/files/network-conf
     - template: jinja
     - context:
         netmask: {{ data.network.netmask }}
