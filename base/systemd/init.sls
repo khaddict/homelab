@@ -1,0 +1,2 @@
+systemd:
+  pkg.installed

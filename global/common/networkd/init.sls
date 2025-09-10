@@ -6,7 +6,7 @@
 {% set is_vm = host in data.proxmox_vms | map(attribute='vm_name') %}
 
 include:
-  - base.systemd_networkd
+  - base.systemd
   - base.systemd_resolved
 
 {% if is_proxmox_node %}

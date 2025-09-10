@@ -1,2 +1,0 @@
-systemd-networkd:
-  pkg.installed
