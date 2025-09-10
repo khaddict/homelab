@@ -1,1 +1,5 @@
-deb [trusted=yes] http://aptly.homelab.lan:8080/ stable main
+Types: deb
+URIs: http://aptly.homelab.lan:8080/
+Suites: stable
+Components: main
+Trusted: yes

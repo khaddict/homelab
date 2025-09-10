@@ -1,3 +1,11 @@
-deb http://deb.debian.org/debian {{ oscodename }} main contrib non-free non-free-firmware
-deb http://deb.debian.org/debian-security/ {{ oscodename }}-security main contrib non-free non-free-firmware
-deb http://deb.debian.org/debian {{ oscodename }}-updates main contrib non-free non-free-firmware
+Types: deb deb-src
+URIs: http://deb.debian.org/debian
+Suites: {{ oscodename }} {{ oscodename }}-updates {{ oscodename }}-backports
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+Types: deb deb-src
+URIs: http://deb.debian.org/debian-security
+Suites: {{ oscodename }}-security
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
