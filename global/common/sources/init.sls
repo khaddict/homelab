@@ -15,7 +15,7 @@
 
 /etc/apt/sources.list.d/homelab_aptly.sources:
   file.managed:
-    - source: salt://global/common/sources/files/homelab_aptly.list
+    - source: salt://global/common/sources/files/homelab_aptly.sources
     - mode: 644
     - user: root
     - group: root
