@@ -4,7 +4,7 @@ mariadb_dependencies:
       - software-properties-common
       - gnupg2
 
-/tmp/mariadb_repo_setup:
+/opt/mariadb_repo_setup:
   file.managed:
     - source: https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
     - makedirs: True
@@ -17,11 +17,11 @@ mariadb_dependencies:
 
 execute_mariadb_repo_setup_script:
   cmd.run :
-    - name: /usr/bin/bash /tmp/mariadb_repo_setup
+    - name: /usr/bin/bash /opt/mariadb_repo_setup
     - require:
-      - file: /tmp/mariadb_repo_setup
+      - file: /opt/mariadb_repo_setup
     - onchanges:
-      - /tmp/mariadb_repo_setup
+      - /opt/mariadb_repo_setup
 
 install_mariadb:
   pkg.installed:

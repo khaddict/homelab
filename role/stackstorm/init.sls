@@ -67,6 +67,7 @@ orquesta_evaluator_service:
         dns: {{ data.network.dns_nameservers.powerdns_recursor }}
         netmask: {{ data.network.netmask }}
         gateway: {{ data.network.gateway }}
+        domain: {{ data.network.domain }}
         snapshot_vms_discord_webhook: {{ snapshot_vms_discord_webhook }}
 
 /opt/stackstorm/packs/netbox:

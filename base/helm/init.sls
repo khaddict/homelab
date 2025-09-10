@@ -1,7 +1,7 @@
 apt-transport-https:
   pkg.installed
 
-/etc/apt/keyrings/helm.gpg:
+/usr/share/keyrings/helm.gpg:
   file.managed:
     - source: salt://base/helm/files/helm.gpg
     - makedirs: True
@@ -11,10 +11,10 @@ apt-transport-https:
 
 /etc/apt/sources.list.d/helm-stable-debian.list:
   pkgrepo.managed:
-    - name: deb [arch=amd64 signed-by=/etc/apt/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main
+    - name: deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main
     - file: /etc/apt/sources.list.d/helm-stable-debian.list
     - require:
-      - file: /etc/apt/keyrings/helm.gpg
+      - file: /usr/share/keyrings/helm.gpg
 
 helm:
   pkg.installed

@@ -33,7 +33,7 @@ vars:
           COUNT=0
           for SNAPSHOT in $SNAPSHOTS; do
               COUNT=$((COUNT+1))
-              if [ $COUNT -gt 3 ]; then
+              if [ $COUNT -gt 1 ]; then
                   pvesh delete /nodes/$NODE/qemu/$VMID/snapshot/$SNAPSHOT --force >/dev/null 2>&1
               fi
           done

@@ -49,3 +49,17 @@
     - group: root
     - mode: 644
     - makedirs: True
+
+/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf:
+  file.managed:
+    - source: salt://role/proxmox/files/override.conf
+    - user: root
+    - group: root
+    - mode: 644
+    - makedirs: True
+
+systemd-networkd-wait-online:
+  service.running:
+    - enable: True
+    - require:
+      - file: /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf

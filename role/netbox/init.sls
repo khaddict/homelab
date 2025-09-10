@@ -6,7 +6,7 @@ include:
   - base.redis
   - base.nginx
 
-/tmp/netbox_db.sh:
+/opt/netbox_db.sh:
   file.managed:
     - source: salt://role/netbox/files/netbox_db.sh
     - mode: 755

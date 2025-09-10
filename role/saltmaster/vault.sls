@@ -4,8 +4,8 @@
   file.managed:
     - source: salt://role/saltmaster/files/vault.conf
     - mode: 644
-    - user: root
-    - group: root
+    - user: salt
+    - group: salt
     - template: jinja
     - context:
         salt_policy_token: {{ salt_policy_token }}
@@ -16,7 +16,7 @@
   file.managed:
     - source: salt://role/saltmaster/files/peer_run.conf
     - mode: 644
-    - user: root
-    - group: root
+    - user: salt
+    - group: salt
     - watch_in:
       - service: service_salt_master

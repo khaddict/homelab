@@ -1,0 +1,5 @@
+[Match]
+Name={{ main_iface }}
+
+[Network]
+Bridge=vmbr0

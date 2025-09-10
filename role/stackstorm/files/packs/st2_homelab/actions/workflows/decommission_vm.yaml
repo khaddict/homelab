@@ -32,7 +32,7 @@ tasks:
           - role_id: <% str(result().result.raw.results[0].role.id) %>
       - when: <% failed() %>
         publish:
-          - msg: "Could not get the VM ID and the VM IP on NetBox."
+          - msg: "Could not fetch VM ID and primary IP on NetBox for <% ctx().fqdn %>."
 
   vm_existence:
     action: core.remote
@@ -48,7 +48,7 @@ tasks:
           - vm_id: <% result()[ctx().node_fqdn].stdout.split()[0] %>
       - when: <% failed() %>
         publish:
-          - msg: "VM doesn't exist."
+          - msg: "VM <% ctx().vm_name %> not found on Proxmox node <% ctx().node_fqdn %>."
 
   vm_status:
     action: core.remote
@@ -64,7 +64,7 @@ tasks:
         do: delete_vm
       - when: <% failed() %>
         publish:
-          - msg: "Could not retrieve the VM status."
+          - msg: "Unable to determine power state for VM <% ctx().vm_id %> on <% ctx().node_fqdn %>."
 
   stop_vm:
     action: core.remote
@@ -78,7 +78,7 @@ tasks:
         do: delete_vm
       - when: <% failed() %>
         publish:
-          - msg: "Could not stop the VM."
+          - msg: "Could not stop VM <% ctx().vm_id %> on <% ctx().node_fqdn %>."
 
   delete_vm:
     action: core.remote
@@ -92,7 +92,7 @@ tasks:
         do: delete_saltkey
       - when: <% failed() %>
         publish:
-          - msg: "Could not destroy the VM."
+          - msg: "Could not delete VM <% ctx().vm_id %> on <% ctx().node_fqdn %>."
 
   delete_saltkey:
     action: core.remote
@@ -106,7 +106,7 @@ tasks:
         do: delete_a_record
       - when: <% failed() %>
         publish:
-          - msg: "Could not delete the salt-key."
+          - msg: "Could not delete Salt key for <% ctx().fqdn %> on <% ctx().saltmaster %>."
 
   delete_a_record:
     action: powerdns.delete_records
@@ -121,7 +121,7 @@ tasks:
         do: calculate_reverse_dns
       - when: <% failed() %>
         publish:
-          - msg: "Could not delete the A record."
+          - msg: "Could not delete A record for <% ctx().fqdn %> in zone <% ctx().zone_name %>."
 
   calculate_reverse_dns:
     action: core.noop
@@ -132,7 +132,7 @@ tasks:
           - reverse_name: <% ctx(vm_ip_netbox).split(".").limit(4).reverse().join(".") + ".in-addr.arpa." %>
       - when: <% failed() %>
         publish:
-          - msg: "Could not calculate the reverse name."
+          - msg: "Could not derive reverse name from IP <% ctx().vm_ip_netbox %>."
 
   delete_ptr_record:
     action: powerdns.delete_records
@@ -147,7 +147,7 @@ tasks:
         do: delete_vm_netbox
       - when: <% failed() %>
         publish:
-          - msg: "Could not delete the PTR record."
+          - msg: "Could not delete PTR record <% ctx().reverse_name %> for IP <% ctx().vm_ip_netbox %> in zone <% ctx().ptr_zone_name %>."
 
   delete_vm_netbox:
     action: netbox.delete.virtualization.virtual_machines
@@ -156,10 +156,10 @@ tasks:
     next:
       - when: <% succeeded() %>
         publish:
-          - msg: "Everything is finished."
+          - msg: "Decommission complete: '<% ctx().fqdn %>' removed from Proxmox, Salt, and DNS; NetBox record deleted."
       - when: <% failed() %>
         publish:
-          - msg: "Could not delete the virtual machine <% ctx().fqdn %> on NetBox."
+          - msg: "Could not delete virtual machine <% ctx().fqdn %> (id <% ctx().vm_id_netbox %>) on NetBox."
 
 output:
   - msg: <% ctx().msg %>

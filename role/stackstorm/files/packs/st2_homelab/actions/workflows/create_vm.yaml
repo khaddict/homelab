@@ -16,7 +16,7 @@ input:
   - tags
 
 vars:
-  - domain: "homelab.lan"
+  - domain: "{{ domain }}"
   - vm_fqdn: "<% ctx().vm_name %>.<% ctx().domain %>"
   - saltmaster: "saltmaster.<% ctx().domain %>"
   - pdns: "pdns.<% ctx().domain %>"
@@ -59,13 +59,13 @@ tasks:
       hosts: <% ctx().proxmox %>
       username: root
       cmd: |
-        qm list | grep -w "<% ctx().vm_name %>" > /dev/null; echo $?
+        pvesh get /cluster/resources --type vm --output-format json | jq -e --arg name '<% ctx().vm_name %>' 'any(.[]; .type=="qemu" and .name==$name)' >/dev/null && echo EXISTS || echo ABSENT
     next:
-      - when: <% succeeded() and result()[ctx().proxmox].stdout = 0 %>
+      - when: <% result()[ctx().proxmox].stdout = "EXISTS" %>
         do: noop
         publish:
-          - msg: "VM <% ctx().vm_name %> already exists."
-      - when: <% succeeded() and result()[ctx().proxmox].stdout = 1 %>
+          - msg: "VM <% ctx().vm_name %> already exists on <% ctx().proxmox %>. Skipping creation."
+      - when: <% result()[ctx().proxmox].stdout = "ABSENT" %>
         do: get_template_id
 
   get_template_id:
@@ -74,7 +74,7 @@ tasks:
       hosts: <% ctx().proxmox %>
       username: root
       cmd: |
-        qm list | grep <% ctx().template %> | awk '{print $1}'
+        pvesh get /nodes/<% ctx().node %>/qemu --output-format json | jq -re --arg name '<% ctx().template %>' 'first(.[] | select(.template==1 and .name==$name)) | .vmid'
     next:
       - when: <% succeeded() %>
         do: clone_vm
@@ -82,7 +82,7 @@ tasks:
           - template_id: <% result()[ctx().proxmox].stdout %>
       - when: <% failed() %>
         publish:
-          - msg: "Could not retrieve the template ID."
+          - msg: "Failed to retrieve template ID for <% ctx().template %> on <% ctx().proxmox %>."
 
   clone_vm:
     action: core.remote
@@ -96,7 +96,7 @@ tasks:
         do: configure_vm
       - when: <% failed() %>
         publish:
-          - msg: "Could not clone the VM."
+          - msg: "Failed to clone VM <% ctx().vm_name %> (vmid <% ctx().vmid %>) from template <% ctx().template_id %> on <% ctx().proxmox %>."
 
   configure_vm:
     action: core.remote
@@ -104,13 +104,13 @@ tasks:
       hosts: <% ctx().proxmox %>
       username: root
       cmd: |
-        qm set <% ctx().vmid %> --tags <% ctx().tags %> --ciuser root -ipconfig0 ip=<% ctx().ip_addr %>/24,gw={{ gateway }} --memory <% ctx().memory %> --cores <% ctx().cores %> --serial0 socket --sshkeys <(echo -e "<% ctx().st2_sshkey %>\n<% ctx().saltmaster_sshkey %>")
+        qm set <% ctx().vmid %> --tags <% ctx().tags %> --ciuser root -ipconfig0 ip=<% ctx().ip_addr %>/24,gw=192.168.0.254 --memory <% ctx().memory %> --cores <% ctx().cores %> --description "<% ctx().description %>" --sshkeys <(echo -e "<% ctx().st2_sshkey %>\n<% ctx().saltmaster_sshkey %>")
     next:
       - when: <% succeeded() %>
         do: resize_disk
       - when: <% failed() %>
         publish:
-          - msg: "Could not configure the VM."
+          - msg: "Failed to configure VM <% ctx().vm_name %> (vmid <% ctx().vmid %>) on <% ctx().proxmox %>."
 
   resize_disk:
     action: core.remote
@@ -118,46 +118,28 @@ tasks:
       hosts: <% ctx().proxmox %>
       username: root
       cmd: |
-        qm disk resize <% ctx().vmid %> scsi0 "+<% int(ctx().disk) - 2 %>G"
+        qm resize <% ctx().vmid %> scsi0 <% ctx().disk %>G
     next:
       - when: <% succeeded() %>
         do: first_start_vm
       - when: <% failed() %>
         publish:
-          - msg: "Could not resize the disk."
+          - msg: "Disk resize failed for VM <% ctx().vm_name %> (vmid <% ctx().vmid %>)."
 
   first_start_vm:
     action: core.remote
     input:
       hosts: <% ctx().proxmox %>
       username: root
-      timeout: 90
       cmd: |
         qm start <% ctx().vmid %>
-        echo wait 10s; sleep 10; echo waiting for host ping response; fping --quiet --retry=60 --backoff=1 --timeout=1000 <% ctx().ip_addr %> && echo wait 15s for ssh service to start && sleep 15
-    next:
-      - when: <% succeeded() %>
-        do: resize_part
-      - when: <% failed() %>
-        publish:
-          - msg: "Could not start the VM."
-
-  resize_part:
-    action: core.remote
-    input:
-      hosts: <% ctx().ip_addr %>
-      username: root
-      timeout: 150
-      cmd: |
-        apt install parted -y
-        echo -e "Yes\nquit" | parted /dev/sda resizepart 1 100% ---pretend-input-tty
-        resize2fs /dev/sda1
+        until nc -z -w1 <% ctx().ip_addr %> 22 >/dev/null 2>&1; do sleep 1; done
     next:
       - when: <% succeeded() %>
         do: set_hostname
       - when: <% failed() %>
         publish:
-          - msg: "Could not resize the partition."
+          - msg: "Failed to start VM <% ctx().vm_name %> or SSH (22/tcp) not reachable at <% ctx().ip_addr %>."
 
   set_hostname:
     action: core.remote
@@ -171,7 +153,7 @@ tasks:
         do: ssh_keygen
       - when: <% failed() %>
         publish:
-          - msg: "The hostname could not be set."
+          - msg: "Failed to set hostname <% ctx().vm_fqdn %> on <% ctx().ip_addr %>."
 
   ssh_keygen:
     action: core.remote
@@ -185,14 +167,14 @@ tasks:
         do: independent_minion
       - when: <% failed() %>
         publish:
-          - msg: "Could not generate the SSH public key."
+          - msg: "Failed to generate SSH keypair on <% ctx().ip_addr %>."
 
   independent_minion:
     action: core.remote
     input:
       hosts: <% ctx().saltmaster %>
       username: root
-      timeout: 300
+      timeout: 180
       cmd: |
         salt-ssh --user=root -i --priv=/root/.ssh/id_ed25519 <% ctx().ip_addr %> state.sls independent
     next:
@@ -200,21 +182,22 @@ tasks:
         do: restart_salt_minion
       - when: <% failed() %>
         publish:
-          - msg: "Could not install & configure salt-minion as independent minion."
+          - msg: "Salt independent minion bootstrap failed for <% ctx().vm_fqdn %>."
 
   restart_salt_minion:
     action: core.remote
     input:
       hosts: <% ctx().ip_addr %>
       username: root
+      timeout: 120
       cmd: |
-        systemctl restart salt-minion && sleep 5
+        systemctl stop salt-minion && systemctl kill -s SIGKILL --kill-who=all salt-minion 2>/dev/null || true; rm -f /run/salt-minion.pid; systemctl reset-failed salt-minion; systemctl start salt-minion
     next:
       - when: <% succeeded() %>
         do: accept_salt_key
       - when: <% failed() %>
         publish:
-          - msg: "Could not generate the SSH public key."
+          - msg: "Failed to restart salt-minion on <% ctx().vm_fqdn %>."
 
   accept_salt_key:
     action: core.remote
@@ -225,10 +208,78 @@ tasks:
         salt-key -a <% ctx().vm_fqdn %> -y
     next:
       - when: <% succeeded() %>
+        do: highstate_vm
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to accept Salt key for <% ctx().vm_fqdn %>."
+
+  highstate_vm:
+    action: core.remote
+    input:
+      hosts: <% ctx().ip_addr %>
+      username: root
+      timeout: 240
+      cmd: |
+        salt-call state.highstate
+    next:
+      - when: <% succeeded() %>
+        do: remove_useless_devices
+      - when: <% failed() %>
+        publish:
+          - msg: "Salt highstate failed on <% ctx().vm_fqdn %>."
+
+  remove_useless_devices:
+    action: core.remote
+    input:
+      hosts: <% ctx().proxmox %>
+      username: root
+      cmd: |
+        qm set <% ctx().vmid %> --delete efidisk0 --delete ide0
+    next:
+      - when: <% succeeded() %>
+        do: shutdown_vm
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to delete cloud-init/EFI devices (efidisk0, ide0) on VM <% ctx().vmid %>."
+
+  shutdown_vm:
+    action: core.remote
+    input:
+      hosts: <% ctx().ip_addr %>
+      username: root
+      cmd: |
+        shutdown -h now
+    next:
+      - when: <% succeeded() or failed() %>
+        do: wait_vm_stopped
+
+  wait_vm_stopped:
+    action: core.remote
+    input:
+      hosts: <% ctx().proxmox %>
+      username: root
+      cmd: |
+        until qm status <% ctx().vmid %> | grep -q 'stopped'; do sleep 1; done; qm start <% ctx().vmid %>
+    next:
+      - when: <% succeeded() %>
+        do: delete_unused0
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to stop or restart VM <% ctx().vmid %> on <% ctx().proxmox %>."
+
+  delete_unused0:
+    action: core.remote
+    input:
+      hosts: <% ctx().proxmox %>
+      username: root
+      cmd: |
+        qm set <% ctx().vmid %> --delete unused0
+    next:
+      - when: <% succeeded() %>
         do: create_a_record
       - when: <% failed() %>
         publish:
-          - msg: "Could not accept the salt-key for <% ctx().vm_fqdn %>."
+          - msg: "Failed to delete unused0 on VM <% ctx().vmid %>."
 
   create_a_record:
     action: powerdns.create_records
@@ -245,7 +296,7 @@ tasks:
         do: create_ptr_record
       - when: <% failed() %>
         publish:
-          - msg: "Could not create the A record for <% ctx().vm_fqdn %>."
+          - msg: "DNS A record creation failed for <% ctx().vm_fqdn %> → <% ctx().ip_addr %>."
 
   create_ptr_record:
     action: powerdns.create_records
@@ -259,10 +310,24 @@ tasks:
       zone_name: "<% ctx().ptr_zone_name %>"
     next:
       - when: <% succeeded() %>
+        do: restart_recursor_service
+      - when: <% failed() %>
+        publish:
+          - msg: "DNS PTR record creation failed for <% ctx().ip_addr %> → <% ctx().vm_fqdn %>."
+
+  restart_recursor_service:
+    action: core.remote
+    input:
+      hosts: <% ctx().recursor %>
+      username: root
+      cmd: |
+        systemctl restart pdns-recursor.service
+    next:
+      - when: <% succeeded() %>
         do: create_vm_netbox
       - when: <% failed() %>
         publish:
-          - msg: "Could not create the PTR record for <% ctx().vm_fqdn %>."
+          - msg: "Failed to restart pdns-recursor.service on <% ctx().recursor %>."
 
   create_vm_netbox:
     action: st2_homelab.netbox_vm
@@ -275,81 +340,11 @@ tasks:
       disk: <% int(ctx().disk) * 1000 %>
     next:
       - when: <% succeeded() %>
-        do: global_state_vm
+        publish:
+          - msg: "Provisioning complete: VM <% ctx().vm_fqdn %> (vmid <% ctx().vmid %>) created and recorded in NetBox."
       - when: <% failed() %>
         publish:
-          - msg: "Could not create <% ctx().vm_fqdn %> on NetBox side."
-
-  global_state_vm:
-    action: core.remote
-    input:
-      hosts: <% ctx().ip_addr %>
-      username: root
-      timeout: 180
-      cmd: |
-        salt-call state.sls global
-    next:
-      - when: <% succeeded() %>
-        do: remove_useless_devices
-      - when: <% failed() %>
-        publish:
-          - msg: "Could not apply the global state on <% ctx().vm_fqdn %>."
-
-  remove_useless_devices:
-    action: core.remote
-    input:
-      hosts: <% ctx().proxmox %>
-      username: root
-      cmd: |
-        for device in efidisk0 ide0 serial0; do qm set <% ctx().vmid %> --delete $device; done
-    next:
-      - when: <% succeeded() %>
-        do: shutdown_vm
-      - when: <% failed() %>
-        publish:
-          - msg: "Could not delete cloud-init or EFI volume."
-
-  shutdown_vm:
-    action: core.remote
-    input:
-      hosts: <% ctx().ip_addr %>
-      username: root
-      cmd: |
-        shutdown now
-    next:
-      - when: <% succeeded() or failed() %>
-        do: second_start_vm
-
-  second_start_vm:
-    action: core.remote
-    input:
-      hosts: <% ctx().proxmox %>
-      username: root
-      cmd: |
-        sleep 10
-        qm start <% ctx().vmid %>
-        qm set <% ctx().vmid %> --delete unused0
-    next:
-      - when: <% succeeded() %>
-        do: restart_recursor_service
-      - when: <% failed() %>
-        publish:
-          - msg: "Could not start the VM."
-
-  restart_recursor_service:
-    action: core.remote
-    input:
-      hosts: <% ctx().recursor %>
-      username: root
-      cmd: |
-        systemctl restart pdns-recursor.service
-    next:
-      - when: <% succeeded() %>
-        publish:
-          - msg: "Everything is finished."
-      - when: <% failed() %>
-        publish:
-          - msg: "Could not restart pdns-recursor.service."
+          - msg: "NetBox creation failed for VM <% ctx().vm_fqdn %>."
 
 output:
   - msg: <% ctx().msg %>

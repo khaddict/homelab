@@ -56,19 +56,19 @@ rclone_sync_timer:
     - watch:
       - file: /etc/systemd/system/rclone-sync.timer
 
-/etc/apt/trusted.gpg.d/proxmox-backup-server-bookworm.gpg:
+/usr/share/keyrings/proxmox-archive-keyring.gpg:
   file.managed:
-    - source: salt://role/pbs/files/proxmox-backup-server-bookworm.gpg
+    - source: salt://role/pbs/files/proxmox-archive-keyring.gpg
     - mode: 644
     - user: root
     - group: root
 
-/etc/apt/sources.list.d/proxmox-backup-server-bookworm.list:
-  pkgrepo.managed:
-    - name: deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/proxmox-backup-server-bookworm.gpg] http://download.proxmox.com/debian/pbs bookworm pbs-no-subscription
-    - file: /etc/apt/sources.list.d/proxmox-backup-server-bookworm.list
-    - require:
-      - file: /etc/apt/trusted.gpg.d/proxmox-backup-server-bookworm.gpg
+/etc/apt/sources.list.d/proxmox.sources:
+  file.managed:
+    - source: salt://role/pbs/files/proxmox.sources
+    - mode: 644
+    - user: root
+    - group: root
 
 proxmox-backup-server:
   pkg.installed
