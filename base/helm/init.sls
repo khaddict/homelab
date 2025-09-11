@@ -14,7 +14,7 @@ apt-transport-https:
     - name: deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main
     - file: /etc/apt/sources.list.d/helm-stable-debian.list
     - require:
-      - file: /etc/apt/keyrings/helm.gpg
+      - file: /usr/share/keyrings/helm.gpg
 
 helm:
   pkg.installed
