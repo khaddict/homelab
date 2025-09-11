@@ -6,8 +6,17 @@
 {% set is_vm = host in data.proxmox_vms | map(attribute='vm_name') %}
 
 include:
+{% if grains["os"] == "Debian" %}
   - base.systemd
   - base.systemd_resolved
+{% elif grains["os"] == "Ubuntu" %}
+  - base.systemd
+{% endif %}
+
+
+
+
+
 
 {% if is_proxmox_node %}
 {{ host }}_network_conf:
