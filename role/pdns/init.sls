@@ -9,7 +9,6 @@ include:
   - base.mariadb
   - base.nginx
   - base.virtualenv
-  - base.python311_venv
 
 pdns_dependencies:
   pkg.installed:
@@ -38,19 +37,19 @@ pdns_dependencies:
 
 /etc/apt/sources.list.d/pdns.list:
   pkgrepo.managed:
-    - name: deb [signed-by=/etc/apt/keyrings/auth-49-pub.asc] http://repo.powerdns.com/debian {{ oscodename }}-auth-49 main
+    - name: deb [signed-by=/etc/apt/keyrings/auth-50-pub.asc] http://repo.powerdns.com/debian {{ oscodename }}-auth-50 main
     - file: /etc/apt/sources.list.d/pdns.list
 
-/etc/apt/preferences.d/auth-49:
+/etc/apt/preferences.d/auth-50:
   file.managed:
-    - source: salt://role/pdns/files/auth-49
+    - source: salt://role/pdns/files/auth-50
     - mode: 644
     - user: root
     - group: root
 
-/etc/apt/keyrings/auth-49-pub.asc:
+/etc/apt/keyrings/auth-50-pub.asc:
   file.managed:
-    - source: salt://role/pdns/files/auth-49-pub.asc
+    - source: salt://role/pdns/files/auth-50-pub.asc
     - mode: 644
     - user: root
     - group: root
@@ -61,9 +60,9 @@ install_pdns:
       - pdns-server
       - pdns-backend-mysql
     - require:
-      - file: /etc/apt/keyrings/auth-49-pub.asc
+      - file: /etc/apt/keyrings/auth-50-pub.asc
       - pkgrepo: /etc/apt/sources.list.d/pdns.list
-      - file: /etc/apt/preferences.d/auth-49
+      - file: /etc/apt/preferences.d/auth-50
 
 /etc/powerdns/pdns.d/pdns.local.gmysql.conf:
   file.managed:

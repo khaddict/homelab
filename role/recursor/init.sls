@@ -1,6 +1,7 @@
 {% import_json 'data/main.json' as data %}
 
 {% set powerdns_authoritative = data.network.dns_nameservers.powerdns_authoritative %}
+{% set domain = data.network.domain %}
 
 pdns-recursor:
   pkg.installed
@@ -14,6 +15,7 @@ pdns-recursor:
     - template: jinja
     - context:
         powerdns_authoritative: {{ powerdns_authoritative }}
+        domain: {{ domain }}
     - require:
       - pkg: pdns-recursor
 

@@ -1,3 +1,5 @@
+{% set oscodename = grains["oscodename"] %}
+
 /etc/apt/keyrings/docker.asc:
   file.managed:
     - source: salt://role/docker/files/docker.asc
@@ -7,7 +9,7 @@
 
 /etc/apt/sources.list.d/docker.list:
   pkgrepo.managed:
-    - name: deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian bookworm stable
+    - name: deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ oscodename }} stable
     - file: /etc/apt/sources.list.d/docker.list
     - require:
       - file: /etc/apt/keyrings/docker.asc
