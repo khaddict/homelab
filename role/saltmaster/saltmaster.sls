@@ -11,8 +11,8 @@ include:
   file.managed:
     - source: salt://role/saltmaster/files/master
     - mode: 644
-    - user: root
-    - group: root
+    - user: salt
+    - group: salt
 
 saltgui:
   user.present:
