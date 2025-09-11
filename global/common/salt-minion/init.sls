@@ -10,8 +10,8 @@ minion_config:
     - name: /etc/salt/minion
     - source: salt://global/common/salt-minion/files/minion
     - mode: 644
-    - user: salt
-    - group: salt
+    - user: root
+    - group: root
 
 service_salt_minion:
   service.running:
