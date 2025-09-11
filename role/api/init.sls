@@ -1,5 +1,5 @@
 include:
-  - base.python311_venv
+  - base.python313_venv
 
 /opt/api_homelab:
   file.recurse:

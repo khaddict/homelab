@@ -3,7 +3,7 @@
 include:
   - base.git
   - base.ansible
-  - base.python311_venv
+  - base.python313_venv
   - base.virtualenv
   - base.kubectl
   - base.helm
