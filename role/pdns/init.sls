@@ -1,9 +1,12 @@
+{% import_json 'data/main.json' as data %}
+{% set powerdns_authoritative = data.network.dns_nameservers.powerdns_authoritative %}
 {% set osarch = grains["osarch"] %}
 {% set oscodename = grains["oscodename"] %}
 {% set powerdns_db_password = salt['vault'].read_secret('kv/powerdns').powerdns_db_password %}
 {% set powerdns_api_key = salt['vault'].read_secret('kv/powerdns').powerdns_api_key %}
 {% set powerdns_salt = salt['vault'].read_secret('kv/powerdns').powerdns_salt %}
 {% set powerdns_secret_key = salt['vault'].read_secret('kv/powerdns').powerdns_secret_key %}
+
 
 include:
   - base.mariadb
@@ -85,6 +88,7 @@ install_pdns:
     - template: jinja
     - context:
         powerdns_api_key: {{ powerdns_api_key }}
+        powerdns_authoritative: {{ powerdns_authoritative }}
     - require:
       - pkg: install_pdns
 
