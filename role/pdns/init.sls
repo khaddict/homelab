@@ -28,7 +28,7 @@ pdns_dependencies:
       - libmariadb-dev
       - python3-flask
 
-/tmp/pdns_db.sh:
+/opt/pdns_db.sh:
   file.managed:
     - source: salt://role/pdns/files/pdns_db.sh
     - mode: 755
@@ -98,7 +98,7 @@ service_pdns:
       - file: /etc/powerdns/pdns.d/pdns.local.gmysql.conf
       - file: /etc/powerdns/pdns.conf
 
-/tmp/setup_20.x:
+/opt/setup_20.x:
   file.managed:
     - source: https://deb.nodesource.com/setup_20.x
     - makedirs: True
@@ -109,16 +109,16 @@ service_pdns:
 
 execute_nodejs_script:
   cmd.run:
-    - name: /usr/bin/bash /tmp/setup_20.x
+    - name: /usr/bin/bash /opt/setup_20.x
     - require:
-      - file: /tmp/setup_20.x
+      - file: /opt/setup_20.x
     - onchanges:
-      - /tmp/setup_20.x
+      - /opt/setup_20.x
 
 nodejs:
   pkg.installed:
     - require:
-      - file: /tmp/setup_20.x
+      - file: /opt/setup_20.x
       - cmd: execute_nodejs_script
 
 /usr/share/keyrings/yarnkey.gpg:
