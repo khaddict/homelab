@@ -4,6 +4,6 @@ Name=vmbr0
 [Network]
 Address={{ ip_addr }}/24
 Gateway={{ gateway }}
-DNS={{ dns_nameservers.values()|list|join(' ') }}
+DNS={{ powerdns_recursor }}
 Domains={{ domain }}
 IPv6AcceptRA=no

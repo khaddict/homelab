@@ -33,7 +33,7 @@ include:
     - context:
         gateway: {{ data.network.gateway }}
         ip_addr: {{ data.proxmox_nodes[host].ip_addr }}
-        dns_nameservers: {{ data.network.dns_nameservers }}
+        powerdns_recursor: {{ data.network.dns_nameservers.powerdns_recursor }}
         domain: {{ domain }}
 {% elif is_vm %}
 {{ host }}_network_conf:
@@ -45,7 +45,7 @@ include:
         gateway: {{ data.network.gateway }}
         main_iface: {{ (data.proxmox_vms | selectattr('vm_name', 'equalto', host) | first).main_iface }}
         ip_addr: {{ (data.proxmox_vms | selectattr('vm_name', 'equalto', host) | first).ip_addr }}
-        dns_nameservers: {{ data.network.dns_nameservers }}
+        powerdns_recursor: {{ data.network.dns_nameservers.powerdns_recursor }}
         domain: {{ domain }}
 {% else %}
 network_conf_absent_warning:
