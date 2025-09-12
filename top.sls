@@ -31,6 +31,9 @@
   'kcli.homelab.lan':
     - role.kcli
 
+  'kworker0?.homelab.lan':
+    - role.kworker
+
   'kcontrol0?.homelab.lan':
     - role.kcontrol
 
