@@ -13,3 +13,21 @@
     - context:
         powerdns_authoritative: {{ powerdns_authoritative }}
         freebox: {{ freebox }}
+
+service_systemd_resolved:
+  service.running:
+    - name: systemd-resolved
+    - enable: True
+    - require:
+      - file: /etc/systemd/resolved.conf
+    - watch:
+      - file: /etc/systemd/resolved.conf
+
+resolv_conf_symlink:
+  file.symlink:
+    - name: /etc/resolv.conf
+    - target: /run/systemd/resolve/stub-resolv.conf
+    - force: True
+    - makedirs: True
+    - require:
+      - service: service_systemd_resolved

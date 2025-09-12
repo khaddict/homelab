@@ -57,17 +57,3 @@ service_systemd_networkd:
   service.running:
     - name: systemd-networkd
     - enable: True
-
-service_systemd_resolved:
-  service.running:
-    - name: systemd-resolved
-    - enable: True
-
-resolv_conf_symlink:
-  file.symlink:
-    - name: /etc/resolv.conf
-    - target: /run/systemd/resolve/stub-resolv.conf
-    - force: True
-    - makedirs: True
-    - require:
-      - service: service_systemd_resolved
