@@ -7,6 +7,7 @@ include:
   - .networkd
   - .ntp
   - .packages
+  - .resolved
   - .rsyslog
   - .salt-minion
   - .sources
