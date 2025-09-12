@@ -13,37 +13,40 @@ include:
   - base.systemd
 {% endif %}
 
-
-
-
-
-
 {% if is_proxmox_node %}
-{{ host }}_network_conf:
+{{ host }}_networkd_conf:
   file.managed:
-    - name: /etc/systemd/network/10-eth0.network
+    - name: /etc/systemd/network/10-{{ data.proxmox_nodes[host].main_iface }}.network
     - source: salt://global/common/networkd/files/networkd-conf
     - template: jinja
     - context:
-        netmask: {{ data.network.netmask }}
-        gateway: {{ data.network.gateway }}
         main_iface: {{ data.proxmox_nodes[host].main_iface }}
+{{ host }}_10_vmbr0_netdev_conf:
+  file.managed:
+    - name: /etc/systemd/network/10-vmbr0.netdev
+    - source: salt://global/common/networkd/files/10-vmbr0.netdev
+{{ host }}_20_vmbr0_network_conf:
+  file.managed:
+    - name: /etc/systemd/network/20-vmbr0.network
+    - source: salt://global/common/networkd/files/20-vmbr0.network
+    - template: jinja
+    - context:
+        gateway: {{ data.network.gateway }}
         ip_addr: {{ data.proxmox_nodes[host].ip_addr }}
         dns_nameservers: {{ data.network.dns_nameservers }}
-
+        domain: {{ domain }}
 {% elif is_vm %}
 {{ host }}_network_conf:
   file.managed:
-    - name: /etc/systemd/network/10-eth0.network
-    - source: salt://global/common/networkd/files/networkd-conf
+    - name: /etc/systemd/network/10-{{ (data.proxmox_vms | selectattr('vm_name', 'equalto', host) | first).main_iface }}.network
+    - source: salt://global/common/networkd/files/default-networkd-conf
     - template: jinja
     - context:
-        netmask: {{ data.network.netmask }}
         gateway: {{ data.network.gateway }}
         main_iface: {{ (data.proxmox_vms | selectattr('vm_name', 'equalto', host) | first).main_iface }}
         ip_addr: {{ (data.proxmox_vms | selectattr('vm_name', 'equalto', host) | first).ip_addr }}
         dns_nameservers: {{ data.network.dns_nameservers }}
-
+        domain: {{ domain }}
 {% else %}
 network_conf_absent_warning:
   test.show_notification:
