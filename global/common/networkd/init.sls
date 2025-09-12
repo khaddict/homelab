@@ -17,7 +17,7 @@ include:
 {{ host }}_networkd_conf:
   file.managed:
     - name: /etc/systemd/network/10-{{ data.proxmox_nodes[host].main_iface }}.network
-    - source: salt://global/common/networkd/files/networkd-conf
+    - source: salt://global/common/networkd/files/proxmox-networkd-conf
     - template: jinja
     - context:
         main_iface: {{ data.proxmox_nodes[host].main_iface }}
