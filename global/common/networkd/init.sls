@@ -57,3 +57,17 @@ service_systemd_networkd:
   service.running:
     - name: systemd-networkd
     - enable: True
+    - require:
+    {% if is_proxmox_node %}
+      - file: {{ host }}_networkd_conf
+      - file: {{ host }}_10_vmbr0_netdev_conf
+      - file: {{ host }}_20_vmbr0_network_conf
+    - watch:
+      - file: {{ host }}_networkd_conf
+      - file: {{ host }}_10_vmbr0_netdev_conf
+      - file: {{ host }}_20_vmbr0_network_conf
+    {% else %}
+      - file: {{ host }}_network_conf
+    - watch:
+      - file: {{ host }}_network_conf
+    {% endif %}
