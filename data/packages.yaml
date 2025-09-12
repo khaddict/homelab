@@ -18,13 +18,14 @@ common_packages:
   - "tig"
 
 purged_packages:
-  - openipmi
-  - netplan.io
-  - ifupdown
-  - isc-dhcp-client
-  - isc-dhcp-common
-  - dhcpcd5
-  - cloud-init
+  - "openipmi"
+  - "netplan.io"
+  - "ifupdown"
+  - "ifupdown2"
+  - "isc-dhcp-client"
+  - "isc-dhcp-common"
+  - "dhcpcd5"
+  - "cloud-init"
 
 homelab_packages:
   homelab_blackbox_exporter_amd64: "1.0.0"
