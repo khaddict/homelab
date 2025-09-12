@@ -21,7 +21,6 @@ purged_packages:
   - "openipmi"
   - "netplan.io"
   - "ifupdown"
-  - "ifupdown2"
   - "isc-dhcp-client"
   - "isc-dhcp-common"
   - "dhcpcd5"
