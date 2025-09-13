@@ -16,7 +16,7 @@ input:
   - tags
 
 vars:
-  - domain: "homelab.lan"
+  - domain: "{{ domain }}"
   - vm_fqdn: "<% ctx().vm_name %>.<% ctx().domain %>"
   - saltmaster: "saltmaster.<% ctx().domain %>"
   - pdns: "pdns.<% ctx().domain %>"
@@ -59,13 +59,13 @@ tasks:
       hosts: <% ctx().proxmox %>
       username: root
       cmd: |
-        qm list | grep -w "<% ctx().vm_name %>" > /dev/null; echo $?
+        qm list | awk -v name='<% ctx().vm_name %>' '$2==name{found=1} END{exit !found}'
     next:
-      - when: <% succeeded() and result()[ctx().proxmox].stdout = 0 %>
+      - when: <% succeeded() %>
         do: noop
         publish:
           - msg: "VM <% ctx().vm_name %> already exists."
-      - when: <% succeeded() and result()[ctx().proxmox].stdout = 1 %>
+      - when: <% failed() %>
         do: get_template_id
 
   get_template_id:
@@ -74,12 +74,12 @@ tasks:
       hosts: <% ctx().proxmox %>
       username: root
       cmd: |
-        qm list | grep <% ctx().template %> | awk '{print $1}'
+        qm list | awk -v name='<% ctx().template %>' '$2==name{print $1; ok=1} END{exit !ok}'
     next:
       - when: <% succeeded() %>
         do: clone_vm
         publish:
-          - template_id: <% result()[ctx().proxmox].stdout %>
+          - template_id: <% str(result()[ctx().proxmox].stdout).strip() %>
       - when: <% failed() %>
         publish:
           - msg: "Could not retrieve the template ID."
@@ -104,7 +104,7 @@ tasks:
       hosts: <% ctx().proxmox %>
       username: root
       cmd: |
-        qm set <% ctx().vmid %> --tags <% ctx().tags %> --ciuser root -ipconfig0 ip=<% ctx().ip_addr %>/24,gw={{ gateway }} --memory <% ctx().memory %> --cores <% ctx().cores %> --sshkeys <(echo -e "<% ctx().st2_sshkey %>\n<% ctx().saltmaster_sshkey %>")
+        qm set <% ctx().vmid %> --tags <% ctx().tags %> --ciuser root -ipconfig0 ip=<% ctx().ip_addr %>/24,gw={{ gateway }} --memory <% ctx().memory %> --cores <% ctx().cores %> --description "<% ctx().description %>" --sshkeys <(echo -e "<% ctx().st2_sshkey %>\n<% ctx().saltmaster_sshkey %>")
     next:
       - when: <% succeeded() %>
         do: resize_disk
@@ -131,7 +131,6 @@ tasks:
     input:
       hosts: <% ctx().proxmox %>
       username: root
-      timeout: 90
       cmd: |
         qm start <% ctx().vmid %>
         until nc -z -w1 <% ctx().ip_addr %> 22 >/dev/null 2>&1; do sleep 1; done
@@ -175,7 +174,6 @@ tasks:
     input:
       hosts: <% ctx().saltmaster %>
       username: root
-      timeout: 300
       cmd: |
         salt-ssh --user=root -i --priv=/root/.ssh/id_ed25519 <% ctx().ip_addr %> state.sls independent
     next:
@@ -191,13 +189,13 @@ tasks:
       hosts: <% ctx().ip_addr %>
       username: root
       cmd: |
-        systemctl restart salt-minion && sleep 5
+        systemctl restart salt-minion
     next:
       - when: <% succeeded() %>
         do: accept_salt_key
       - when: <% failed() %>
         publish:
-          - msg: "Could not generate the SSH public key."
+          - msg: "Could not restart the salt-minion service."
 
   accept_salt_key:
     action: core.remote
@@ -208,10 +206,66 @@ tasks:
         salt-key -a <% ctx().vm_fqdn %> -y
     next:
       - when: <% succeeded() %>
-        do: create_a_record
+        do: highstate_vm
       - when: <% failed() %>
         publish:
           - msg: "Could not accept the salt-key for <% ctx().vm_fqdn %>."
+
+  highstate_vm:
+    action: core.remote
+    input:
+      hosts: <% ctx().ip_addr %>
+      username: root
+      timeout: 240
+      cmd: |
+        salt-call state.highstate
+    next:
+      - when: <% succeeded() %>
+        do: remove_useless_devices
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not highstate <% ctx().vm_fqdn %>."
+
+  remove_useless_devices:
+    action: core.remote
+    input:
+      hosts: <% ctx().proxmox %>
+      username: root
+      cmd: |
+        for device in efidisk0 ide0; do qm set <% ctx().vmid %> --delete $device; done
+    next:
+      - when: <% succeeded() %>
+        do: shutdown_vm
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not delete cloud-init or EFI volume."
+
+  shutdown_vm:
+    action: core.remote
+    input:
+      hosts: <% ctx().ip_addr %>
+      username: root
+      cmd: |
+        shutdown now
+    next:
+      - when: <% succeeded() or failed() %>
+        do: second_start_vm
+
+  second_start_vm:
+    action: core.remote
+    input:
+      hosts: <% ctx().proxmox %>
+      username: root
+      cmd: |
+        sleep 10
+        qm start <% ctx().vmid %>
+        qm set <% ctx().vmid %> --delete unused0
+    next:
+      - when: <% succeeded() %>
+        do: create_a_record
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not start the VM."
 
   create_a_record:
     action: powerdns.create_records
@@ -242,10 +296,24 @@ tasks:
       zone_name: "<% ctx().ptr_zone_name %>"
     next:
       - when: <% succeeded() %>
-        do: create_vm_netbox
+        do: restart_recursor_service
       - when: <% failed() %>
         publish:
           - msg: "Could not create the PTR record for <% ctx().vm_fqdn %>."
+
+  restart_recursor_service:
+    action: core.remote
+    input:
+      hosts: <% ctx().recursor %>
+      username: root
+      cmd: |
+        systemctl restart pdns-recursor.service
+    next:
+      - when: <% succeeded() %>
+        do: create_vm_netbox
+      - when: <% failed() %>
+        publish:
+          - msg: "Could not restart pdns-recursor.service."
 
   create_vm_netbox:
     action: st2_homelab.netbox_vm
@@ -258,81 +326,11 @@ tasks:
       disk: <% int(ctx().disk) * 1000 %>
     next:
       - when: <% succeeded() %>
-        do: global_state_vm
-      - when: <% failed() %>
-        publish:
-          - msg: "Could not create <% ctx().vm_fqdn %> on NetBox side."
-
-  global_state_vm:
-    action: core.remote
-    input:
-      hosts: <% ctx().ip_addr %>
-      username: root
-      timeout: 180
-      cmd: |
-        salt-call state.sls global
-    next:
-      - when: <% succeeded() %>
-        do: remove_useless_devices
-      - when: <% failed() %>
-        publish:
-          - msg: "Could not apply the global state on <% ctx().vm_fqdn %>."
-
-  remove_useless_devices:
-    action: core.remote
-    input:
-      hosts: <% ctx().proxmox %>
-      username: root
-      cmd: |
-        for device in efidisk0 ide0 serial0; do qm set <% ctx().vmid %> --delete $device; done
-    next:
-      - when: <% succeeded() %>
-        do: shutdown_vm
-      - when: <% failed() %>
-        publish:
-          - msg: "Could not delete cloud-init or EFI volume."
-
-  shutdown_vm:
-    action: core.remote
-    input:
-      hosts: <% ctx().ip_addr %>
-      username: root
-      cmd: |
-        shutdown now
-    next:
-      - when: <% succeeded() or failed() %>
-        do: second_start_vm
-
-  second_start_vm:
-    action: core.remote
-    input:
-      hosts: <% ctx().proxmox %>
-      username: root
-      cmd: |
-        sleep 10
-        qm start <% ctx().vmid %>
-        qm set <% ctx().vmid %> --delete unused0
-    next:
-      - when: <% succeeded() %>
-        do: restart_recursor_service
-      - when: <% failed() %>
-        publish:
-          - msg: "Could not start the VM."
-
-  restart_recursor_service:
-    action: core.remote
-    input:
-      hosts: <% ctx().recursor %>
-      username: root
-      cmd: |
-        systemctl restart pdns-recursor.service
-    next:
-      - when: <% succeeded() %>
         publish:
           - msg: "Everything is finished."
       - when: <% failed() %>
         publish:
-          - msg: "Could not restart pdns-recursor.service."
+          - msg: "Could not create the VM on NetBox."
 
 output:
   - msg: <% ctx().msg %>
