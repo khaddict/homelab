@@ -104,7 +104,7 @@ tasks:
       hosts: <% ctx().proxmox %>
       username: root
       cmd: |
-        qm set <% ctx().vmid %> --tags <% ctx().tags %> --ciuser root -ipconfig0 ip=<% ctx().ip_addr %>/24,gw={{ gateway }} --memory <% ctx().memory %> --cores <% ctx().cores %> --serial0 socket --sshkeys <(echo -e "<% ctx().st2_sshkey %>\n<% ctx().saltmaster_sshkey %>")
+        qm set <% ctx().vmid %> --tags <% ctx().tags %> --ciuser root -ipconfig0 ip=<% ctx().ip_addr %>/24,gw={{ gateway }} --memory <% ctx().memory %> --cores <% ctx().cores %> --sshkeys <(echo -e "<% ctx().st2_sshkey %>\n<% ctx().saltmaster_sshkey %>")
     next:
       - when: <% succeeded() %>
         do: resize_disk
@@ -118,7 +118,7 @@ tasks:
       hosts: <% ctx().proxmox %>
       username: root
       cmd: |
-        qm disk resize <% ctx().vmid %> scsi0 "+<% int(ctx().disk) - 2 %>G"
+        qm resize <% ctx().vmid %> scsi0 <% ctx().disk %>G
     next:
       - when: <% succeeded() %>
         do: first_start_vm
@@ -134,30 +134,13 @@ tasks:
       timeout: 90
       cmd: |
         qm start <% ctx().vmid %>
-        echo wait 10s; sleep 10; echo waiting for host ping response; fping --quiet --retry=60 --backoff=1 --timeout=1000 <% ctx().ip_addr %> && echo wait 15s for ssh service to start && sleep 15
-    next:
-      - when: <% succeeded() %>
-        do: resize_part
-      - when: <% failed() %>
-        publish:
-          - msg: "Could not start the VM."
-
-  resize_part:
-    action: core.remote
-    input:
-      hosts: <% ctx().ip_addr %>
-      username: root
-      timeout: 150
-      cmd: |
-        apt install parted -y
-        echo -e "Yes\nquit" | parted /dev/sda resizepart 1 100% ---pretend-input-tty
-        resize2fs /dev/sda1
+        until nc -z -w1 <% ctx().ip_addr %> 22 >/dev/null 2>&1; do sleep 1; done
     next:
       - when: <% succeeded() %>
         do: set_hostname
       - when: <% failed() %>
         publish:
-          - msg: "Could not resize the partition."
+          - msg: "Could not start the VM or SSH KO."
 
   set_hostname:
     action: core.remote
