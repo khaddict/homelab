@@ -25,9 +25,9 @@ A proper system and network architecture diagram will be added later (when I hav
 
 ## 5) Infrastructure Overview 🌟
 
-![image](https://github.com/user-attachments/assets/32fa0544-b78d-4873-bb69-f9d625e816bc)
+![image](https://github.com/user-attachments/assets/a635abfa-e3bc-4854-9aad-99625671c4fe)
 
-I have a three-node Proxmox cluster running virtual machines. Most of these VMs are managed with SaltStack. The technologies used include:
+My environment consists of a three-node Proxmox VE cluster for virtual machines. The majority of VMs run Debian 13 (Trixie), provisioned via StackStorm and managed with SaltStack. High availability is provided by Proxmox VE HA with Ceph. The stack includes:
 
 - 🔐 `main.homelab.lan` ➞ The main entry point to my infrastructure.<br>
   - All SSH access to other machines is blocked by default.
@@ -97,6 +97,8 @@ I have a three-node Proxmox cluster running virtual machines. Most of these VMs 
 - 🔩 `kworker0[1-3].homelab.lan` ➞ Kubernetes worker nodes.
 
 - 🔧 `kcontrol0[1-3].homelab.lan` ➞ Kubernetes control plane nodes.
+
+- 🧠 `ai.homelab.lan` ➞ Artificial Intelligence experimentations.
 
 - 💾 `pbs.homelab.lan` ➞ [Proxmox Backup Server](https://www.proxmox.com/en/products/proxmox-backup-server/overview)<br>
   - Proxmox Backup Server for backing up & restoring VMs.
