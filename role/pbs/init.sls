@@ -5,11 +5,26 @@
 include:
   - base.rclone
 
-/mnt/shadowDrive/pbs_backups/.chunks:
+/opt/local/pbs_backups:
   file.directory:
     - user: backup
     - group: backup
-    - mode: 750
+    - mode: 755
+    - makedirs: True
+
+/opt/remote/pbs_backups:
+  file.directory:
+    - user: root
+    - group: root
+    - mode: 755
+    - makedirs: True
+
+/usr/local/bin/pbs_backup.sh:
+  file.managed:
+    - source: salt://role/pbs/files/pbs_backup.sh
+    - mode: 755
+    - user: root
+    - group: root
     - makedirs: True
 
 /root/.config/rclone/rclone.conf:
