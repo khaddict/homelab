@@ -14,13 +14,6 @@ include:
     - user: salt
     - group: salt
 
-/etc/apt/preferences.d/salt.pref:
-  file.managed:
-    - source: salt://role/saltmaster/files/salt.pref
-    - mode: 644
-    - user: root
-    - group: root
-
 saltgui:
   user.present:
     - usergroup: True

@@ -146,8 +146,8 @@
       "force": true,
       "tags": "n2-cls1,trixie,salt,ceph",
       "main_iface": "ens18",
-      "schedule": "*-*-01 03:00:00",
-      "backup_enabled": true
+      "schedule": "2099-12-31 00:00:00",
+      "backup_enabled": false
     },
     {
       "vm_name": "grafana",
