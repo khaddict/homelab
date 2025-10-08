@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export METALLB_NAMESPACE="metallb-system"
+export VERSION="0.15.2"
 
 helm repo add metallb https://metallb.github.io/metallb
 helm repo update
@@ -12,14 +13,11 @@ else
     echo "Namespace $METALLB_NAMESPACE already exists, skipping creation."
 fi
 
-if ! helm status --namespace=$METALLB_NAMESPACE metallb &> /dev/null; then
-    echo "Installing Metallb Helm chart..."
-    helm install --namespace=$METALLB_NAMESPACE metallb metallb/metallb
-    echo "Waiting for Metallb components to initialize..."
-    sleep 60
-else
-    echo "Metallb Helm release already exists, skipping installation."
-fi
+echo "Installing/Upgrading Metallb Helm chart to version $VERSION..."
+helm upgrade --install --namespace=$METALLB_NAMESPACE metallb metallb/metallb --version $VERSION
+
+echo "Waiting for Metallb components to initialize..."
+sleep 60
 
 echo "Applying Metallb configurations..."
 kubectl apply -f /root/apps/metallb/metallb_pool.yaml --namespace $METALLB_NAMESPACE

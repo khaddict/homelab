@@ -3,6 +3,7 @@
 export TRAEFIK_NAMESPACE="traefik"
 export VAULT_TOKEN={{ vault_token }}
 export VAULT_ADDR="https://vault.homelab.lan:8200/"
+export VERSION="37.1.2"
 
 helm repo add traefik https://traefik.github.io/charts
 helm repo update
@@ -25,14 +26,11 @@ kubectl create secret tls traefik-cert-secret \
     --cert=/tmp/traefik.crt \
     --key=/tmp/traefik.key
 
-if ! helm status --namespace=$TRAEFIK_NAMESPACE traefik &> /dev/null; then
-    echo "Installing Traefik Helm chart..."
-    helm install traefik traefik/traefik --namespace $TRAEFIK_NAMESPACE --set dashboard.enabled=true --set service.type=LoadBalancer
-    echo "Waiting for Traefik components to initialize..."
-    sleep 30
-else
-    echo "Traefik Helm release already exists, skipping installation."
-fi
+echo "Installing/Upgrading Traefik Helm chart to version $VERSION..."
+helm upgrade --install traefik traefik/traefik --namespace $TRAEFIK_NAMESPACE --version $VERSION --set dashboard.enabled=true --set service.type=LoadBalancer
+
+echo "Waiting for Traefik components to initialize..."
+sleep 30
 
 export TRAEFIK_DASHBOARD_SECRET=$(vault kv get -tls-skip-verify -field="traefik_dashboard_secret" "kv/kubernetes")
 export TRAEFIK_DASHBOARD_SECRET_HTPASSWD=$(htpasswd -nb admin "$TRAEFIK_DASHBOARD_SECRET")
