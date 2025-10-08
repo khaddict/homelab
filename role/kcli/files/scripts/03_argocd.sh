@@ -3,6 +3,7 @@
 export ARGOCD_NAMESPACE="argocd"
 export VAULT_TOKEN={{ vault_token }}
 export VAULT_ADDR="https://vault.homelab.lan:8200/"
+export VERSION="8.5.10"
 
 if ! kubectl get namespace $ARGOCD_NAMESPACE &> /dev/null; then
     echo "Creating namespace $ARGOCD_NAMESPACE..."
@@ -30,14 +31,11 @@ kubectl create secret generic ca-homelab-secret \
     --namespace $ARGOCD_NAMESPACE \
     --from-literal=ca-homelab.crt="$CA_HOMELAB_SECRET"
 
-if ! helm status --namespace=$ARGOCD_NAMESPACE argocd &> /dev/null; then
-    echo "Installing ArgoCD Helm chart..."
-    helm install --namespace=$ARGOCD_NAMESPACE argocd argo/argo-cd -f /root/apps/argocd/argocd_values.yaml -f /root/apps/argocd/argocd_overrides.yaml --set configs.params."server\.insecure"=true
-    echo "Waiting for ArgoCD components to initialize..."
-    sleep 40
-else
-    echo "ArgoCD Helm release already exists, skipping installation."
-fi
+echo "Installing/Upgrading ArgoCD Helm chart to version $VERSION..."
+helm upgrade --install argocd argo/argo-cd --namespace $ARGOCD_NAMESPACE --version $VERSION -f /root/apps/argocd/argocd_values.yaml -f /root/apps/argocd/argocd_overrides.yaml --set configs.params."server\.insecure"=true
+
+echo "Waiting for ArgoCD components to initialize..."
+sleep 40
 
 export ARGOCD_CERT_SECRET=$(vault kv get -tls-skip-verify -field="argocd.homelab.lan.crt" "kv/ca/applications/argocd.homelab.lan")
 export ARGOCD_KEY_SECRET=$(vault kv get -tls-skip-verify -field="argocd.homelab.lan.key" "kv/ca/applications/argocd.homelab.lan")
