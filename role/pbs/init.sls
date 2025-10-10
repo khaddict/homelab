@@ -14,8 +14,8 @@ include:
 
 /opt/remote/pbs_backups:
   file.directory:
-    - user: root
-    - group: root
+    - user: backup
+    - group: backup
     - mode: 755
     - makedirs: True
 
