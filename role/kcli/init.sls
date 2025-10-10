@@ -27,6 +27,11 @@ include:
     - source: salt://role/kcli/files/apps
     - include_empty: True
 
+/root/random_manifests:
+  file.recurse:
+    - source: salt://role/kcli/files/random_manifests
+    - include_empty: True
+
 /root/scripts:
   file.recurse:
     - source: salt://role/kcli/files/scripts
