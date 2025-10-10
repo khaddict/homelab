@@ -490,6 +490,23 @@
       "backup_enabled": true
     },
     {
+      "vm_name": "uptimekuma",
+      "vmid": "128",
+      "disk": "20",
+      "memory": "2048",
+      "cores": "2",
+      "description": "Uptime Kuma to monitore endpoints",
+      "template": "debian-trixie-template",
+      "ip_addr": "192.168.0.182",
+      "vm_role": "uptimekuma",
+      "node": "n1-cls1",
+      "force": true,
+      "tags": "n1-cls1,trixie,salt,ceph",
+      "main_iface": "ens18",
+      "schedule": "*-*-01 10:30:00",
+      "backup_enabled": true
+    },
+    {
       "vm_name": "vault",
       "vmid": "105",
       "disk": "30",

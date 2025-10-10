@@ -73,5 +73,8 @@
   'stackstorm.homelab.lan':
     - role.stackstorm
 
+  'uptimekuma.homelab.lan':
+    - role.uptimekuma
+
   'vault.homelab.lan':
     - role.vault
