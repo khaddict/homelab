@@ -502,7 +502,7 @@
       "node": "n1-cls1",
       "force": true,
       "tags": "n1-cls1,trixie,salt,ceph",
-      "main_iface": "eth0",
+      "main_iface": "ens18",
       "schedule": "*-*-01 10:30:00",
       "backup_enabled": true
     },
