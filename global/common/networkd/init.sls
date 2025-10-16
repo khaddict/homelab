@@ -47,6 +47,14 @@ include:
         ip_addr: {{ (data.proxmox_vms | selectattr('vm_name', 'equalto', host) | first).ip_addr }}
         powerdns_recursor: {{ data.network.dns_nameservers.powerdns_recursor }}
         domain: {{ domain }}
+
+{{ host }}_rename_iface:
+  file.managed:
+    - name: /etc/systemd/network/00-rename-ens18.link
+    - source: salt://global/common/networkd/files/00-rename-ens18.link
+    - template: jinja
+    - context:
+        main_iface: {{ (data.proxmox_vms | selectattr('vm_name', 'equalto', host) | first).main_iface }}
 {% else %}
 network_conf_absent_warning:
   test.show_notification:
