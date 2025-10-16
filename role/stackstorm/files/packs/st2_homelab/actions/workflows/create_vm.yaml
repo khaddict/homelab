@@ -179,33 +179,57 @@ tasks:
         salt-ssh --user=root -i --priv=/root/.ssh/id_ed25519 <% ctx().ip_addr %> state.sls independent
     next:
       - when: <% succeeded() %>
-        do: restart_salt_minion
+        do: purge_cloudinit_netplan
       - when: <% failed() %>
         publish:
           - msg: "Salt independent minion bootstrap failed for <% ctx().vm_fqdn %>."
 
-  restart_salt_minion:
+  purge_cloudinit_netplan:
     action: core.remote
     input:
       hosts: <% ctx().ip_addr %>
       username: root
-      timeout: 120
       cmd: |
-        systemctl stop salt-minion && systemctl kill -s SIGKILL --kill-who=all salt-minion 2>/dev/null || true; rm -f /run/salt-minion.pid; systemctl reset-failed salt-minion; systemctl start salt-minion
+        set -euxo pipefail
+        mkdir -p /etc/cloud/cloud.cfg.d
+        printf "network:\n  config: disabled\n" > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+        touch /etc/cloud/cloud-init.disabled || true
+        systemctl mask cloud-init-local.service cloud-init-network.service cloud-config.service cloud-final.service || true
+        apt-get purge -y cloud-init netplan.io netplan-generator libnetplan1 python3-netplan || true
+        rm -f /etc/netplan/* 2>/dev/null || true
+        rm -rf /var/lib/cloud/* /var/log/cloud-init* /run/cloud-init 2>/dev/null || true
+        rm -f /run/systemd/network/10-*.network 2>/dev/null || true
+        apt-get -y autoremove --purge || true
+    next:
+      - when: <% succeeded() %>
+        do: restart_vm
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to purge cloud-init/netplan on <% ctx().vm_fqdn %>."
+
+  restart_vm:
+    action: core.remote
+    input:
+      hosts: <% ctx().ip_addr %>
+      username: root
+      cmd: |
+        reboot now
     next:
       - when: <% succeeded() %>
         do: accept_salt_key
       - when: <% failed() %>
         publish:
-          - msg: "Failed to restart salt-minion on <% ctx().vm_fqdn %>."
+          - msg: "Failed to restart <% ctx().vm_fqdn %>."
 
   accept_salt_key:
     action: core.remote
     input:
       hosts: <% ctx().saltmaster %>
       username: root
+      timeout: 180
       cmd: |
-        salt-key -a <% ctx().vm_fqdn %> -y
+        until salt-key -l unaccepted | grep -qx "<% ctx().vm_fqdn %>"; do sleep 1; done
+        salt-key -a "<% ctx().vm_fqdn %>" -y
     next:
       - when: <% succeeded() %>
         do: highstate_vm
