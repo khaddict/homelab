@@ -56,7 +56,7 @@ My environment consists of a three-node Proxmox VE cluster for virtual machines.
   - A monitoring and alerting system.
   - Uses Prometheus and Alertmanager.
 
-- ✅ `ca.homelab.lan` ➞ Internal Certificate Authority (CA).<br>
+- ✅ `easypki.homelab.lan` ➞ Internal Certificate Authority (CA).<br>
   - `stackstorm.homelab.lan` manages certificate issuance through automated workflows.
 
 - ⏰ `ntp.homelab.lan` ➞ [Chrony NTP Server](https://chrony-project.org)<br>
