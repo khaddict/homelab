@@ -1,6 +1,5 @@
 {% import_json 'data/main.json' as data %}
 
-{% set ca_password = salt['vault'].read_secret('kv/ca/ca').ca_password %}
 {% set netbox_api_token = salt['vault'].read_secret('kv/stackstorm/netbox').api_token %}
 {% set messaging_url = salt['vault'].read_secret('kv/stackstorm/st2').messaging_url %}
 {% set database_password = salt['vault'].read_secret('kv/stackstorm/st2').database_password %}
@@ -82,16 +81,6 @@ orquesta_evaluator_service:
 
 # Configs
 
-/opt/stackstorm/configs/st2_homelab.yaml:
-  file.managed:
-    - source: salt://role/stackstorm/files/configs/st2_homelab.yaml
-    - mode: 660
-    - user: root
-    - group: st2packs
-    - template: jinja
-    - context:
-        ca_password: {{ ca_password }}
-
 /opt/stackstorm/configs/netbox.yaml:
   file.managed:
     - source: salt://role/stackstorm/files/configs/netbox.yaml
@@ -131,7 +120,6 @@ st2_homelab_installation:
       - file: /opt/stackstorm/packs/st2_homelab
     - onchanges:
       - file: /opt/stackstorm/packs/st2_homelab
-      - file: /opt/stackstorm/configs/st2_homelab.yaml
 
 netbox_installation:
   cmd.run:
