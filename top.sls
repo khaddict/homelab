@@ -16,11 +16,11 @@
   'build.homelab.lan':
     - role.build
 
-  'ca.homelab.lan':
-    - role.ca
-
   'docker.homelab.lan':
     - role.docker
+
+  'easypki.homelab.lan':
+    - role.easypki
 
   'elk.homelab.lan':
     - role.elk

@@ -99,7 +99,7 @@
       "backup_enabled": true
     },
     {
-      "vm_name": "ca",
+      "vm_name": "easypki",
       "vmid": "108",
       "disk": "20",
       "memory": "1024",
@@ -107,7 +107,7 @@
       "description": "Certificate Authority for homelab.lan",
       "template": "debian-trixie-template",
       "ip_addr": "192.168.0.161",
-      "vm_role": "ca",
+      "vm_role": "easypki",
       "node": "n1-cls1",
       "force": true,
       "tags": "n1-cls1,trixie,salt,ceph",
