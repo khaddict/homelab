@@ -522,23 +522,6 @@
       "main_iface": "ens18",
       "schedule": "*-*-01 10:00:00",
       "backup_enabled": true
-    },
-    {
-      "vm_name": "fault",
-      "vmid": "129",
-      "disk": "30",
-      "memory": "4096",
-      "cores": "2",
-      "description": "Fault",
-      "template": "debian-trixie-template",
-      "ip_addr": "192.168.0.184",
-      "vm_role": "fault",
-      "node": "n1-cls1",
-      "force": true,
-      "tags": "n1-cls1,trixie,salt,ceph",
-      "main_iface": "ens18",
-      "schedule": "*-*-01 10:00:00",
-      "backup_enabled": true
     }
   ]
 }
