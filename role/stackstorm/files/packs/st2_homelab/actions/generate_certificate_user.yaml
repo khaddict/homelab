@@ -1,0 +1,11 @@
+name: generate_certificate_user
+pack: st2_homelab
+runner_type: orquesta
+description: Generate user certificate & send it to Vault.
+enabled: true
+entry_point: workflows/generate_certificate_user.yaml
+parameters:
+  user_name:
+    required: true
+    type: string
+    description: The user name.
