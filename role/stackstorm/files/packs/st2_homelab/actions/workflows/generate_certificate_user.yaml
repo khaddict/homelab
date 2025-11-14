@@ -1,0 +1,92 @@
+version: 1.0
+description: Generate user certificate & send it to Vault.
+
+input:
+  - user_name
+
+vars:
+  - domain: "homelab.lan"
+  - easypki_vm: "easypki.<% ctx().domain %>"
+  - vault_vm: "vault.<% ctx().domain %>"
+  - vm_path: "/root/easypki/pki/intermediates/homelab/issued/<% ctx().user_name %>"
+
+tasks:
+  generate_certificate_user:
+    action: core.remote
+    input:
+      hosts: "<% ctx().easypki_vm %>"
+      username: root
+      cmd: |
+        /usr/bin/bash /root/easypki/easypki.sh cert --pki-dir /root/easypki/pki --ca homelab --issue-user <% ctx().user_name %>
+    next:
+      - when: <% succeeded() %>
+        do: get_cert
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to generate <% ctx().user_name %> certificate."
+
+  get_cert:
+    action: core.remote
+    input:
+      hosts: "<% ctx().easypki_vm %>"
+      username: root
+      cmd: |
+        cat <% ctx().vm_path %>/<% ctx().user_name %>.cert.pem
+    next:
+      - when: <% succeeded() %>
+        do: get_fullchain
+        publish:
+          - cert: <% result()[ctx().easypki_vm].stdout %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to retrieve the certificate file <% ctx().user_name %>.cert.pem."
+
+  get_fullchain:
+    action: core.remote
+    input:
+      hosts: "<% ctx().easypki_vm %>"
+      username: root
+      cmd: |
+        cat <% ctx().vm_path %>/<% ctx().user_name %>.fullchain.pem
+    next:
+      - when: <% succeeded() %>
+        do: get_key
+        publish:
+          - fullchain: <% result()[ctx().easypki_vm].stdout %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to retrieve the fullchain file <% ctx().user_name %>.fullchain.pem."
+
+  get_key:
+    action: core.remote
+    input:
+      hosts: "<% ctx().easypki_vm %>"
+      username: root
+      cmd: |
+        cat <% ctx().vm_path %>/<% ctx().user_name %>.key.pem
+    next:
+      - when: <% succeeded() %>
+        do: send_to_vault
+        publish:
+          - key: <% result()[ctx().easypki_vm].stdout %>
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to retrieve the key file <% ctx().user_name %>.key.pem."
+
+  send_to_vault:
+    action: core.remote
+    input:
+      hosts: "<% ctx().vault_vm %>"
+      username: root
+      cmd: |
+        vault kv put kv/easypki/user/<% ctx().user_name %> <% ctx().user_name %>.cert.pem="<% ctx().cert %>" <% ctx().user_name %>.fullchain.pem="<% ctx().fullchain %>" <% ctx().user_name %>.key.pem="<% ctx().key %>"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - msg: "Certificate files for <% ctx().user_name %> have been successfully generated and uploaded to Vault."
+      - when: <% failed() %>
+        publish:
+          - msg: "Failed to upload <% ctx().vm_path %>/<% ctx().user_name %>.[cert|pem|key].pem to Vault."
+
+output:
+  - msg: <% ctx().msg %>
