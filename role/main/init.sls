@@ -10,6 +10,7 @@
 
 include:
   - base.pssh
+  - base.age
 
 /root/.bashrc.d/vars.bashrc:
   file.managed:
