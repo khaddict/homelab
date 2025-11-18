@@ -72,9 +72,6 @@ My environment consists of a three-node Proxmox VE cluster for virtual machines.
 - 🚀 `api.homelab.lan` ➞ [FastAPI](https://fastapi.tiangolo.com/)<br>
   - An API server for practice and development.
 
-- 🪙 `assets.homelab.lan` ➞ [Assets](https://github.com/khaddict/assets)<br>
-  - An application to track my assets.
-
 - 📚 `pdns.homelab.lan` ➞ [PowerDNS Authoritative Server](https://doc.powerdns.com/authoritative/index.html)<br>
   - Authoritative DNS server.
 
@@ -99,6 +96,8 @@ My environment consists of a three-node Proxmox VE cluster for virtual machines.
 - 🔧 `kcontrol0[1-3].homelab.lan` ➞ Kubernetes control plane nodes.
 
 - 🧠 `ai.homelab.lan` ➞ Artificial Intelligence experimentations.
+
+- 🟢 `uptimekuma.homelab.lan` ➞ Uptime Kuma to monitore services.
 
 - 💾 `pbs.homelab.lan` ➞ [Proxmox Backup Server](https://www.proxmox.com/en/products/proxmox-backup-server/overview)<br>
   - Proxmox Backup Server for backing up & restoring VMs.
