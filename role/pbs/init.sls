@@ -54,7 +54,7 @@ include:
     - group: root
 
 rclone_sync_service:
-  service.enabled:
+  service.disabled:
     - name: rclone-sync.service
     - require:
       - file: /etc/systemd/system/rclone-sync.service

@@ -1,5 +1,5 @@
 [Unit]
-Description=Rebuild /opt/remote/pbs_backups from /opt/local/pbs_backups and sync to ShadowDrive
+Description=Sync /opt/local/pbs_backups to ShadowDrive
 After=network-online.target
 Wants=network-online.target
 ConditionPathIsDirectory=/opt/local/pbs_backups
@@ -8,6 +8,3 @@ ConditionPathIsDirectory=/opt/local/pbs_backups
 Type=oneshot
 ExecStart=/usr/bin/bash /usr/local/bin/pbs_backup.sh
 Restart=no
-
-[Install]
-WantedBy=multi-user.target
