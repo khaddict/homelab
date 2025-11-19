@@ -15,16 +15,16 @@ else
     echo "Namespace $TRAEFIK_NAMESPACE already exists, skipping creation."
 fi
 
-export TRAEFIK_CERT_SECRET=$(vault kv get -tls-skip-verify -field="traefik.homelab.lan.crt" "kv/ca/applications/traefik.homelab.lan")
-export TRAEFIK_KEY_SECRET=$(vault kv get -tls-skip-verify -field="traefik.homelab.lan.key" "kv/ca/applications/traefik.homelab.lan")
+export TRAEFIK_CERT_SECRET=$(vault kv get -tls-skip-verify -field="traefik.homelab.lan.cert.pem" "kv/easypki/application/traefik.homelab.lan")
+export TRAEFIK_KEY_SECRET=$(vault kv get -tls-skip-verify -field="traefik.homelab.lan.key.pem" "kv/easypki/application/traefik.homelab.lan")
 
-echo "$TRAEFIK_CERT_SECRET" > /tmp/traefik.crt
-echo "$TRAEFIK_KEY_SECRET" > /tmp/traefik.key
+echo "$TRAEFIK_CERT_SECRET" > /tmp/traefik.cert.pem
+echo "$TRAEFIK_KEY_SECRET" > /tmp/traefik.key.pem
 
 kubectl create secret tls traefik-cert-secret \
     --namespace $TRAEFIK_NAMESPACE \
-    --cert=/tmp/traefik.crt \
-    --key=/tmp/traefik.key
+    --cert=/tmp/traefik.cert.pem \
+    --key=/tmp/traefik.key.pem
 
 echo "Installing/Upgrading Traefik Helm chart to version $VERSION..."
 helm upgrade --install traefik traefik/traefik --namespace $TRAEFIK_NAMESPACE --version $VERSION --set dashboard.enabled=true --set service.type=LoadBalancer

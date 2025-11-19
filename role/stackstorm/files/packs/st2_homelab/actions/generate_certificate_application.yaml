@@ -1,0 +1,11 @@
+name: generate_certificate_application
+pack: st2_homelab
+runner_type: orquesta
+description: Generate application certificate & send it to Vault.
+enabled: true
+entry_point: workflows/generate_certificate_application.yaml
+parameters:
+  app_name:
+    required: true
+    type: string
+    description: The application name.

@@ -23,13 +23,13 @@ kubectl create secret generic vault-configuration \
     --from-literal=VAULT_TOKEN=$VAULT_TOKEN \
     --from-literal=AVP_AUTH_TYPE=token \
     --from-literal=AVP_TYPE=vault \
-    --from-literal=VAULT_CACERT=/ca/ca-homelab.crt
+    --from-literal=VAULT_CACERT=/ca/homelab.chain.crt
 
-export CA_HOMELAB_SECRET=$(vault kv get -tls-skip-verify -field="ca-homelab.crt" "kv/ca/ca")
+export CA_HOMELAB_SECRET=$(vault kv get -tls-skip-verify -field="homelab.chain.crt" "kv/easypki/root")
 
 kubectl create secret generic ca-homelab-secret \
     --namespace $ARGOCD_NAMESPACE \
-    --from-literal=ca-homelab.crt="$CA_HOMELAB_SECRET"
+    --from-literal=homelab.chain.crt="$CA_HOMELAB_SECRET"
 
 echo "Installing/Upgrading ArgoCD Helm chart to version $VERSION..."
 helm upgrade --install argocd argo/argo-cd --namespace $ARGOCD_NAMESPACE --version $VERSION -f /root/apps/argocd/argocd_values.yaml -f /root/apps/argocd/argocd_overrides.yaml --set configs.params."server\.insecure"=true
@@ -37,18 +37,18 @@ helm upgrade --install argocd argo/argo-cd --namespace $ARGOCD_NAMESPACE --versi
 echo "Waiting for ArgoCD components to initialize..."
 sleep 40
 
-export ARGOCD_CERT_SECRET=$(vault kv get -tls-skip-verify -field="argocd.homelab.lan.crt" "kv/ca/applications/argocd.homelab.lan")
-export ARGOCD_KEY_SECRET=$(vault kv get -tls-skip-verify -field="argocd.homelab.lan.key" "kv/ca/applications/argocd.homelab.lan")
+export ARGOCD_CERT_SECRET=$(vault kv get -tls-skip-verify -field="argocd.homelab.lan.cert.pem" "kv/ca/applications/argocd.homelab.lan")
+export ARGOCD_KEY_SECRET=$(vault kv get -tls-skip-verify -field="argocd.homelab.lan.key.pem" "kv/ca/applications/argocd.homelab.lan")
 
-echo "$ARGOCD_CERT_SECRET" > /tmp/argocd.crt
-echo "$ARGOCD_KEY_SECRET" > /tmp/argocd.key
+echo "$ARGOCD_CERT_SECRET" > /tmp/argocd.cert.pem
+echo "$ARGOCD_KEY_SECRET" > /tmp/argocd.key.pem
 
 kubectl create secret tls argocd-cert-secret \
     --namespace $ARGOCD_NAMESPACE \
-    --cert=/tmp/argocd.crt \
-    --key=/tmp/argocd.key
+    --cert=/tmp/argocd.cert.pem \
+    --key=/tmp/argocd.key.pem
 
-rm /tmp/argocd.crt /tmp/argocd.key
+rm /tmp/argocd.cert.pem /tmp/argocd.key.pem
 
 kubectl apply -f /root/apps/argocd/argocd_ingressroute.yaml --namespace $ARGOCD_NAMESPACE
 
