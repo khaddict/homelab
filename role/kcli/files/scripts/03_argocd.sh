@@ -37,8 +37,8 @@ helm upgrade --install argocd argo/argo-cd --namespace $ARGOCD_NAMESPACE --versi
 echo "Waiting for ArgoCD components to initialize..."
 sleep 40
 
-export ARGOCD_CERT_SECRET=$(vault kv get -tls-skip-verify -field="argocd.homelab.lan.cert.pem" "kv/ca/applications/argocd.homelab.lan")
-export ARGOCD_KEY_SECRET=$(vault kv get -tls-skip-verify -field="argocd.homelab.lan.key.pem" "kv/ca/applications/argocd.homelab.lan")
+export ARGOCD_CERT_SECRET=$(vault kv get -tls-skip-verify -field="argocd.homelab.lan.cert.pem" "kv/easypki/application/argocd.homelab.lan")
+export ARGOCD_KEY_SECRET=$(vault kv get -tls-skip-verify -field="argocd.homelab.lan.key.pem" "kv/easypki/application/argocd.homelab.lan")
 
 echo "$ARGOCD_CERT_SECRET" > /tmp/argocd.cert.pem
 echo "$ARGOCD_KEY_SECRET" > /tmp/argocd.key.pem
