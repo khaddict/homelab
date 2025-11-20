@@ -21,8 +21,68 @@ purged_packages:
   - "openipmi"
   - "netplan.io"
   - "ifupdown"
-  - "isc-dhcp-client"
-  - "isc-dhcp-common"
+  # I don't remember why I deleted both, but pve needs them:
+  # (Thursday 20 Nov)(10:19:43)(root@n3-cls1:~)(64K:5D:7F)
+  # > salt-call state.highstate
+  # [ERROR   ] Command 'systemd-run' failed with return code: 100
+  # [ERROR   ] stdout: Reading package lists...
+  # Building dependency tree...
+  # Reading state information...
+  # The following packages were automatically installed and are no longer required:
+  #   libclass-methodmaker-perl libdpkg-perl libfile-fcntllock-perl
+  #   pve-nvidia-vgpu-helper pve-yew-mobile-gui pve-yew-mobile-i18n python3-pefile
+  #   python3-virt-firmware virtiofsd
+  # Use 'apt autoremove' to remove them.
+  # The following packages will be REMOVED:
+  #   isc-dhcp-client* isc-dhcp-common* proxmox-ve* pve-container* pve-ha-manager*
+  #   pve-manager* qemu-server*
+  # W: (pve-apt-hook) !! WARNING !!
+  # W: (pve-apt-hook) You are attempting to remove the meta-package 'proxmox-ve'!
+  # W: (pve-apt-hook)
+  # W: (pve-apt-hook) If you really want to permanently remove 'proxmox-ve' from your system, run the following command
+  # W: (pve-apt-hook) 	touch '/please-remove-proxmox-ve'
+  # W: (pve-apt-hook) run apt purge proxmox-ve to remove the meta-package
+  # W: (pve-apt-hook) and repeat your apt invocation.
+  # W: (pve-apt-hook)
+  # W: (pve-apt-hook) If you are unsure why 'proxmox-ve' would be removed, please verify
+  # W: (pve-apt-hook) 	- your APT repository settings
+  # W: (pve-apt-hook) 	- that you are using 'apt full-upgrade' to upgrade your system
+  # 0 upgraded, 0 newly installed, 7 to remove and 0 not upgraded.
+  # After this operation, 9425 kB disk space will be freed.
+  # [ERROR   ] stderr: Running as unit: run-p299786-i299787.scope; invocation ID: ec2e7128182845ecb2f5a295bed145be
+  # E: Sub-process /usr/share/proxmox-ve/pve-apt-hook returned an error code (1)
+  # E: Failure running script /usr/share/proxmox-ve/pve-apt-hook
+  # [ERROR   ] retcode: 100
+  # [ERROR   ] {'removed': {}, 'installed': {}}
+  # local:
+  # ----------
+  #           ID: purged_packages
+  #     Function: pkg.purged
+  #       Result: False
+  #      Comment: Problem encountered removing package(s). Additional info follows:
+
+  #               errors:
+  #                   - Running as unit: run-p299786-i299787.scope; invocation ID: ec2e7128182845ecb2f5a295bed145be
+  #                     E: Sub-process /usr/share/proxmox-ve/pve-apt-hook returned an error code (1)
+  #                     E: Failure running script /usr/share/proxmox-ve/pve-apt-hook
+  #      Started: 10:19:55.121060
+  #     Duration: 396.083 ms
+  #      Changes:
+  #               ----------
+  #               installed:
+  #                   ----------
+  #               removed:
+  #                   ----------
+
+  # Summary for local
+  # -------------
+  # Succeeded: 49 (changed=1)
+  # Failed:     1
+  # -------------
+  # Total states run:     50
+  # Total run time:    1.896 s
+  # - "isc-dhcp-client"
+  # - "isc-dhcp-common"
   - "dhcpcd5"
   - "cloud-init"
 
